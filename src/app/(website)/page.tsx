@@ -1,3 +1,9 @@
+import { Button } from "@/components/ui/button";
+
 export default function Home() {
-  return <p>Streat</p>;
+  return (
+    <div>
+      <Button effect="gooeyLeft">Click Me</Button>
+    </div>
+  );
 }
