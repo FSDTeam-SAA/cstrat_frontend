@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode } from 'react';
 
 type User = {
   id: string;
@@ -23,9 +23,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = () => {
     // Simulate login
     setUser({
-      id: "1",
-      name: "John Doe",
-      email: "john@example.com",
+      id: '1',
+      name: 'John Doe',
+      email: 'john@example.com',
     });
   };
 
@@ -51,7 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 }
