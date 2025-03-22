@@ -1,7 +1,7 @@
-import { cn } from "@/lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
-import { X } from "lucide-react";
-import { ReactNode, useEffect } from "react";
+import { cn } from '@/lib/utils';
+import { AnimatePresence, motion } from 'framer-motion';
+import { X } from 'lucide-react';
+import { ReactNode, useEffect } from 'react';
 
 const backdropVariants = {
   hidden: { opacity: 0 },
@@ -20,22 +20,17 @@ interface Props {
   children: ReactNode;
 }
 
-export default function CstratModal({
-  open,
-  onOpenChange,
-  className,
-  children,
-}: Props) {
+export default function CstratModal({ open, onOpenChange, className, children }: Props) {
   // Close modal on escape key
   useEffect(() => {
     if (!open) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onOpenChange(false);
+      if (e.key === 'Escape') onOpenChange(false);
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [open, onOpenChange]);
 
   return (
@@ -51,8 +46,8 @@ export default function CstratModal({
         >
           <motion.div
             className={cn(
-              "relative mt-5 w-full max-w-[90%] rounded-2xl bg-white p-4 shadow-xl sm:max-w-[600px] md:max-w-[700px] md:p-6",
-              className
+              'relative mt-5 w-full max-w-[90%] rounded-2xl bg-white p-4 shadow-xl sm:max-w-[600px] md:max-w-[700px] md:p-6',
+              className,
             )}
             variants={modalVariants}
             initial="hidden"
