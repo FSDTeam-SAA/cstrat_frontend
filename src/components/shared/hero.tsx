@@ -14,9 +14,7 @@ export default function Hero() {
       <section className="flex h-full w-full flex-col items-center justify-center bg-white/70 px-4">
         <div className="container mx-auto py-16 md:py-24">
           <div className="max-w-[688px] space-y-6">
-            <h1 className="text-4xl font-bold tracking-tight text-black md:text-5xl">
-              Sustainable Corporate Gifts for a Greener Future
-            </h1>
+            <h1 className="title">Sustainable Corporate Gifts for a Greener Future</h1>
             <p className="text-lg text-black">
               Enhance your brand identity with our curated selection of eco-friendly corporate gifts that make a lasting
               impression while caring for our planet.

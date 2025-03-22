@@ -12,6 +12,7 @@ import LogoutModal from '../auth/logout-modal';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
 import ShopMenuContent from '../shop/shop-menu';
+import Logo from '../../../public/images/drip-logo.png';
 
 export default function Navbar() {
   const { isAuthenticated, logout } = useAuth();
@@ -24,7 +25,7 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 w-full bg-black text-white">
       <div className="container mx-auto flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo.svg" alt="Drip Swag" width={120} height={40} className="h-10 w-auto" />
+          <Image src={Logo} alt="Drip Swag" width={120} height={40} className="h-10 w-auto" />
         </Link>
 
         <nav className="hidden flex-1 items-center justify-center md:flex">

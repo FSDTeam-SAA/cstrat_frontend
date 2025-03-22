@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import featuredProduct from '../../../public/images/featured-product.png';
 
 export default function ShopMenuContent() {
   const categories = [
@@ -72,12 +73,7 @@ export default function ShopMenuContent() {
       <div className="space-y-3">
         <h3 className="font-bold">Our Most Valuable Products</h3>
         <div className="relative h-32 w-full">
-          <Image
-            src="/placeholder.svg?height=128&width=200"
-            alt="Featured products"
-            fill
-            className="rounded-md object-cover"
-          />
+          <Image src={featuredProduct} alt="Featured products" fill className="rounded-md object-cover" />
         </div>
       </div>
     </div>
