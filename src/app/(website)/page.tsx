@@ -1,8 +1,8 @@
-// import BestSellers from "@/components/best-sellers";
+import BestSellers from "@/components/shop/best-sellers";
 import BrandShowcase from '@/components/shop/brand-showcase';
-// import Categories from "@/components/categories";
-// import ClientReviews from "@/components/client-reviews";
-// import CorporateGifting from "@/components/corporate-gifting";
+import Categories from "@/components/shared/categories";
+import ClientReviews from "@/components/shared/client-reviews";
+import CorporateGifting from "@/components/corporate-gifting";
 import Hero from '@/components/shared/hero';
 
 export default function Home() {
@@ -10,11 +10,11 @@ export default function Home() {
     <div className="">
       <Hero />
       <BrandShowcase />
-      {/* 
+      
       <BestSellers />
       <CorporateGifting />
       <Categories />
-      <ClientReviews /> */}
+      <ClientReviews />
     </div>
   );
 }
