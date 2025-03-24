@@ -2,14 +2,14 @@ import Image from 'next/image';
 
 export default function BrandShowcase() {
   const brands = [
-    { name: 'New Balance', logo: '/placeholder.svg?height=50&width=100' },
-    { name: 'Puma', logo: '/placeholder.svg?height=50&width=100' },
-    { name: 'Calvin Klein', logo: '/placeholder.svg?height=50&width=100' },
-    { name: 'Adidas', logo: '/placeholder.svg?height=50&width=100' },
-    { name: 'Calvin Klein', logo: '/placeholder.svg?height=50&width=100' },
-    { name: 'Adidas', logo: '/placeholder.svg?height=50&width=100' },
-    { name: 'Nike', logo: '/placeholder.svg?height=50&width=100' },
-    { name: 'Under Armour', logo: '/placeholder.svg?height=50&width=100' },
+    { name: 'New Balance', logo: '/images/brand-logo-1.png' },
+    { name: 'Puma', logo: '/images/brand-logo-2.png' },
+    { name: 'Calvin Klein', logo: '/images/brand-logo-3.png' },
+    { name: 'Adidas', logo: '/images/brand-logo-4.png' },
+    { name: 'Calvin Klein', logo: '/images/brand-logo-5.png' },
+    { name: 'Adidas', logo: '/images/brand-logo-3.png' },
+    { name: 'Nike', logo: '/images/brand-logo-4.png' },
+    { name: 'Under Armour', logo: '/images/brand-logo-5.png' },
   ];
 
   return (

@@ -22,7 +22,7 @@ export default function ProductGrid() {
       name: "Men's Sports T-Shirt",
       price: 25,
       rating: 4.5,
-      image: '/placeholder.svg?height=400&width=300',
+      image: '/images/best-2.png',
       isWishlisted: false,
     },
     {
@@ -30,7 +30,7 @@ export default function ProductGrid() {
       name: "Women's Hoodie",
       price: 25,
       rating: 4,
-      image: '/placeholder.svg?height=400&width=300',
+      image: '/images/image 1.png',
       isWishlisted: false,
     },
     {
@@ -38,7 +38,7 @@ export default function ProductGrid() {
       name: 'Black Stripes T-Shirt',
       price: 70,
       rating: 4.5,
-      image: '/placeholder.svg?height=400&width=300',
+      image: '/images/best-2.png',
       isWishlisted: true,
     },
     {
@@ -46,7 +46,7 @@ export default function ProductGrid() {
       name: 'Running Shoes',
       price: 120,
       rating: 5,
-      image: '/placeholder.svg?height=400&width=300',
+      image: '/images/image 1.png',
       isWishlisted: false,
     },
     {
@@ -54,7 +54,7 @@ export default function ProductGrid() {
       name: 'Wireless Headphones',
       price: 85,
       rating: 4,
-      image: '/placeholder.svg?height=400&width=300',
+      image: '/images/best-2.png',
       isWishlisted: false,
     },
     {
@@ -62,7 +62,7 @@ export default function ProductGrid() {
       name: 'Water Bottle',
       price: 15,
       rating: 4.5,
-      image: '/placeholder.svg?height=400&width=300',
+      image: '/images/image 1.png',
       isWishlisted: false,
     },
   ]);
