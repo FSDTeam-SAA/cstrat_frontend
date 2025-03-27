@@ -1,40 +1,85 @@
-import { Button } from '@/components/ui/button';
+// import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import Link from 'next/link';
+// import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+// import Link from 'next/link';
 
 export default function CheckoutForm() {
   return (
     <div className="space-y-8">
+      
       <div className="overflow-hidden rounded-lg border">
         <div className="border-b bg-gray-50 p-4">
-          <h2 className="font-bold">Contact Information</h2>
+          <h2 className="font-bold">Delivery Information</h2>
         </div>
         <div className="space-y-4 p-6">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="firstName">First Name</Label>
-              <Input id="firstName" placeholder="Enter your first name" />
+              <Label className="text-[18px] font-medium" htmlFor="lastName">
+              Full Name
+              </Label>
+              <Input className="h-12 rounded-none" id="lastName" placeholder="Enter your last name" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="lastName">Last Name</Label>
-              <Input id="lastName" placeholder="Enter your last name" />
+              <Label className="text-[18px] font-medium" htmlFor="lastName">
+              Region
+              </Label>
+              <Input className="h-12 rounded-none" id="lastName" placeholder="Enter your last name" />
             </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email Address</Label>
-            <Input id="email" type="email" placeholder="Enter your email" />
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label className="text-[18px] font-medium" htmlFor="lastName">
+              Phone Number
+              </Label>
+              <Input className="h-12 rounded-none" id="lastName" placeholder="Enter your last name" />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-[18px] font-medium" htmlFor="lastName">
+              City
+              </Label>
+              <Input className="h-12 rounded-none" id="lastName" placeholder="Enter your last name" />
+            </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone Number</Label>
-            <Input id="phone" placeholder="Enter your phone number" />
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label className="text-[18px] font-medium" htmlFor="lastName">
+              House No/ Street
+              </Label>
+              <Input className="h-12 rounded-none" id="lastName" placeholder="Enter your last name" />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-[18px] font-medium" htmlFor="lastName">
+              Area
+              </Label>
+              <Input className="h-12 rounded-none" id="lastName" placeholder="Enter your last name" />
+            </div>
           </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+            <Label className='text-[18px] font-medium' htmlFor="lastName">Colony/ Locality</Label>
+            <Input className='h-12 rounded-none' id="lastName" placeholder="Enter your last name" />
+            </div>
+            <div className="space-y-2">
+            <Label className='text-[18px] font-medium' htmlFor="lastName">Address</Label>
+            <Input className='h-12 rounded-none' id="lastName" placeholder="Enter your last name" />
+            </div>
+          </div>
+
+          <div className='flex justify-end'>
+          <button className='w-[100px] h-[50px] bg-black text-white'>Save</button>
+          </div>
+          
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-lg border">
+
+
+      {/* <div className="overflow-hidden rounded-lg border">
         <div className="border-b bg-gray-50 p-4">
           <h2 className="font-bold">Shipping Address</h2>
         </div>
@@ -86,9 +131,9 @@ export default function CheckoutForm() {
             </Select>
           </div>
         </div>
-      </div>
+      </div> */}
 
-      <div className="overflow-hidden rounded-lg border">
+      {/* <div className="overflow-hidden rounded-lg border">
         <div className="border-b bg-gray-50 p-4">
           <h2 className="font-bold">Shipping Method</h2>
         </div>
@@ -117,16 +162,16 @@ export default function CheckoutForm() {
             </div>
           </RadioGroup>
         </div>
-      </div>
+      </div> */}
 
-      <div className="flex justify-between">
+      {/* <div className="flex justify-between">
         <Button variant="outline" asChild>
           <Link href="/cart">Return to Cart</Link>
         </Button>
         <Button asChild className="bg-black text-white hover:bg-gray-800">
           <Link href="/checkout/payment">Continue to Payment</Link>
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 }

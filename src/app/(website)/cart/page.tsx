@@ -11,17 +11,23 @@ export default function CartPage() {
   const cartItems = [
     {
       id: '1',
-      name: "Men's Sports T-Shirt",
+      name: "Premium Quality - stylish new T shirt - Casual Exclusive half Sleeve T Shirt For Men - T Shirt",
       price: 25,
       quantity: 1,
-      image: '/placeholder.svg?height=400&width=300',
+      image: '/images/image 5.png',
+      brandName: "ABC",
+      size: 'XL',
+      color: 'Black'
     },
     {
       id: '2',
-      name: "Women's Hoodie",
+      name: "Premium Quality - stylish new T shirt - Casual Exclusive half Sleeve T Shirt For Men - T Shirt",
       price: 25,
       quantity: 2,
-      image: '/placeholder.svg?height=400&width=300',
+      image: '/images/image 5.png',
+      brandName: "AtoZ",
+      size: 'XL',
+      color: 'Red'
     },
   ];
 
@@ -31,11 +37,11 @@ export default function CartPage() {
     <div className="flex w-full flex-col items-center">
       <PageHeader
         title="Cart"
-        backgroundImage="/images/cart-bg.jpg"
-        breadcrumbs={[
-          { label: 'Home', href: '/' },
-          { label: 'Cart', href: '/cart' },
-        ]}
+        backgroundImage="/images/cart-hero.png"
+        // breadcrumbs={[
+        //   { label: 'Home', href: '/' },
+        //   { label: 'Cart', href: '/cart' },
+        // ]}
       />
 
       <div className="container py-8">
@@ -49,8 +55,8 @@ export default function CartPage() {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-            <div className="lg:col-span-2">
+          <div className="">
+            <div className="lg:col-span-2 mb-8">
               <div className="overflow-hidden rounded-lg border">
                 <div className="border-b bg-gray-50 p-4">
                   <h2 className="font-bold">

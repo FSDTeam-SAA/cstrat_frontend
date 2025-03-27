@@ -31,7 +31,7 @@ export function PageHeader({
         className="relative w-full bg-cover bg-center"
         style={{
           backgroundImage: `url('${backgroundImage}')`,
-          height: description ? '400px' : '300px',
+          height: description ? '400px' : '378px',
         }}
       >
         {/* Content container */}

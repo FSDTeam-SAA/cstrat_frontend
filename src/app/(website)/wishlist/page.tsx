@@ -11,19 +11,57 @@ export default function WishlistPage() {
       id: '1',
       name: "Men's Sports T-Shirt",
       price: 25,
-      image: '/placeholder.svg?height=400&width=300',
+      rating: 5,
+      image: '/images/best-2.png',
     },
     {
       id: '2',
       name: "Women's Hoodie",
       price: 25,
-      image: '/placeholder.svg?height=400&width=300',
+      rating: 5,
+      image: '/images/best-2.png',
     },
     {
       id: '3',
       name: 'Black Stripes T-Shirt',
       price: 70,
-      image: '/placeholder.svg?height=400&width=300',
+      rating: 5,
+      image: '/images/best-2.png',
+    },
+    {
+      id: '4',
+      name: 'Black Stripes T-Shirt',
+      price: 70,
+      rating: 5,
+      image: '/images/best-2.png',
+    },
+    {
+      id: '5',
+      name: 'Black Stripes T-Shirt',
+      price: 70,
+      rating: 5,
+      image: '/images/best-2.png',
+    },
+    {
+      id: '6',
+      name: 'Black Stripes T-Shirt',
+      price: 70,
+      rating: 5,
+      image: '/images/best-2.png',
+    },
+    {
+      id: '7',
+      name: 'Black Stripes T-Shirt',
+      price: 70,
+      rating: 5,
+      image: '/images/best-2.png',
+    },
+    {
+      id: '8',
+      name: 'Black Stripes T-Shirt',
+      price: 70,
+      rating: 5,
+      image: '/images/best-2.png',
     },
   ];
 
@@ -34,7 +72,7 @@ export default function WishlistPage() {
       <PageHeader
         title="Wishlist"
         subtitle="Style That Speaks, Comfort That Lasts."
-        backgroundImage="/images/wishlist-bg.jpg"
+        backgroundImage="/images/clothing-hero.png"
       />
 
       <div className="container py-8">
@@ -50,7 +88,7 @@ export default function WishlistPage() {
         ) : (
           <div>
             <h2 className="mb-6 text-2xl font-bold">My Wishlist ({wishlistItems.length} items)</h2>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
               {wishlistItems.map((item) => (
                 <WishlistItem key={item.id} item={item} />
               ))}
