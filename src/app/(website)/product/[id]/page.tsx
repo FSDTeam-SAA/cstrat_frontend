@@ -1,6 +1,4 @@
 import { Suspense } from 'react';
-import Link from 'next/link';
-import { ChevronRight } from 'lucide-react';
 import ProductDetails from '@/components/product/product-details';
 import RelatedProducts from '@/components/product/related-products';
 import ProductTabs from '@/components/product/product-tabs';
@@ -10,20 +8,20 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   const product = products.find((p) => p.id === params.id) || products[0];
 
   // Get category and subcategory for breadcrumb
-  const category = product.category;
-  const subcategory = product.subcategory;
+  // const category = product.category;
+  // const subcategory = product.subcategory;
 
   // Format category and subcategory names for display
-  const categoryName = category.charAt(0).toUpperCase() + category.slice(1);
-  const subcategoryName = subcategory
-    .split('-')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+  // const categoryName = category.charAt(0).toUpperCase() + category.slice(1);
+  // const subcategoryName = subcategory
+  //   .split('-')
+  //   .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+  //   .join(' ');
 
   return (
     <div className="container mx-auto px-4 py-6">
       {/* Breadcrumb */}
-      <nav className="mb-6 flex items-center text-sm">
+      {/* <nav className="mb-6 flex items-center text-sm">
         <Link href="/" className="hover:underline">
           Home
         </Link>
@@ -39,7 +37,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
         <Link href={`/shop/${category}/${subcategory}`} className="hover:underline">
           {subcategoryName}
         </Link>
-      </nav>
+      </nav> */}
 
       {/* Product Details */}
       <Suspense fallback={<div>Loading product details...</div>}>
