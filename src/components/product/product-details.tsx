@@ -16,16 +16,16 @@ const COLORS = [
     name: 'Olive',
     value: '#5D4A1F',
     images: [
-      '/ts/blue.jpg', // Front view
-      '/ts/blue.jpg', // Back view
-      '/ts/blue.jpg', // Side view
-      '/ts/blue.jpg', // Model view
+      '/ts/green.jpg', // Front view
+      '/ts/green.jpg', // Back view
+      '/ts/green.jpg', // Side view
+      '/ts/green.jpg', // Model view
     ],
   },
   {
     name: 'Forest',
     value: '#1F3D36',
-    images: ['/ts/green.jpg', '/ts/green.jpg', '/ts/green.jpg', '/ts/green.jpg'],
+    images: ['/images/green-1.jpeg', '/images/green-1.jpeg', '/images/green-1.jpeg', '/images/green-1.jpeg'],
   },
   {
     name: 'Yellow',
@@ -91,7 +91,7 @@ export default function ProductDetails({ product }: { product: Product }) {
   // UI state
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartPos, setDragStartPos] = useState({ x: 0, y: 0 });
-  // const [isRotating, setIsRotating] = useState(false);
+  const [isRotating, setIsRotating] = useState(false);
   const [rotateStartAngle, setRotateStartAngle] = useState(0);
 
   // Preview state
@@ -220,46 +220,6 @@ export default function ProductDetails({ product }: { product: Product }) {
       x: touch.clientX,
       y: touch.clientY,
     });
-
-    // Prevent default behavior to avoid scrolling
-    e.preventDefault();
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging || !imageContainerRef.current) return;
-
-    const currentLogo = getCurrentLogo();
-    const containerRect = imageContainerRef.current.getBoundingClientRect();
-    const touch = e.touches[0];
-
-    const deltaX = touch.clientX - dragStartPos.x;
-    const deltaY = touch.clientY - dragStartPos.y;
-
-    // Calculate new position as percentage of container
-    const newX = currentLogo.position.x + (deltaX / containerRect.width) * 100;
-    const newY = currentLogo.position.y + (deltaY / containerRect.height) * 100;
-
-    // Constrain to container bounds with some padding for the logo
-    const padding = currentLogo.size / 2;
-    const constrainedX = Math.max(padding, Math.min(100 - padding, newX));
-    const constrainedY = Math.max(padding, Math.min(100 - padding, newY));
-
-    updateCurrentLogo({
-      position: {
-        x: constrainedX,
-        y: constrainedY,
-      },
-    });
-
-    setDragStartPos({
-      x: touch.clientX,
-      y: touch.clientY,
-    });
-  };
-
-  const handleTouchEnd = () => {
-    setIsDragging(false);
-    // setIsRotating(false);
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -294,7 +254,7 @@ export default function ProductDetails({ product }: { product: Product }) {
 
   const handleMouseUp = () => {
     setIsDragging(false);
-    // setIsRotating(false);
+    setIsRotating(false);
   };
 
   // Handle logo resize with corner handles
@@ -305,8 +265,6 @@ export default function ProductDetails({ product }: { product: Product }) {
     e.stopPropagation(); // Prevent triggering drag
 
     const containerRect = imageContainerRef.current.getBoundingClientRect();
-    // const logoRect = logoRef.current.getBoundingClientRect();
-
     const startSize = currentLogo.size;
     const startMouseX = e.clientX;
     const startMouseY = e.clientY;
@@ -357,7 +315,7 @@ export default function ProductDetails({ product }: { product: Product }) {
     if (!currentLogo.logoUrl || !logoRef.current) return;
 
     e.stopPropagation(); // Prevent triggering drag
-    // setIsRotating(true);
+    setIsRotating(true);
 
     const logoRect = logoRef.current.getBoundingClientRect();
     const logoCenter = {
@@ -379,7 +337,7 @@ export default function ProductDetails({ product }: { product: Product }) {
     };
 
     const handleRotateUp = () => {
-      // setIsRotating(false);
+      setIsRotating(false);
       document.removeEventListener('mousemove', handleRotateMove);
       document.removeEventListener('mouseup', handleRotateUp);
     };
@@ -602,10 +560,87 @@ export default function ProductDetails({ product }: { product: Product }) {
 
   // Get product rating or default
   const rating = product.rating || 4.5;
-  // const reviewCount = product.reviewCount || 42;
 
   // Get current logo for rendering
   const currentLogo = getCurrentLogo();
+
+  // Handle touch move for dragging and rotating
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!imageContainerRef.current) return;
+
+    // Handle dragging
+    if (isDragging) {
+      const currentLogo = getCurrentLogo();
+      const containerRect = imageContainerRef.current.getBoundingClientRect();
+      const touch = e.touches[0];
+
+      const deltaX = touch.clientX - dragStartPos.x;
+      const deltaY = touch.clientY - dragStartPos.y;
+
+      // Calculate new position as percentage of container
+      const newX = currentLogo.position.x + (deltaX / containerRect.width) * 100;
+      const newY = currentLogo.position.y + (deltaY / containerRect.height) * 100;
+
+      // Constrain to container bounds with some padding for the logo
+      const padding = currentLogo.size / 2;
+      const constrainedX = Math.max(padding, Math.min(100 - padding, newX));
+      const constrainedY = Math.max(padding, Math.min(100 - padding, newY));
+
+      updateCurrentLogo({
+        position: {
+          x: constrainedX,
+          y: constrainedY,
+        },
+      });
+
+      setDragStartPos({
+        x: touch.clientX,
+        y: touch.clientY,
+      });
+    }
+
+    // Handle rotation
+    if (isRotating && logoRef.current) {
+      // const currentLogo = getCurrentLogo();
+      const logoRect = logoRef.current.getBoundingClientRect();
+      const logoCenter = {
+        x: logoRect.left + logoRect.width / 2,
+        y: logoRect.top + logoRect.height / 2,
+      };
+
+      const touch = e.touches[0];
+      const newAngle = Math.atan2(touch.clientY - logoCenter.y, touch.clientX - logoCenter.x) * (180 / Math.PI);
+
+      // Apply rotation (accounting for initial offset)
+      updateCurrentLogo({ rotation: newAngle - rotateStartAngle });
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+    setIsRotating(false);
+  };
+
+  // Setup touch event listeners with { passive: false } to allow preventDefault
+  useEffect(() => {
+    const container = imageContainerRef.current;
+    if (!container) return;
+
+    // Function to handle touch move with passive: false
+    const handleTouchMoveNonPassive = (e: TouchEvent) => {
+      if (isDragging || isRotating) {
+        e.preventDefault();
+      }
+    };
+
+    // Add event listener with passive: false
+    container.addEventListener('touchmove', handleTouchMoveNonPassive, { passive: false });
+
+    // Clean up
+    return () => {
+      container.removeEventListener('touchmove', handleTouchMoveNonPassive);
+    };
+  }, [isDragging, isRotating]);
 
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
@@ -662,7 +697,7 @@ export default function ProductDetails({ product }: { product: Product }) {
           {currentLogo.logoUrl && canCustomizeCurrentView() && (
             <div
               ref={logoRef}
-              className="absolute cursor-move touch-manipulation"
+              className="absolute cursor-move touch-manipulation select-none"
               style={{
                 left: `${currentLogo.position.x}%`,
                 top: `${currentLogo.position.y}%`,
@@ -672,8 +707,6 @@ export default function ProductDetails({ product }: { product: Product }) {
               }}
               onMouseDown={handleMouseDown}
               onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
             >
               <Image
                 src={currentLogo.logoUrl || '/placeholder.svg'}
@@ -687,24 +720,209 @@ export default function ProductDetails({ product }: { product: Product }) {
               <div
                 className="absolute -bottom-3 -right-3 h-6 w-6 cursor-nwse-resize touch-manipulation rounded-full border-2 border-blue-500 bg-white"
                 onMouseDown={(e) => handleResizeMouseDown(e, 'bottomRight')}
+                onTouchStart={(e) => {
+                  e.stopPropagation();
+                  const currentLogo = getCurrentLogo();
+                  if (!currentLogo.logoUrl || !imageContainerRef.current || !logoRef.current) return;
+
+                  const containerRect = imageContainerRef.current.getBoundingClientRect();
+                  const touch = e.touches[0];
+                  const startSize = currentLogo.size;
+                  const startTouchX = touch.clientX;
+                  const startTouchY = touch.clientY;
+
+                  const handleTouchMove = (moveEvent: TouchEvent) => {
+                    moveEvent.preventDefault(); // Prevent scrolling
+                    const moveTouch = moveEvent.touches[0];
+                    const deltaX = moveTouch.clientX - startTouchX;
+                    const deltaY = moveTouch.clientY - startTouchY;
+
+                    // For bottom right, we want to increase size when dragging outward
+                    const sizeDelta = Math.max(deltaX, deltaY);
+
+                    // Convert to percentage of container width
+                    const percentDelta = (sizeDelta / containerRect.width) * 100;
+
+                    // Apply new size with constraints
+                    const newSize = Math.max(10, Math.min(60, startSize + percentDelta));
+                    updateCurrentLogo({ size: newSize });
+                  };
+
+                  const handleTouchEnd = () => {
+                    document.removeEventListener('touchmove', handleTouchMove);
+                    document.removeEventListener('touchend', handleTouchEnd);
+                  };
+
+                  // Add with passive: false to allow preventDefault
+                  document.addEventListener('touchmove', handleTouchMove, { passive: false });
+                  document.addEventListener('touchend', handleTouchEnd);
+                }}
               ></div>
               <div
                 className="absolute -bottom-3 -left-3 h-6 w-6 cursor-nesw-resize touch-manipulation rounded-full border-2 border-blue-500 bg-white"
                 onMouseDown={(e) => handleResizeMouseDown(e, 'bottomLeft')}
+                onTouchStart={(e) => {
+                  e.stopPropagation();
+                  const currentLogo = getCurrentLogo();
+                  if (!currentLogo.logoUrl || !imageContainerRef.current || !logoRef.current) return;
+
+                  const containerRect = imageContainerRef.current.getBoundingClientRect();
+                  const touch = e.touches[0];
+                  const startSize = currentLogo.size;
+                  const startTouchX = touch.clientX;
+                  const startTouchY = touch.clientY;
+
+                  const handleTouchMove = (moveEvent: TouchEvent) => {
+                    moveEvent.preventDefault(); // Prevent scrolling
+                    const moveTouch = moveEvent.touches[0];
+                    const deltaX = moveTouch.clientX - startTouchX;
+                    const deltaY = moveTouch.clientY - startTouchY;
+
+                    // For bottom left, we want to increase size when dragging outward
+                    const sizeDelta = Math.max(-deltaX, deltaY);
+
+                    // Convert to percentage of container width
+                    const percentDelta = (sizeDelta / containerRect.width) * 100;
+
+                    // Apply new size with constraints
+                    const newSize = Math.max(10, Math.min(60, startSize + percentDelta));
+                    updateCurrentLogo({ size: newSize });
+                  };
+
+                  const handleTouchEnd = () => {
+                    document.removeEventListener('touchmove', handleTouchMove);
+                    document.removeEventListener('touchend', handleTouchEnd);
+                  };
+
+                  // Add with passive: false to allow preventDefault
+                  document.addEventListener('touchmove', handleTouchMove, { passive: false });
+                  document.addEventListener('touchend', handleTouchEnd);
+                }}
               ></div>
               <div
                 className="absolute -right-3 -top-3 h-6 w-6 cursor-nesw-resize touch-manipulation rounded-full border-2 border-blue-500 bg-white"
                 onMouseDown={(e) => handleResizeMouseDown(e, 'topRight')}
+                onTouchStart={(e) => {
+                  e.stopPropagation();
+                  const currentLogo = getCurrentLogo();
+                  if (!currentLogo.logoUrl || !imageContainerRef.current || !logoRef.current) return;
+
+                  const containerRect = imageContainerRef.current.getBoundingClientRect();
+                  const touch = e.touches[0];
+                  const startSize = currentLogo.size;
+                  const startTouchX = touch.clientX;
+                  const startTouchY = touch.clientY;
+
+                  const handleTouchMove = (moveEvent: TouchEvent) => {
+                    moveEvent.preventDefault(); // Prevent scrolling
+                    const moveTouch = moveEvent.touches[0];
+                    const deltaX = moveTouch.clientX - startTouchX;
+                    const deltaY = moveTouch.clientY - startTouchY;
+
+                    // For top right, we want to increase size when dragging outward
+                    const sizeDelta = Math.max(deltaX, -deltaY);
+
+                    // Convert to percentage of container width
+                    const percentDelta = (sizeDelta / containerRect.width) * 100;
+
+                    // Apply new size with constraints
+                    const newSize = Math.max(10, Math.min(60, startSize + percentDelta));
+                    updateCurrentLogo({ size: newSize });
+                  };
+
+                  const handleTouchEnd = () => {
+                    document.removeEventListener('touchmove', handleTouchMove);
+                    document.removeEventListener('touchend', handleTouchEnd);
+                  };
+
+                  // Add with passive: false to allow preventDefault
+                  document.addEventListener('touchmove', handleTouchMove, { passive: false });
+                  document.addEventListener('touchend', handleTouchEnd);
+                }}
               ></div>
               <div
                 className="absolute -left-3 -top-3 h-6 w-6 cursor-nwse-resize touch-manipulation rounded-full border-2 border-blue-500 bg-white"
                 onMouseDown={(e) => handleResizeMouseDown(e, 'topLeft')}
+                onTouchStart={(e) => {
+                  e.stopPropagation();
+                  const currentLogo = getCurrentLogo();
+                  if (!currentLogo.logoUrl || !imageContainerRef.current || !logoRef.current) return;
+
+                  const containerRect = imageContainerRef.current.getBoundingClientRect();
+                  const touch = e.touches[0];
+                  const startSize = currentLogo.size;
+                  const startTouchX = touch.clientX;
+                  const startTouchY = touch.clientY;
+
+                  const handleTouchMove = (moveEvent: TouchEvent) => {
+                    moveEvent.preventDefault(); // Prevent scrolling
+                    const moveTouch = moveEvent.touches[0];
+                    const deltaX = moveTouch.clientX - startTouchX;
+                    const deltaY = moveTouch.clientY - startTouchY;
+
+                    // For top left, we want to increase size when dragging inward
+                    const sizeDelta = -Math.max(deltaX, deltaY);
+
+                    // Convert to percentage of container width
+                    const percentDelta = (sizeDelta / containerRect.width) * 100;
+
+                    // Apply new size with constraints
+                    const newSize = Math.max(10, Math.min(60, startSize + percentDelta));
+                    updateCurrentLogo({ size: newSize });
+                  };
+
+                  const handleTouchEnd = () => {
+                    document.removeEventListener('touchmove', handleTouchMove);
+                    document.removeEventListener('touchend', handleTouchEnd);
+                  };
+
+                  // Add with passive: false to allow preventDefault
+                  document.addEventListener('touchmove', handleTouchMove, { passive: false });
+                  document.addEventListener('touchend', handleTouchEnd);
+                }}
               ></div>
 
               {/* Rotation handle */}
               <div
                 className="absolute -top-8 left-1/2 h-6 w-6 -translate-x-1/2 cursor-move touch-manipulation rounded-full border-2 border-green-500 bg-white"
                 onMouseDown={handleRotateMouseDown}
+                onTouchStart={(e) => {
+                  e.stopPropagation();
+                  const touch = e.touches[0];
+                  const logoRect = logoRef.current?.getBoundingClientRect();
+                  if (!logoRect) return;
+
+                  const logoCenter = {
+                    x: logoRect.left + logoRect.width / 2,
+                    y: logoRect.top + logoRect.height / 2,
+                  };
+
+                  // Calculate initial angle
+                  const initialAngle =
+                    Math.atan2(touch.clientY - logoCenter.y, touch.clientX - logoCenter.x) * (180 / Math.PI);
+                  setRotateStartAngle(initialAngle - currentLogo.rotation);
+                  setIsRotating(true);
+
+                  const handleTouchMove = (moveEvent: TouchEvent) => {
+                    moveEvent.preventDefault(); // Prevent scrolling
+                    const moveTouch = moveEvent.touches[0];
+                    const newAngle =
+                      Math.atan2(moveTouch.clientY - logoCenter.y, moveTouch.clientX - logoCenter.x) * (180 / Math.PI);
+
+                    // Apply rotation (accounting for initial offset)
+                    updateCurrentLogo({ rotation: newAngle - rotateStartAngle });
+                  };
+
+                  const handleTouchEnd = () => {
+                    setIsRotating(false);
+                    document.removeEventListener('touchmove', handleTouchMove);
+                    document.removeEventListener('touchend', handleTouchEnd);
+                  };
+
+                  // Add with passive: false to allow preventDefault
+                  document.addEventListener('touchmove', handleTouchMove, { passive: false });
+                  document.addEventListener('touchend', handleTouchEnd);
+                }}
               ></div>
 
               {/* Remove logo button */}
@@ -785,7 +1003,10 @@ export default function ProductDetails({ product }: { product: Product }) {
                     <button
                       className="rounded-md p-2 transition-colors hover:bg-gray-700"
                       title="Reset Rotation"
-                      onClick={() => updateCurrentLogo({ rotation: 0 })}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        updateCurrentLogo({ rotation: 0 });
+                      }}
                     >
                       <RotateCw size={18} />
                     </button>
