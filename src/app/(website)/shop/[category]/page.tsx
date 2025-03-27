@@ -16,5 +16,6 @@ export default function CategoryPage({ params }: { params: { category: string } 
   const firstSubcategory = categoryData.subcategories?.[0]?.toLowerCase().replace(/\s+/g, '-') || 't-shirt';
 
   // Redirect to the first subcategory
+
   redirect(`/shop/${category}/${firstSubcategory}`);
 }
