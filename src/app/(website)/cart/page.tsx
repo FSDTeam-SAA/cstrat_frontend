@@ -29,6 +29,36 @@ export default function CartPage() {
       size: 'XL',
       color: 'Red'
     },
+    {
+      id: '2',
+      name: "Premium Quality - stylish new T shirt - Casual Exclusive half Sleeve T Shirt For Men - T Shirt",
+      price: 25,
+      quantity: 2,
+      image: '/images/image 5.png',
+      brandName: "AtoZ",
+      size: 'XL',
+      color: 'Red'
+    },
+    {
+      id: '2',
+      name: "Premium Quality - stylish new T shirt - Casual Exclusive half Sleeve T Shirt For Men - T Shirt",
+      price: 25,
+      quantity: 2,
+      image: '/images/image 5.png',
+      brandName: "AtoZ",
+      size: 'XL',
+      color: 'Red'
+    },
+    {
+      id: '2',
+      name: "Premium Quality - stylish new T shirt - Casual Exclusive half Sleeve T Shirt For Men - T Shirt",
+      price: 25,
+      quantity: 2,
+      image: '/images/image 5.png',
+      brandName: "AtoZ",
+      size: 'XL',
+      color: 'Red'
+    },
   ];
 
   const isEmpty = cartItems.length === 0;

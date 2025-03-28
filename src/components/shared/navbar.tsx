@@ -145,11 +145,6 @@
 //   );
 // }
 
-
-
-
-
-
 'use client';
 
 import { useState } from 'react';
@@ -236,13 +231,17 @@ export default function Navbar() {
             </Button>
           )} */}
 
-          <div className='flex items-center gap-5'>
+          <div className="flex items-center gap-5">
             <Link href="/cart">
-            <Image src="/images/cart-img.png" width={30} height={30} alt='cart image'/>
+              <Image src="/images/cart-img.png" width={30} height={30} alt="cart image" />
             </Link>
 
             <Link href="/wishlist">
-              <Image src="/images/wishlist.png" width={30} height={30} alt='wishlist'/>
+              <Image src="/images/wishlist.png" width={30} height={30} alt="wishlist" />
+            </Link>
+
+            <Link href="/profile">
+              <Image src="/images/account.png" width={30} height={30} alt="wishlist" />
             </Link>
           </div>
 
@@ -254,7 +253,7 @@ export default function Navbar() {
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </SheetTrigger>
-            
+
             <SheetContent side="right" className="w-[300px] bg-black text-white sm:w-[400px]">
               <nav className="mt-8 flex flex-col gap-4">
                 <Link href="/" className="py-2 text-lg font-medium" onClick={() => setIsMobileMenuOpen(false)}>
@@ -307,4 +306,3 @@ export default function Navbar() {
     </header>
   );
 }
-

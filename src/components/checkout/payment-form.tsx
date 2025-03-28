@@ -2,65 +2,108 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Link from 'next/link';
-import { CreditCard, ShoppingCartIcon as Paypal } from 'lucide-react';
+import { CreditCard } from 'lucide-react';
+import CheckoutSummary from '@/components/checkout/checkout-summary';
+import Image from 'next/image';
 
 export default function PaymentForm() {
   return (
     <div className="space-y-8">
-      <div className="overflow-hidden rounded-lg border">
-        <div className="border-b bg-gray-50 p-4">
+      <div className="container rounded-lg border">
+        {/* <div className="border-b bg-gray-50 p-4">
           <h2 className="font-bold">Payment Method</h2>
-        </div>
-        <div className="p-6">
+        </div> */}
+        <CheckoutSummary />
+
+        <div className="p-4">
           <RadioGroup defaultValue="credit-card">
-            <div className="mb-4 rounded-lg border p-4">
-              <div className="mb-4 flex items-center space-x-2">
-                <RadioGroupItem value="credit-card" id="credit-card" />
-                <Label htmlFor="credit-card" className="flex items-center">
-                  <CreditCard className="mr-2 h-5 w-5" />
-                  Credit / Debit Card
-                </Label>
-              </div>
-              <div className="space-y-4 pl-6">
-                <div className="space-y-2">
-                  <Label htmlFor="card-number">Card Number</Label>
-                  <Input id="card-number" placeholder="1234 5678 9012 3456" />
+            <div className="mb-4 rounded-lg">
+              <div className="mb-6 flex items-center justify-between rounded-md bg-[#b8bff0] px-4 py-2">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="credit-card" id="credit-card" />
+                  <Label htmlFor="credit-card" className="flex items-center">
+                    <CreditCard className="mr-2 h-5 w-5" />
+                    Credit / Debit Card
+                  </Label>
                 </div>
+                <div className="flex items-center gap-3">
+                  <Image src="/images/Visa.png" width={50} height={20} alt="visa" />
+                  <Image src="/images/Mastercard.png" width={50} height={20} alt="visa" />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  {/* <Label htmlFor="card-number">Card Number</Label> */}
+                  <Input className="h-12" id="card-number" placeholder="Cardholder Name" />
+                </div>
+
+                <div className="space-y-2">
+                  {/* <Label htmlFor="card-number">Card Number</Label> */}
+                  <Input className="h-12" id="card-number" placeholder="Card Number" />
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="expiry">Expiration Date</Label>
-                    <Input id="expiry" placeholder="MM/YY" />
+                    <Input className="h-12" id="card-number" placeholder="Exp.Date" />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="cvv">CVV</Label>
-                    <Input id="cvv" placeholder="123" />
+                    <Input className="h-12" id="card-number" placeholder="CVV" />
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="name-on-card">Name on Card</Label>
-                  <Input id="name-on-card" placeholder="John Doe" />
+
+                <div className="mb-6 flex items-center justify-between rounded-md border px-4 py-2">
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="credit-card" id="credit-card" />
+                    <Label htmlFor="credit-card" className="flex items-center">
+                      {/* <CreditCard className="mr-2 h-5 w-5" /> */}
+                      PayPal
+                    </Label>
+                  </div>
+                  <div className="flex h-10 items-center">
+                    <Image src="/images/payPal.png" width={50} height={20} alt="visa" />
+                  </div>
+                </div>
+
+                <div className="mb-6 flex items-center justify-between rounded-md border px-4 py-2">
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="credit-card" id="credit-card" />
+                    <Label htmlFor="credit-card" className="flex items-center">
+                      {/* <CreditCard className="mr-2 h-5 w-5" /> */}
+                      Cash on delivery
+                    </Label>
+                  </div>
+                  <div className="flex h-10 items-center">
+                    <Image src="/images/cash.png" width={50} height={20} alt="visa" />
+                  </div>
                 </div>
               </div>
             </div>
-            <div className="rounded-lg border p-4">
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="paypal" id="paypal" />
-                <Label htmlFor="paypal" className="flex items-center">
-                  <Paypal className="mr-2 h-5 w-5" />
-                  PayPal
-                </Label>
-              </div>
-              <p className="mt-2 pl-6 text-sm text-gray-500">
-                You will be redirected to PayPal to complete your purchase securely.
+
+            <div className="">
+              <p className="mb-3">
+                Available Coupon{' '}
+                <span className="text-sm text-gray-400">(Select one if you want to have discount)</span>
               </p>
+              <div className='flex gap-4'>
+                <div className="w-[148px] rounded-md border p-4">
+                  <p>Coupon #1255</p>
+                </div>
+                <div className="w-[148px] rounded-md border p-4">
+                  <p>Coupon #1255</p>
+                </div>
+                <div className="w-[148px] rounded-md border p-4">
+                  <p>Coupon #1255</p>
+                </div>
+              </div>
             </div>
           </RadioGroup>
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-lg border">
+      {/* <div className="overflow-hidden rounded-lg border">
         <div className="border-b bg-gray-50 p-4">
           <h2 className="font-bold">Billing Address</h2>
         </div>
@@ -98,13 +141,10 @@ export default function PaymentForm() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
-      <div className="flex justify-between">
-        <Button variant="outline" asChild>
-          <Link href="/checkout">Return to Shipping</Link>
-        </Button>
-        <Button asChild className="bg-black text-white hover:bg-gray-800">
+      <div className="flex justify-between ">
+        <Button className="bg-black text-white hover:bg-gray-800 w-full h-[60px]">
           <Link href="/checkout/confirmation">Place Order</Link>
         </Button>
       </div>

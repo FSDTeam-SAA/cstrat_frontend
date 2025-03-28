@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import WishlistItem from '@/components/wishlist/wishlist-item';
 import Link from 'next/link';
 import { Heart } from 'lucide-react';
+import WishlistPagination from '@/components/wishlist/WishlistPagination';
 
 export default function WishlistPage() {
   // This would normally come from a wishlist context or API
@@ -96,6 +97,7 @@ export default function WishlistPage() {
           </div>
         )}
       </div>
+      <WishlistPagination />
     </div>
   );
 }

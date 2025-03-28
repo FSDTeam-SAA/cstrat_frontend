@@ -4,7 +4,7 @@ import CheckoutSummary from '@/components/checkout/checkout-summary';
 
 export default function DeliveryPage() {
   return (
-    <div className="flex w-full flex-col items-center">
+    <div className="flex w-full items-center">
       <PageHeader
         title="Delivery Information"
         backgroundImage="/images/delivery-bg.jpg"
@@ -15,12 +15,12 @@ export default function DeliveryPage() {
         ]}
       />
 
-      <div className="container py-8">
+      <div className="">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          <div className="lg:col-span-2">
+          <div className="">
             <DeliveryForm />
           </div>
-          <div className="lg:col-span-1">
+          <div className="">
             <CheckoutSummary />
           </div>
         </div>

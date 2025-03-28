@@ -1,13 +1,13 @@
 import { PageHeader } from '@/components/shared/page-header';
 import PaymentForm from '@/components/checkout/payment-form';
-import CheckoutSummary from '@/components/checkout/checkout-summary';
+// import CheckoutSummary from '@/components/checkout/checkout-summary';
 
 export default function PaymentPage() {
   return (
     <div className="flex w-full flex-col items-center">
       <PageHeader
         title="Payment Details"
-        backgroundImage="/images/payment-bg.jpg"
+        backgroundImage="/images/payment-hero.png"
         breadcrumbs={[
           { label: 'Home', href: '/' },
           { label: 'Checkout', href: '/checkout' },
@@ -17,12 +17,12 @@ export default function PaymentPage() {
       />
 
       <div className="container py-8">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <div className='w-full'>
           <div className="lg:col-span-2">
             <PaymentForm />
           </div>
           <div className="lg:col-span-1">
-            <CheckoutSummary />
+            {/* <CheckoutSummary /> */}
           </div>
         </div>
       </div>
