@@ -13,19 +13,19 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 // Available colors with their hex values and image paths
 const COLORS = [
   {
-    name: 'Olive',
-    value: '#5D4A1F',
+    name: 'White',
+    value: '#000000',
     images: [
-      '/ts/green.jpg', // Front view
-      '/ts/green.jpg', // Back view
-      '/ts/green.jpg', // Side view
-      '/ts/green.jpg', // Model view
+      '/ts/bf.png', // Front view
+      '/ts/bb.png', // Back view
+      '/ts/bs.png', // Side view
+      // '/ts/bf.png', // Model view
     ],
   },
   {
-    name: 'Forest',
-    value: '#1F3D36',
-    images: ['/images/green-1.jpeg', '/images/green-1.jpeg', '/images/green-1.jpeg', '/images/green-1.jpeg'],
+    name: 'Black',
+    value: '#FFFFFF',
+    images: ['/ts/wf.png', '/ts/wb.png', '/ts/ws.png'],
   },
   {
     name: 'Yellow',
