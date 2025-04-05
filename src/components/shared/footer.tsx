@@ -1,11 +1,22 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
+import Hideon from '@/provider/Hideon';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
+
+    <Hideon
+  routes={[
+    "/sign-up",
+    "/login",
+    "/reset-password",
+    '/forget-password'
+  ]}
+  >
+  
     <footer className="bg-black text-white">
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
@@ -141,5 +152,7 @@ export default function Footer() {
         </div>
       </div>
     </footer>
+
+    </Hideon>
   );
 }
