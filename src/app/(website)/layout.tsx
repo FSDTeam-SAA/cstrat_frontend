@@ -6,6 +6,7 @@ import Navbar from '@/components/shared/navbar';
 import Footer from '@/components/shared/footer';
 // import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from '@/context/auth-context';
+import AppProvider from '@/provider/AppProvider';
 
 const montserrat = Montserrat({ subsets: ['latin'] });
 
@@ -26,7 +27,11 @@ export default function RootLayout({
         <AuthProvider>
           <div className="">
             <Navbar />
-            <main className="">{children}</main>
+            <AppProvider>
+
+            {children}
+            </AppProvider>
+
             <Footer />
           </div>
         </AuthProvider>
