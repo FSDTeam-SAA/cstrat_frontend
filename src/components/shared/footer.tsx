@@ -13,7 +13,9 @@ export default function Footer() {
     "/sign-up",
     "/login",
     "/reset-password",
-    '/forget-password'
+    "/verify-otp",
+    "/reset-password",
+    "/forgot-password", 
   ]}
   >
   

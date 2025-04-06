@@ -34,7 +34,9 @@ export default function Navbar() {
       "/sign-up",
       "/login",
       "/reset-password",
-      '/forget-password'
+      "/verify-otp",
+      "/reset-password",
+      "/forgot-password",
     ]}
     >
 
