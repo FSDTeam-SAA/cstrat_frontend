@@ -43,7 +43,7 @@ export default function ForgotPassword() {
     e.preventDefault()
     forgotPasswordMutation.mutate(email)
   }
-
+    
   return (
     <div className="flex h-screen  overflow-hidden">
       {/* Left side - Image */}

@@ -1,11 +1,12 @@
 import VerifyOtp from '@/components/auth/Verify-otp'
 import React from 'react'
+import { Suspense } from "react";
 
 const page = () => {
   return (
-    <div>
+   <Suspense fallback={<div>Loading...</div>}>
     <VerifyOtp/>
-    </div>
+    </Suspense>
   )
 }
 
