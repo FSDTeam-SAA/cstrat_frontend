@@ -12,22 +12,26 @@ import Image from 'next/image';
 import { useAuth } from '@/context/auth-context';
 import { Button } from '@/components/ui/button';
 import { ChevronDown } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import LoginModal from '../auth/login-modal';
-import LogoutModal from '../auth/logout-modal';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
 import ShopMenuContent from '../shop/shop-menu';
 import Logo from '../../../public/images/drip-logo.png';
 import Hideon from '@/provider/Hideon';
+import {  User } from "lucide-react"
+import { useRouter } from "next/navigation"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 export default function Navbar() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { isAuthenticated, logout } = useAuth();
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const { isAuthenticated, user, logout } = useAuth()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isShopMenuOpen, setIsShopMenuOpen] = useState(false);
-
+  const router = useRouter()
   return (
     <Hideon
     routes={[
@@ -85,35 +89,128 @@ export default function Navbar() {
         </nav>
 
         <div className="flex items-center gap-4">
-          {/* {isAuthenticated ? (
-            <Button
-              variant="outline"
-              onClick={() => setShowLogoutModal(true)}
-              className="bg-white text-black hover:bg-gray-100"
-            >
-              Log out
-            </Button>
-          ) : (
-            <Button
-              variant="outline"
-              onClick={() => setShowLoginModal(true)}
-              className="rounded-md bg-white text-black hover:bg-gray-100"
-            >
-              Log in
-            </Button>
-          )} */}
+       
+        <div className="flex items-center gap-4">
+            {/* User account and auth buttons */}
+            {isAuthenticated ? (
+                <>
+              <DropdownMenu  >
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="md:flex items-center gap-2 text-white hidden ">
+                    <User className="h-4 w-4" />
+                    <span className="hidden md:inline">{user?.name || "Account"}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 ">
+                  <div className="px-2 py-1.5 text-sm font-medium">{user?.email}</div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile">My Profile</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/orders">My Orders</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="text-red-500 focus:text-red-500" onClick={logout}>
+                    Log out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            
+                 <div className="flex items-center gap-5">
+              <Link href="/cart">
+                <Image src="/images/cart-img.png" width={30} height={30} alt="cart image" />
+              </Link>
 
-          <div className='flex items-center gap-5'>
-            <Link href="/cart">
-            <Image src="/images/cart-img.png" width={30} height={30} alt='cart image'/>
-            </Link>
+              <Link href="/wishlist">
+                <Image src="/images/wishlist.png" width={30} height={30} alt="wishlist" />
+              </Link>
+            </div>
+              </>
+            ) : (
+              <Button
+                variant="outline"
+                onClick={() => router.push("/login")}
+                className="rounded-md bg-white text-black hover:bg-gray-100"
+              >
+                Log in
+              </Button>
+            )}
 
-            <Link href="/wishlist">
-              <Image src="/images/wishlist.png" width={30} height={30} alt='wishlist'/>
-            </Link>
+         
+
+            {/* Mobile menu button */}
+            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden">
+                  <Menu className="h-6 w-6" />
+                  <span className="sr-only">Toggle menu</span>
+                </Button>
+              </SheetTrigger>
+
+              <SheetContent side="right" className="w-[300px] bg-black text-white sm:w-[400px]">
+                <nav className="mt-8 flex flex-col gap-4">
+                  <Link href="/" className="py-2 text-lg font-medium" onClick={() => setIsMobileMenuOpen(false)}>
+                    Home
+                  </Link>
+                  <Link href="/about" className="py-2 text-lg font-medium" onClick={() => setIsMobileMenuOpen(false)}>
+                    About
+                  </Link>
+                  <Link href="/shop" className="py-2 text-lg font-medium" onClick={() => setIsMobileMenuOpen(false)}>
+                    Shop
+                  </Link>
+                  <Link href="/contact" className="py-2 text-lg font-medium" onClick={() => setIsMobileMenuOpen(false)}>
+                    Contact
+                  </Link>
+
+                  <div className="my-4 border-t border-gray-700"></div>
+
+                  {isAuthenticated ? (
+                    <>
+                      <div className="py-2 text-lg font-medium">Hello, {user?.name || "User"}</div>
+                      <Link
+                        href="/profile"
+                        className="py-2 text-lg font-medium"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        My Profile
+                      </Link>
+                      <Link
+                        href="/orders"
+                        className="py-2 text-lg font-medium"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        My Orders
+                      </Link>
+                      <button
+                        className="py-2 text-left text-lg font-medium text-red-400"
+                        onClick={() => {
+                          setIsMobileMenuOpen(false)
+                          logout()
+                        }}
+                      >
+                        Logout
+                      </button>
+                    </>
+                  ) : (
+                    <Button
+                      onClick={() => {
+                        setIsMobileMenuOpen(false)
+                        router.push("/login")
+                      }}
+                      className="mt-4 bg-white text-black hover:bg-gray-100"
+                    >
+                      Log in
+                    </Button>
+                  )}
+                </nav>
+              </SheetContent>
+            </Sheet>
           </div>
 
-          {/* Mobile menu button */}
+    
+
+          {/* Mobile menu button
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
@@ -139,38 +236,13 @@ export default function Navbar() {
 
                 <div className="my-4 border-t border-gray-700"></div>
 
-                {/* {isAuthenticated ? (
-                  <button
-                    className="py-2 text-left text-lg font-medium text-red-400"
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      setShowLogoutModal(true);
-                    }}
-                  >
-                    Logout
-                  </button>
-                ) : (
-                  <Button
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      setShowLoginModal(true);
-                    }}
-                    className="mt-4 bg-white text-black hover:bg-gray-100"
-                  >
-                    Log in
-                  </Button>
-                )} */}
+                
               </nav>
             </SheetContent>
-          </Sheet>
+          </Sheet> */}
         </div>
       </div>
 
-      {/* Login Modal */}
-      <LoginModal open={showLoginModal} onClose={() => setShowLoginModal(false)} />
-
-      {/* Logout Confirmation Modal */}
-      <LogoutModal open={showLogoutModal} onClose={() => setShowLogoutModal(false)} onConfirm={logout} />
     </header>
 
     </Hideon>

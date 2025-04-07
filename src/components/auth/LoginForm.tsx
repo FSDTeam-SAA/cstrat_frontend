@@ -7,27 +7,38 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { Loader2 } from "lucide-react"
+import { Loader2, Eye, EyeOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Image from "next/image"
-
-import { Eye, EyeOff } from "lucide-react"
+import { useAuth } from "@/context/auth-context"
 
 interface LoginCredentials {
   email: string
   password: string
 }
 
-export default function LoginFrom() {
+interface LoginResponse {
+  status: boolean
+  message: string
+  token: string
+  user?: {
+    id: string
+    name: string
+    email: string
+    role: string
+  }
+}
 
-    const [showPassword, setShowPassword] = useState(false);
+export default function LoginForm() {
+  const [showPassword, setShowPassword] = useState(false)
   const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
+  const { login } = useAuth()
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: LoginCredentials) => {
@@ -44,10 +55,18 @@ export default function LoginFrom() {
         throw new Error(errorData.message || "Login failed")
       }
 
-      return response.json()
+      return response.json() as Promise<LoginResponse>
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log(data)
       toast.success("Login successful! Welcome back.")
+
+      // Store token and user data in auth context
+      login(data.token, data.user)
+
+      // If remember me is checked, we could set a longer expiry in localStorage
+      // but that's handled in the auth context
+
       router.push("/")
     },
     onError: (error: Error) => {
@@ -64,8 +83,14 @@ export default function LoginFrom() {
     <div className="flex h-screen overflow-hidden">
       {/* Left side - Image */}
       <div className="hidden md:block md:w-1/2 bg-stone-100">
-              <Image height={200} width={1100} src="/images/login.png" alt="Fashion model" className="  min-w-[405px] min-h-[90px] h-auto " />
-            </div>
+        <Image
+          height={200}
+          width={1100}
+          src="/images/login.png"
+          alt="Fashion model"
+          className="min-w-[405px] min-h-[90px] h-auto"
+        />
+      </div>
 
       {/* Right side - Login Form */}
       <div className="w-full md:w-1/2 flex items-center justify-center p-8">
@@ -91,26 +116,26 @@ export default function LoginFrom() {
             </div>
 
             <div className="space-y-2">
-      <Label htmlFor="password">Password</Label>
-      <div className="relative">
-        <Input
-          id="password"
-          type={showPassword ? "text" : "password"}
-          placeholder="Enter your password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="pr-16" // space for the toggle button
-        />
-        <button
-          type="button"
-          onClick={() => setShowPassword((prev) => !prev)}
-          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-black"
-        >
-          {showPassword ? <Eye  size={20} /> : <EyeOff size={20} />}
-        </button>
-      </div>
-    </div>
+              <Label htmlFor="password">Password</Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="pr-16" // space for the toggle button
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-black"
+                >
+                  {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+                </button>
+              </div>
+            </div>
 
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
