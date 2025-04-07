@@ -58,7 +58,7 @@ export default function LoginForm() {
       return response.json() as Promise<LoginResponse>
     },
     onSuccess: (data) => {
-      console.log(data)
+
       toast.success("Login successful! Welcome back.")
 
       // Store token and user data in auth context

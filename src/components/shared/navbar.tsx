@@ -1,9 +1,3 @@
-
-
-
-
-
-
 'use client';
 
 import { useState } from 'react';
@@ -33,6 +27,8 @@ export default function Navbar() {
   const [isShopMenuOpen, setIsShopMenuOpen] = useState(false);
   const router = useRouter()
   return (
+
+    
     <Hideon
     routes={[
       "/sign-up",

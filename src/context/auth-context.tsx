@@ -70,7 +70,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     // Extract user info from JWT if available
     try {
-      console.log("emai",userData)
+     
       const tokenParts = newToken.split(".")
       if (tokenParts.length === 3) {
         const payload = JSON.parse(atob(tokenParts[1]))
