@@ -90,6 +90,15 @@ export default function Navbar() {
             {/* User account and auth buttons */}
             {isAuthenticated ? (
                 <>
+                  <div className="flex items-center gap-5">
+              <Link href="/cart">
+                <Image src="/images/cart-img.png" width={30} height={30} alt="cart image" />
+              </Link>
+
+              <Link href="/wishlist">
+                <Image src="/images/wishlist.png" width={30} height={30} alt="wishlist" />
+              </Link>
+            </div>
               <DropdownMenu  >
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="md:flex items-center gap-2 text-white hidden ">
@@ -113,15 +122,7 @@ export default function Navbar() {
                 </DropdownMenuContent>
               </DropdownMenu>
             
-                 <div className="flex items-center gap-5">
-              <Link href="/cart">
-                <Image src="/images/cart-img.png" width={30} height={30} alt="cart image" />
-              </Link>
-
-              <Link href="/wishlist">
-                <Image src="/images/wishlist.png" width={30} height={30} alt="wishlist" />
-              </Link>
-            </div>
+               
               </>
             ) : (
               <Button
