@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 export default function PersonalInformation() {
   const [formData, setFormData] = useState({
@@ -45,6 +46,9 @@ export default function PersonalInformation() {
   };
 
   return (
+    <ProtectedRoute>
+
+   
     <div className="max-w-full">
       <h1 className="mb-6 text-2xl font-bold">Personal Information :</h1>
 
@@ -98,5 +102,6 @@ export default function PersonalInformation() {
         </div>
       </form>
     </div>
+    </ProtectedRoute>
   );
 }
