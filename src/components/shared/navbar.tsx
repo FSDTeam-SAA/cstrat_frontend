@@ -53,6 +53,7 @@ export default function Navbar() {
                     <ChevronDown className="ml-1 h-4 w-4" />
                   </button>
                 </DropdownMenuTrigger>
+<<<<<<< HEAD
                 <DropdownMenuContent
                   align="center"
                   className="mt-0 w-screen rounded-none border-0 bg-white p-0 text-black shadow-lg"
@@ -63,6 +64,44 @@ export default function Navbar() {
                   <ShopMenuContent />
                 </DropdownMenuContent>
               </DropdownMenu>
+=======
+                <DropdownMenuContent align="end" className="w-56 ">
+                  <div className="px-2 py-1.5 text-sm font-medium">{user?.email}</div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile">My Profile</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile/order-history">My Orders</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  {/* <DropdownMenuItem className="text-red-500 focus:text-red-500" onClick={logout}>
+                    Log out
+                  </DropdownMenuItem> */}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            
+               
+              </>
+            ) : (
+            <div>
+                <Button
+                variant="outline"
+                onClick={() => router.push("/login")}
+                className="rounded-md bg-white text-black hover:bg-gray-100"
+              >
+                Log in
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => router.push("/sign-up")}
+                className="rounded-md bg-white text-black ml-2 hover:bg-gray-100"
+              >
+              SignUP
+              </Button>
+            </div>
+            )}
+>>>>>>> 858a1c4dea06e27a09518878d5083fdfa2a50cda
 
               <Link href="/contact" className="text-sm font-medium transition-colors hover:text-gray-300">
                 Contact
@@ -126,6 +165,7 @@ export default function Navbar() {
                   </Button>
                 </SheetTrigger>
 
+<<<<<<< HEAD
                 <SheetContent side="right" className="w-[300px] bg-black text-white sm:w-[400px]">
                   <nav className="mt-8 flex flex-col gap-4">
                     <Link href="/" className="py-2 text-lg font-medium" onClick={() => setIsMobileMenuOpen(false)}>
@@ -144,6 +184,63 @@ export default function Navbar() {
                     >
                       Contact
                     </Link>
+=======
+                  <div className="my-4 border-t border-gray-700"></div>
+
+                  {isAuthenticated ? (
+                    <>
+                      <div className="py-2 text-lg font-medium">Hello, {user?.name || "User"}</div>
+                      <Link
+                        href="/profile"
+                        className="py-2 text-lg font-medium"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        My Profile
+                      </Link>
+                      <Link
+                        href="/orders"
+                        className="py-2 text-lg font-medium"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        My Orders
+                      </Link>
+                      <button
+                        className="py-2 text-left text-lg font-medium text-red-400"
+                        onClick={() => {
+                          setIsMobileMenuOpen(false)
+                          logout()
+                        }}
+                      >
+                        Logout
+                      </button>
+                    </>
+                  ) : (
+                   <div>
+                     <Button
+                      onClick={() => {
+                        setIsMobileMenuOpen(false)
+                        router.push("/login")
+                      }}
+                      className="mt-4 bg-white text-black hover:bg-gray-100"
+                    >
+                      Log in
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setIsMobileMenuOpen(false)
+                        router.push("/sign-up")
+                      }}
+                      className="mt-4 bg-white ml-2 text-black hover:bg-gray-100"
+                    >
+                      SignUP
+                    </Button>
+                   </div>
+                  )}
+                </nav>
+              </SheetContent>
+            </Sheet>
+          </div>
+>>>>>>> 858a1c4dea06e27a09518878d5083fdfa2a50cda
 
                     <div className="my-4 border-t border-gray-700"></div>
 
