@@ -1,67 +1,114 @@
-'use client';
+"use client"
 
-import type React from 'react';
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Eye, EyeOff } from 'lucide-react';
+import type React from "react"
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Eye, EyeOff } from "lucide-react"
+import { useMutation } from "@tanstack/react-query"
+// import { useToast } from "@/hooks/use-toast"
+import { toast } from "sonner"
+import { useAuth } from "@/context/auth-context"
+// import { useAuth } from "@/hooks/use-auth" // Assuming this hook exists
 
 export default function Settings() {
-  const [formData, setFormData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
-  });
+  // const { toast } = useToast()
+  const { user } = useAuth() // Get user data from useAuth hook
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState('');
+  const [formData, setFormData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  })
 
   const [showPassword, setShowPassword] = useState({
     current: false,
     new: false,
     confirm: false,
-  });
+  })
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    setError('');
-  };
+  // Set up mutation with Tanstack Query
+  const updatePasswordMutation = useMutation({
+    mutationFn: async (data: typeof formData) => {
+      const response = await fetch(`http://localhost:8001/api/v1/auth/set-new-password/${user?._id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
 
-  const togglePasswordVisibility = (key: 'current' | 'new' | 'confirm') => {
-    setShowPassword((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Failed to update password")
+      }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+      return response.json()
+    },
+    onSuccess: (data) => {
+      // toast({
+      //   title: "Success",
+      //   description: data.message || "Password updated successfully",
+      //   variant: "default",
+      // })
+      toast.success(data.message || "Password updated successfully")
 
-    if (formData.newPassword !== formData.confirmPassword) {
-      setError('New passwords do not match');
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    // Simulate API call
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log('Password changed');
       // Reset form after successful submission
       setFormData({
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: '',
-      });
-    } catch (error) {
-      console.error('Error changing password:', error);
-    } finally {
-      setIsSubmitting(false);
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      })
+    },
+    onError: (error: Error) => {
+      // toast({
+      //   title: "Error",
+      //   description: error.message || "Failed to update password",
+      //   variant: "destructive",
+      // })
+      toast.error(error.message || "Failed to update password")
+    },
+  })
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const togglePasswordVisibility = (key: "current" | "new" | "confirm") => {
+    setShowPassword((prev) => ({ ...prev, [key]: !prev[key] }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (formData.newPassword !== formData.confirmPassword) {
+      // toast({
+      //   title: "Error",
+      //   description: "New passwords do not match",
+      //   variant: "destructive",
+      // })
+      toast.error("New passwords do not match")
+      return
     }
-  };
+
+    if (!user?._id) {
+      // toast({
+      //   title: "Error",
+      //   description: "User information not available",
+      //   variant: "destructive",
+      // })
+
+      toast.error("User information not available")
+      return
+    }
+
+    updatePasswordMutation.mutate(formData)
+  }
 
   return (
-    <div className="max-w-full">
+    <div className="max-w-full px-4">
       <h1 className="mb-6 text-2xl font-bold">Change password :</h1>
 
       <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
@@ -71,7 +118,7 @@ export default function Settings() {
           <Input
             id="currentPassword"
             name="currentPassword"
-            type={showPassword.current ? 'text' : 'password'}
+            type={showPassword.current ? "text" : "password"}
             value={formData.currentPassword}
             onChange={handleChange}
             placeholder="••••••••••••"
@@ -80,7 +127,7 @@ export default function Settings() {
           />
           <button
             type="button"
-            onClick={() => togglePasswordVisibility('current')}
+            onClick={() => togglePasswordVisibility("current")}
             className="absolute right-3 top-[38px] text-gray-500"
             tabIndex={-1}
           >
@@ -96,7 +143,7 @@ export default function Settings() {
             <Input
               id="newPassword"
               name="newPassword"
-              type={showPassword.new ? 'text' : 'password'}
+              type={showPassword.new ? "text" : "password"}
               value={formData.newPassword}
               onChange={handleChange}
               placeholder="••••••••••••"
@@ -105,7 +152,7 @@ export default function Settings() {
             />
             <button
               type="button"
-              onClick={() => togglePasswordVisibility('new')}
+              onClick={() => togglePasswordVisibility("new")}
               className="absolute right-3 top-[38px] text-gray-500"
               tabIndex={-1}
             >
@@ -119,7 +166,7 @@ export default function Settings() {
             <Input
               id="confirmPassword"
               name="confirmPassword"
-              type={showPassword.confirm ? 'text' : 'password'}
+              type={showPassword.confirm ? "text" : "password"}
               value={formData.confirmPassword}
               onChange={handleChange}
               placeholder="••••••••••••"
@@ -128,7 +175,7 @@ export default function Settings() {
             />
             <button
               type="button"
-              onClick={() => togglePasswordVisibility('confirm')}
+              onClick={() => togglePasswordVisibility("confirm")}
               className="absolute right-3 top-[38px] text-gray-500"
               tabIndex={-1}
             >
@@ -137,20 +184,17 @@ export default function Settings() {
           </div>
         </div>
 
-        {/* Error */}
-        {error && <div className="text-sm text-red-500">{error}</div>}
-
         {/* Submit Button */}
         <div className="flex justify-end">
           <Button
             type="submit"
             className="bg-black text-white hover:bg-black/90"
-            disabled={isSubmitting}
+            disabled={updatePasswordMutation.isPending}
           >
-            {isSubmitting ? 'Saving...' : 'Save Changes'}
+            {updatePasswordMutation.isPending ? "Saving..." : "Save Changes"}
           </Button>
         </div>
       </form>
     </div>
-  );
+  )
 }

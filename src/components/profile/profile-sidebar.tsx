@@ -16,7 +16,7 @@ const menuItems = [
   //   icon: Bell,
   // },
   {
-    label: 'Settings',
+    label: 'Change Password',
     href: '/profile/settings',
     icon: Settings,
   },
