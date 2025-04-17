@@ -3,6 +3,9 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { User,  Settings, ShoppingBag, LogOut } from 'lucide-react';
+import { Button } from '../ui/button';
+import { LogoutModal } from '../logout-modal';
+import { useState } from 'react';
 
 const menuItems = [
   {
@@ -25,18 +28,25 @@ const menuItems = [
     href: '/profile/order-history',
     icon: ShoppingBag,
   },
-  {
-    label: 'Log out',
-    href: '/profile/log-out',
-    icon: LogOut,
-  },
+  // {
+  //   label: 'Log out',
+  //   href: '/profile/log-out',
+  //   icon: LogOut,
+  // },
 ];
+
+
 
 export default function ProfileSidebar() {
   const pathname = usePathname();
 
+ const [showModal, setShowModal] = useState(false);
+
+  
+
   return (
-    <nav className="mt-6">
+<>
+<nav className="mt-6">
       <ul className="space-y-1">
         {menuItems.map((item) => {
           const isActive = pathname.startsWith(item.href);
@@ -56,6 +66,14 @@ export default function ProfileSidebar() {
           );
         })}
       </ul>
+    
+
+   <Button
+     onClick={() => setShowModal(true)}
+   className=' btn-start  font-bold bg-black my-5'><LogOut/>  LogOut</Button>
+ 
     </nav>
+    <LogoutModal isOpen={showModal} onClose={() => setShowModal(false)} />
+</>
   );
 }
