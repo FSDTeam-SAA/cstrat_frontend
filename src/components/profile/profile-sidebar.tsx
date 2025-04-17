@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { User, Bell, Settings, ShoppingBag, LogOut } from 'lucide-react';
+import { User,  Settings, ShoppingBag, LogOut } from 'lucide-react';
 
 const menuItems = [
   {
@@ -10,11 +10,11 @@ const menuItems = [
     href: '/profile/personal-information',
     icon: User,
   },
-  {
-    label: 'Notifications',
-    href: '/profile/notifications',
-    icon: Bell,
-  },
+  // {
+  //   label: 'Notifications',
+  //   href: '/profile/notifications',
+  //   icon: Bell,
+  // },
   {
     label: 'Settings',
     href: '/profile/settings',
