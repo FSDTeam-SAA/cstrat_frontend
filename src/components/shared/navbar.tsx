@@ -113,12 +113,12 @@ export default function Navbar() {
                     <Link href="/profile">My Profile</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/orders">My Orders</Link>
+                    <Link href="/profile/order-history">My Orders</Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-red-500 focus:text-red-500" onClick={logout}>
+                  {/* <DropdownMenuItem className="text-red-500 focus:text-red-500" onClick={logout}>
                     Log out
-                  </DropdownMenuItem>
+                  </DropdownMenuItem> */}
                 </DropdownMenuContent>
               </DropdownMenu>
             
