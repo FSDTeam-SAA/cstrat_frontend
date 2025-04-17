@@ -8,12 +8,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import { useAuth } from '@/context/auth-context';
 
 export default function PersonalInformation() {
+  const {user} =  useAuth()
+  console.log('userr data form pprofiel',user)
+
   const [formData, setFormData] = useState({
-    name: 'Darrell Steward',
-    phone: '+2558548888457',
-    email: 'darrellsteward@gmail.com',
+    name: user?.name,
+    phone: user?.phone,
+    email: user?.email,
     gender: 'Male',
     address: '',
   });
