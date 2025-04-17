@@ -10,6 +10,8 @@ interface User {
   phone?: string
   role: string
   image?: string
+  address?: string
+  gender?: string
 }
 
 interface AuthContextType {

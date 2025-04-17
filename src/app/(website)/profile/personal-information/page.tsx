@@ -12,14 +12,14 @@ import { useAuth } from '@/context/auth-context';
 
 export default function PersonalInformation() {
   const {user} =  useAuth()
-  console.log('userr data form pprofiel',user)
+  // console.log('userr data form pprofiel',user)
 
   const [formData, setFormData] = useState({
     name: user?.name,
     phone: user?.phone,
     email: user?.email,
-    gender: 'Male',
-    address: '',
+    gender: user?.gender ||'',
+    address: user?.address || ''
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
