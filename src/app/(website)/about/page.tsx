@@ -34,7 +34,7 @@ export default function AboutPage() {
             </p>
 
             {/* Stats */}
-            <div className="mt-8 grid grid-cols-3 gap-4">
+            {/* <div className="mt-8 grid grid-cols-3 gap-4">
               <div>
                 <h3 className="text-4xl font-bold">30K+</h3>
                 <p className="text-gray-700">Our Products</p>
@@ -47,7 +47,7 @@ export default function AboutPage() {
                 <h3 className="text-4xl font-bold">2K+</h3>
                 <p className="text-gray-700">Our Vendor</p>
               </div>
-            </div>
+            </div> */}
           </div>
           <div className="flex justify-center lg:justify-end">
             <Image

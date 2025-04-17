@@ -113,25 +113,34 @@ export default function Navbar() {
                     <Link href="/profile">My Profile</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/orders">My Orders</Link>
+                    <Link href="/profile/order-history">My Orders</Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-red-500 focus:text-red-500" onClick={logout}>
+                  {/* <DropdownMenuItem className="text-red-500 focus:text-red-500" onClick={logout}>
                     Log out
-                  </DropdownMenuItem>
+                  </DropdownMenuItem> */}
                 </DropdownMenuContent>
               </DropdownMenu>
             
                
               </>
             ) : (
-              <Button
+            <div>
+                <Button
                 variant="outline"
                 onClick={() => router.push("/login")}
                 className="rounded-md bg-white text-black hover:bg-gray-100"
               >
                 Log in
               </Button>
+              <Button
+                variant="outline"
+                onClick={() => router.push("/sign-up")}
+                className="rounded-md bg-white text-black ml-2 hover:bg-gray-100"
+              >
+              SignUP
+              </Button>
+            </div>
             )}
 
          
@@ -190,7 +199,8 @@ export default function Navbar() {
                       </button>
                     </>
                   ) : (
-                    <Button
+                   <div>
+                     <Button
                       onClick={() => {
                         setIsMobileMenuOpen(false)
                         router.push("/login")
@@ -199,6 +209,16 @@ export default function Navbar() {
                     >
                       Log in
                     </Button>
+                    <Button
+                      onClick={() => {
+                        setIsMobileMenuOpen(false)
+                        router.push("/sign-up")
+                      }}
+                      className="mt-4 bg-white ml-2 text-black hover:bg-gray-100"
+                    >
+                      SignUP
+                    </Button>
+                   </div>
                   )}
                 </nav>
               </SheetContent>
