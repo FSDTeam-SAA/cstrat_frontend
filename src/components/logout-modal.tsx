@@ -1,8 +1,8 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+
 import Image from 'next/image';
+import { useAuth } from '@/context/auth-context';
 
 interface LogoutModalProps {
   isOpen: boolean;
@@ -10,25 +10,13 @@ interface LogoutModalProps {
 }
 
 export function LogoutModal({ isOpen, onClose }: LogoutModalProps) {
-  const router = useRouter();
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  
+const {logout} = useAuth() // Get user data from useAuth hook
 
   if (!isOpen) return null;
 
-  const handleLogout = async () => {
-    setIsLoggingOut(true);
 
-    // Simulate API call for logout
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      // Redirect to home page after logout
-      router.push('/');
-    } catch (error) {
-      console.error('Error logging out:', error);
-      setIsLoggingOut(false);
-      onClose();
-    }
-  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -45,8 +33,7 @@ export function LogoutModal({ isOpen, onClose }: LogoutModalProps) {
 
         <div className="space-y-3">
           <button
-            onClick={handleLogout}
-            disabled={isLoggingOut}
+            onClick={logout}
             className="w-full rounded-md border border-black py-3 transition-colors hover:bg-gray-50"
           >
             Yes
