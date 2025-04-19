@@ -7,6 +7,7 @@ import Footer from '@/components/shared/footer';
 // import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from '@/context/auth-context';
 import AppProvider from '@/components/provider/app-provider';
+import { Toaster } from '@/components/ui/sonner';
 
 const montserrat = Montserrat({ subsets: ['latin'] });
 
@@ -28,7 +29,7 @@ export default function RootLayout({
           <div className="">
             <Navbar />
             <AppProvider>{children}</AppProvider>
-
+            <Toaster />
             <Footer />
           </div>
         </AuthProvider>
