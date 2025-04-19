@@ -6,7 +6,7 @@ export default function ContactPage() {
   return (
     <div className="flex w-full flex-col items-center">
       <PageHeader
-        title="Contact Us"
+        title="Contact Us here"
         description="Need assistance? We are here to help. To inquire about the products and services found on our website, please contact us by phone or e-mail, and we'll gladly assist you."
         backgroundImage="/images/contact-hero.png"
       />

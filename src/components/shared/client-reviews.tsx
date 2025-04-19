@@ -23,8 +23,8 @@ const fetchReviews = async (): Promise<Review[]> => {
   return data.map((item: any) => ({
     id: item._id,
     name: item.user.name,
-    // role: 'Customer',
-    // avatar: '/images/review-image.png',
+    role: 'Customer',
+    avatar: '/images/review-image.png',
     rating: item.rating,
     title: item.product.name,
     content: item.review,
@@ -85,7 +85,7 @@ export default function ClientReviews() {
                     </div>
                   </div>
                   <div className="text-center">
-                    <h4 className="mb-2 font-bold">Product: {review.title}</h4>
+                    <h4 className="mb-2 font-bold">{review.title}</h4>
                     <p className="text-gray-600">{review.content}</p>
                   </div>
                 </div>
