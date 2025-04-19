@@ -1,71 +1,27 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
 import WishlistItem from '@/components/wishlist/wishlist-item';
 import Link from 'next/link';
 import { Heart } from 'lucide-react';
+import { useWishlistStore } from '@/store/use-wishlist-store';
 
 export default function WishlistPage() {
-  // This would normally come from a wishlist context or API
-  const wishlistItems = [
-    {
-      id: '1',
-      name: "Men's Sports T-Shirt",
-      price: 25,
-      rating: 5,
-      image: '/images/best-2.png',
-    },
-    {
-      id: '2',
-      name: "Women's Hoodie",
-      price: 25,
-      rating: 5,
-      image: '/images/best-2.png',
-    },
-    {
-      id: '3',
-      name: 'Black Stripes T-Shirt',
-      price: 70,
-      rating: 5,
-      image: '/images/best-2.png',
-    },
-    {
-      id: '4',
-      name: 'Black Stripes T-Shirt',
-      price: 70,
-      rating: 5,
-      image: '/images/best-2.png',
-    },
-    {
-      id: '5',
-      name: 'Black Stripes T-Shirt',
-      price: 70,
-      rating: 5,
-      image: '/images/best-2.png',
-    },
-    {
-      id: '6',
-      name: 'Black Stripes T-Shirt',
-      price: 70,
-      rating: 5,
-      image: '/images/best-2.png',
-    },
-    {
-      id: '7',
-      name: 'Black Stripes T-Shirt',
-      price: 70,
-      rating: 5,
-      image: '/images/best-2.png',
-    },
-    {
-      id: '8',
-      name: 'Black Stripes T-Shirt',
-      price: 70,
-      rating: 5,
-      image: '/images/best-2.png',
-    },
-  ];
+  const { items } = useWishlistStore();
+  const [mounted, setMounted] = useState(false);
 
-  const isEmpty = wishlistItems.length === 0;
+  // Handle hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
+  const isEmpty = items.length === 0;
 
   return (
     <div className="flex w-full flex-col items-center">
@@ -87,9 +43,9 @@ export default function WishlistPage() {
           </div>
         ) : (
           <div>
-            <h2 className="mb-6 text-2xl font-bold">My Wishlist ({wishlistItems.length} items)</h2>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-              {wishlistItems.map((item) => (
+            <h2 className="mb-6 text-2xl font-bold">My Wishlist ({items.length} items)</h2>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              {items.map((item) => (
                 <WishlistItem key={item.id} item={item} />
               ))}
             </div>
