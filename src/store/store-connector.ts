@@ -1,10 +1,10 @@
-import { useCartStore } from './use-cart-store';
+import { useCartStore } from './useCartStore';
 import { useWishlistStore } from './use-wishlist-store';
 import type { CartItem } from '@/types/cart';
 
 // Connect the wishlist store's moveToCart function to the cart store
 export function connectStores() {
-  const originalMoveToCart = useWishlistStore.getState().moveToCart;
+  // const originalMoveToCart = useWishlistStore.getState().moveToCart;
 
   // Override the moveToCart function to add the item to cart
   useWishlistStore.setState({
@@ -14,7 +14,7 @@ export function connectStores() {
 
       if (item) {
         const cartItem: CartItem = {
-          id: item.id,
+          productId: item.id,
           name: item.name,
           price: item.price,
           quantity,
@@ -23,6 +23,20 @@ export function connectStores() {
           size,
           color,
           selected: true,
+          frontCustomization: {
+            logoUrl: null,
+            position: { x: 50, y: 30 },
+            size: 20,
+            rotation: 0,
+            preview: null,
+          },
+          backCustomization: {
+            logoUrl: null,
+            position: { x: 50, y: 30 },
+            size: 20,
+            rotation: 0,
+            preview: null,
+          },
         };
 
         useCartStore.getState().addItem(cartItem);
@@ -32,21 +46,21 @@ export function connectStores() {
   });
 
   // Connect the cart store's moveToWishlist function to the wishlist store
-  const originalMoveToWishlist = useCartStore.getState().moveToWishlist;
+  // const originalMoveToWishlist = useCartStore.getState().moveToWishlist;
 
   useCartStore.setState({
-    moveToWishlist: (id) => {
-      const item = useCartStore.getState().items.find((item) => item.id === id);
+    moveToWishlist: (productId) => {
+      const item = useCartStore.getState().items.find((item) => item.productId === productId);
 
       if (item) {
         useWishlistStore.getState().addItem({
-          id: item.id,
+          id: productId,
           name: item.name,
           price: item.price,
-          image: item.image,
+          image: item.image || '/placeholder.svg',
           rating: 5, // Default rating
         });
-        useCartStore.getState().removeItem(id);
+        useCartStore.getState().removeItem(productId);
       }
     },
   });

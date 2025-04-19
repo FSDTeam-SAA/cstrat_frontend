@@ -2,7 +2,7 @@
 
 import type React from 'react';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Heart, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -28,41 +28,56 @@ export default function CartItem({ item }: CartItemProps) {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (quantity !== item.quantity) {
-        updateQuantity(item.id, quantity);
+        updateQuantity(item.productId, quantity);
       }
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [quantity, item.quantity, item.id, updateQuantity]);
+  }, [quantity, item.quantity, item.productId, updateQuantity]);
 
-  const handleQuantityChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number.parseInt(e.target.value);
     if (!isNaN(value) && value > 0) {
       setQuantity(value);
     }
-  }, []);
+  };
 
-  const incrementQuantity = useCallback(() => {
+  const incrementQuantity = () => {
     setQuantity((prev) => prev + 1);
-  }, []);
+  };
 
-  const decrementQuantity = useCallback(() => {
+  const decrementQuantity = () => {
     if (quantity > 1) {
       setQuantity((prev) => prev - 1);
     }
-  }, [quantity]);
+  };
 
-  const handleRemoveItem = useCallback(() => {
-    removeItem(item.id);
-  }, [removeItem, item.id]);
+  const handleRemoveItem = () => {
+    removeItem(item.productId);
+  };
 
-  const handleMoveToWishlist = useCallback(() => {
-    moveToWishlist(item.id);
-  }, [moveToWishlist, item.id]);
+  const handleMoveToWishlist = () => {
+    moveToWishlist(item.productId);
+  };
 
-  const handleToggleSelected = useCallback(() => {
-    toggleSelected(item.id);
-  }, [toggleSelected, item.id]);
+  const handleToggleSelected = () => {
+    toggleSelected(item.productId);
+  };
+
+  // Determine the image to display
+  const imageUrl =
+    item.image || item.frontCustomization?.preview || item.backCustomization?.preview || '/placeholder.svg';
+
+  // Parse size if it's a string representation of an array
+  let displaySize = item.size;
+  if (typeof item.size === 'string' && item.size.startsWith('[')) {
+    try {
+      const sizeArray = JSON.parse(item.size);
+      displaySize = Array.isArray(sizeArray) ? sizeArray[0] : item.size;
+    } catch (e) {
+      console.error('Error parsing size:', e);
+    }
+  }
 
   return (
     <div className="flex items-center justify-start gap-4 border-b p-4">
@@ -75,7 +90,7 @@ export default function CartItem({ item }: CartItemProps) {
         />
         <div className="relative h-20 w-20 flex-shrink-0">
           <Image
-            src={item.image || '/placeholder.svg'}
+            src={imageUrl || '/placeholder.svg'}
             alt={item.name}
             fill
             className="rounded object-cover"
@@ -87,7 +102,8 @@ export default function CartItem({ item }: CartItemProps) {
       <div className="min-w-0 flex-1">
         <h3 className="truncate font-medium">{item.name}</h3>
         <p className="truncate text-sm text-gray-500">
-          Brand Name: {item.brandName}, Size: {item.size}, Color: {item.color}
+          {item.brandName && `Brand: ${item.brandName}, `}
+          Size: {displaySize}, Color: {item.color || 'N/A'}
         </p>
       </div>
 

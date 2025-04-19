@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import { useEffect, useRef } from 'react';
@@ -16,15 +17,18 @@ export function useInitializeStores() {
     if (!initialized.current) {
       connectStores();
       initialized.current = true;
+      console.log('Stores connected');
     }
 
     // Only add sample data if stores are empty and we're in the browser
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && !localStorage.getItem('cart-storage')) {
+      console.log('No existing cart data found, adding sample data');
+
       if (cartItems.length === 0) {
         // Add sample cart items
         const sampleCartItems = [
           {
-            id: '1',
+            productId: '1',
             name: 'Premium Quality - stylish new T shirt - Casual Exclusive half Sleeve T Shirt For Men - T Shirt',
             price: 50,
             quantity: 1,
@@ -33,9 +37,23 @@ export function useInitializeStores() {
             size: 'XL',
             color: 'Black',
             selected: true,
+            frontCustomization: {
+              logoUrl: null,
+              position: { x: 50, y: 30 },
+              size: 20,
+              rotation: 0,
+              preview: null,
+            },
+            backCustomization: {
+              logoUrl: null,
+              position: { x: 50, y: 30 },
+              size: 20,
+              rotation: 0,
+              preview: null,
+            },
           },
           {
-            id: '2',
+            productId: '2',
             name: 'Premium Quality - stylish new T shirt - Casual Exclusive half Sleeve T Shirt For Men - T Shirt',
             price: 50,
             quantity: 2,
@@ -44,49 +62,28 @@ export function useInitializeStores() {
             size: 'XL',
             color: 'Red',
             selected: true,
+            frontCustomization: {
+              logoUrl: null,
+              position: { x: 50, y: 30 },
+              size: 20,
+              rotation: 0,
+              preview: null,
+            },
+            backCustomization: {
+              logoUrl: null,
+              position: { x: 50, y: 30 },
+              size: 20,
+              rotation: 0,
+              preview: null,
+            },
           },
         ];
 
         // Add items one by one to prevent batch updates
         sampleCartItems.forEach((item) => addToCart(item));
       }
-
-      if (wishlistItems.length === 0) {
-        // Add sample wishlist items
-        const sampleWishlistItems = [
-          {
-            id: '1',
-            name: 'Black Stripes T-Shirt',
-            price: 70,
-            rating: 4.5,
-            image: '/images/best-2.png',
-          },
-          {
-            id: '2',
-            name: "Men's Sports T-Shirt",
-            price: 65,
-            rating: 4.5,
-            image: '/images/best-2.png',
-          },
-          {
-            id: '3',
-            name: "Women's Hoodie",
-            price: 85,
-            rating: 4.5,
-            image: '/images/best-2.png',
-          },
-          {
-            id: '4',
-            name: 'Black Stripes T-Shirt',
-            price: 70,
-            rating: 4.5,
-            image: '/images/best-2.png',
-          },
-        ];
-
-        // Add items one by one to prevent batch updates
-        sampleWishlistItems.forEach((item) => addToWishlist(item));
-      }
+    } else {
+      console.log('Existing cart data found:', localStorage.getItem('cart-storage'));
     }
-  }, [cartItems.length, wishlistItems.length, addToCart, addToWishlist]);
+  }, [cartItems.length, addToCart, addToWishlist]);
 }

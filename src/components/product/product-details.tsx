@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { useProduct } from '@/hooks/use-product';
 import type { Product } from '@/types/product';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useCartStore } from '@/store/useCartStore';
 
 interface LogoCustomization {
   logoUrl: string | null;
@@ -475,10 +476,10 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
         return;
       }
 
-      if (!selectedColor) {
-        alert('Please select a color');
-        return;
-      }
+      // if (!selectedColor) {
+      //   alert('Please select a color');
+      //   return;
+      // }
 
       // Generate previews for front and back
       let frontPreview = null;
@@ -524,8 +525,8 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
         },
       };
 
-      // In a real app, you would dispatch this to your cart state/context
-      console.log('Adding to cart:', cartItem);
+      // Add to cart using the Zustand store
+      useCartStore.getState().addItem(cartItem);
 
       // Show confirmation
       alert(`Added ${quantity} ${productData.name} to cart!`);
@@ -687,7 +688,7 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
 
     return (
       <div className="mt-2 flex flex-wrap gap-3">
-        {productData.colors.map((color) => (
+        {productData.colors.map((color: string) => (
           <button
             key={color}
             className={cn(
@@ -713,7 +714,7 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
 
     return (
       <div className="mt-2 flex flex-wrap gap-3">
-        {productData.sizes.map((size) => (
+        {productData.sizes.map((size: string) => (
           <button
             key={size}
             className={cn(
@@ -736,7 +737,7 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
       {/* Left Thumbnails - horizontal on mobile, vertical on desktop */}
       <div className="order-2 flex flex-row gap-2 overflow-x-auto pb-2 md:order-1 md:col-span-1 md:flex-col md:overflow-x-visible md:pb-0">
         {productImages.length > 0 ? (
-          productImages.map((image, index) => (
+          productImages.map((image: string, index: number) => (
             <button
               key={index}
               className={cn(

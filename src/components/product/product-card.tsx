@@ -2,7 +2,7 @@
 
 import type React from 'react';
 
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Heart, ShoppingCart, Star } from 'lucide-react';
@@ -21,45 +21,61 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   const inWishlist = isInWishlist(product._id);
 
-  const handleAddToCart = useCallback(
-    (e: React.MouseEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-      addToCart({
+    // Get the first size and color if available
+    const size = product.sizes && product.sizes.length > 0 ? product.sizes[0] : 'M';
+    const color = product.colors && product.colors.length > 0 ? product.colors[0] : null;
+
+    const cartItem = {
+      productId: product._id,
+      name: product.name,
+      price: product.price,
+      quantity: 1,
+      image: product.media?.images?.[0] || '/placeholder.svg',
+      brandName: product.category?.categoryName || 'Brand Name',
+      size,
+      color,
+      selected: true,
+      frontCustomization: {
+        logoUrl: null,
+        position: { x: 50, y: 30 },
+        size: 20,
+        rotation: 0,
+        preview: null,
+      },
+      backCustomization: {
+        logoUrl: null,
+        position: { x: 50, y: 30 },
+        size: 20,
+        rotation: 0,
+        preview: null,
+      },
+    };
+
+    addToCart(cartItem);
+    console.log('Added to cart:', cartItem);
+    alert(`Added ${product.name} to cart!`);
+  };
+
+  const handleToggleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (inWishlist) {
+      removeItem(product._id);
+    } else {
+      addToWishlist({
         id: product._id,
         name: product.name,
         price: product.price,
-        quantity: 1,
         image: product.media?.images?.[0] || '/placeholder.svg',
-        brandName: product.category?.categoryName || 'Brand Name',
-        size: product.sizes?.[0] || 'M',
-        color: product.colors?.[0] || 'Black',
-        selected: true,
+        rating: product.rating || 5,
       });
-    },
-    [product, addToCart],
-  );
-
-  const handleToggleWishlist = useCallback(
-    (e: React.MouseEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      if (inWishlist) {
-        removeItem(product._id);
-      } else {
-        addToWishlist({
-          id: product._id,
-          name: product.name,
-          price: product.price,
-          image: product.media?.images?.[0] || '/placeholder.svg',
-          rating: product.rating || 5,
-        });
-      }
-    },
-    [product, inWishlist, addToWishlist, removeItem],
-  );
+    }
+  };
 
   return (
     <div

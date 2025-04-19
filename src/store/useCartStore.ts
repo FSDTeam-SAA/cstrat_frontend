@@ -5,15 +5,15 @@ import type { CartItem, CartSummary } from '@/types/cart';
 interface CartStore {
   items: CartItem[];
   addItem: (item: CartItem) => void;
-  removeItem: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
-  toggleSelected: (id: string) => void;
+  removeItem: (productId: string) => void;
+  updateQuantity: (productId: string, quantity: number) => void;
+  toggleSelected: (productId: string) => void;
   toggleSelectAll: (selected: boolean) => void;
-  moveToWishlist: (id: string) => void;
+  moveToWishlist: (productId: string) => void;
   clearCart: () => void;
   getSummary: () => CartSummary;
   getSelectedItems: () => CartItem[];
-  isItemSelected: (id: string) => boolean;
+  isItemSelected: (productId: string) => boolean;
   areAllItemsSelected: () => boolean;
 }
 
@@ -23,9 +23,10 @@ export const useCartStore = create<CartStore>()(
       items: [],
 
       addItem: (item) => {
+        console.log('Adding item to cart:', item);
         const { items } = get();
         const existingItemIndex = items.findIndex(
-          (i) => i.id === item.id && i.size === item.size && i.color === item.color,
+          (i) => i.productId === item.productId && i.size === item.size && i.color === item.color,
         );
 
         if (existingItemIndex !== -1) {
@@ -39,25 +40,29 @@ export const useCartStore = create<CartStore>()(
         } else {
           set({ items: [...items, { ...item, selected: true }] });
         }
+
+        console.log('Cart after adding item:', [...get().items]);
       },
 
-      removeItem: (id) => {
+      removeItem: (productId) => {
         set((state) => ({
-          items: state.items.filter((item) => item.id !== id),
+          items: state.items.filter((item) => item.productId !== productId),
         }));
       },
 
-      updateQuantity: (id, quantity) => {
+      updateQuantity: (productId, quantity) => {
         if (quantity < 1) return; // Prevent invalid quantities
 
         set((state) => ({
-          items: state.items.map((item) => (item.id === id ? { ...item, quantity } : item)),
+          items: state.items.map((item) => (item.productId === productId ? { ...item, quantity } : item)),
         }));
       },
 
-      toggleSelected: (id) => {
+      toggleSelected: (productId) => {
         set((state) => ({
-          items: state.items.map((item) => (item.id === id ? { ...item, selected: !item.selected } : item)),
+          items: state.items.map((item) =>
+            item.productId === productId ? { ...item, selected: !item.selected } : item,
+          ),
         }));
       },
 
@@ -67,10 +72,10 @@ export const useCartStore = create<CartStore>()(
         }));
       },
 
-      moveToWishlist: (id) => {
+      moveToWishlist: (productId) => {
         // This will be implemented when we connect to the wishlist store
         // For now, just remove from cart
-        get().removeItem(id);
+        get().removeItem(productId);
       },
 
       clearCart: () => {
@@ -96,8 +101,8 @@ export const useCartStore = create<CartStore>()(
         return get().items.filter((item) => item.selected);
       },
 
-      isItemSelected: (id) => {
-        const item = get().items.find((item) => item.id === id);
+      isItemSelected: (productId) => {
+        const item = get().items.find((item) => item.productId === productId);
         return item ? !!item.selected : false;
       },
 
@@ -110,6 +115,10 @@ export const useCartStore = create<CartStore>()(
       name: 'cart-storage',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ items: state.items }),
+      // Add debugging to see what's being stored
+      onRehydrateStorage: () => (state) => {
+        console.log('Rehydrated cart state:', state);
+      },
     },
   ),
 );

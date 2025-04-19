@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { WishlistItem } from '@/types/wishlist';
@@ -32,14 +33,9 @@ export const useWishlistStore = create<WishlistStore>()(
       },
 
       moveToCart: (id, options = {}) => {
-        const { size = 'M', color = 'Black', quantity = 1 } = options;
-        const item = get().items.find((item) => item.id === id);
-
-        if (item) {
-          // This will be connected to the cart store when we import it
-          // For now, just remove from wishlist
-          get().removeItem(id);
-        }
+        // This will be implemented in the store connector
+        // For now, just remove from wishlist
+        get().removeItem(id);
       },
 
       isInWishlist: (id) => {
