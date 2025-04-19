@@ -70,7 +70,7 @@ export default function Categories() {
             <p>Loading...</p>
           ) : (
             <div ref={scrollContainerRef} className="flex gap-4 overflow-x-hidden">
-              {categories.map((category) => (
+              { Array.isArray(categories) && categories.map((category) => (
                 <div
                   key={category._id}
                   className="min-w-[calc(100%/1)] flex-shrink-0 px-1 sm:min-w-[calc(100%/2)] lg:min-w-[calc(100%/3)]"
