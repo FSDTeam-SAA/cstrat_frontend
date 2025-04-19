@@ -1,56 +1,92 @@
+'use client';
+
+import type React from 'react';
+
+import { useCallback } from 'react';
 import Image from 'next/image';
-import { Heart, Star } from 'lucide-react';
-// import { Butt on } from '@/components/ui/button';
+import { Heart, Star, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
+import { useWishlistStore } from '@/store/use-wishlist-store';
+import type { WishlistItem as WishlistItemType } from '@/types/wishlist';
 
 interface WishlistItemProps {
-  item: {
-    id: string;
-    name: string;
-    price: number;
-    image: string;
-    rating: number;
-  };
+  item: WishlistItemType;
 }
 
 export default function WishlistItem({ item }: WishlistItemProps) {
+  const { removeItem, moveToCart } = useWishlistStore();
+
+  const handleRemoveFromWishlist = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      removeItem(item.id);
+    },
+    [removeItem, item.id],
+  );
+
+  const handleMoveToCart = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      moveToCart(item.id, { size: 'M', color: 'Black', quantity: 1 });
+    },
+    [moveToCart, item.id],
+  );
+
   return (
-    <div className="group overflow-hidden rounded-lg border">
+    <div className="group relative overflow-hidden rounded-lg border">
       <div className="relative">
-        <Link href={`/shop/product/${item.id}`}>
+        <Link href={`/product/${item.id}`}>
           <div className="relative aspect-square overflow-hidden">
             <Image
               src={item.image || '/placeholder.svg'}
               alt={item.name}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-105"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
             />
           </div>
         </Link>
-        {/* <Button variant="ghost" size="icon" className="absolute right-2 top-2 rounded-full bg-white/80 hover:bg-white">
-          <Heart className="h-5 w-5 fill-black text-black" />
-          <span className="sr-only">Remove from wishlist</span>
-        </Button> */}
-      </div>
-      <div className="p-4">
-        <div className='flex items-center gap-2'>
-          <div className='flex'>
-          <Star className='w-4 h-4 text-orange-500'/>
-          <Star className='w-4 h-4 text-orange-500'/>
-          <Star className='w-4 h-4 text-orange-500'/>
-          <Star className='w-4 h-4 text-orange-500'/>
-          </div>
-          <p>{item.rating}/{item.rating}</p>
+
+        {/* Move to Cart button on hover */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
+          <button
+            className="flex items-center gap-2 rounded-md bg-white/90 px-4 py-2 text-black shadow-md transition-colors hover:bg-white"
+            onClick={handleMoveToCart}
+            aria-label="Move to cart"
+          >
+            <ShoppingCart className="h-4 w-4" />
+            Move to Cart
+          </button>
         </div>
-        <h3 className="mb-1 text-lg font-bold">{item.name}</h3>
+      </div>
+
+      <div className="p-4">
+        <div className="flex items-center gap-2">
+          <div className="flex">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Star
+                key={i}
+                className={`h-4 w-4 ${i < item.rating ? 'fill-orange-500 text-orange-500' : 'text-gray-300'}`}
+              />
+            ))}
+          </div>
+          <p className="text-sm text-gray-600">{item.rating}/5</p>
+        </div>
+
+        <h3 className="mb-1 truncate text-lg font-bold">{item.name}</h3>
+
         <div className="flex items-center justify-between">
           <p className="text-xl font-bold">${item.price.toFixed(2)}</p>
-          {/* <Button className="bg-black rounded-full text-white hover:bg-gray-800">
-            <Heart  className="mr-2 flex text-lg" />
-          </Button> */}
-          <div className='bg-black w-12 h-12 rounded-full flex items-center justify-center'>
-            <Heart className='text-xl text-white'/>
-          </div>
+
+          <button
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-black transition-colors hover:bg-gray-800"
+            onClick={handleRemoveFromWishlist}
+            aria-label="Remove from wishlist"
+          >
+            <Heart className="fill-white text-xl text-white" />
+          </button>
         </div>
       </div>
     </div>

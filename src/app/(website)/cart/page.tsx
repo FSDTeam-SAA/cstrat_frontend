@@ -1,77 +1,105 @@
-/* eslint-disable react/no-unescaped-entities */
+'use client';
+
+import { useEffect, useState } from 'react';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
 import CartItem from '@/components/cart/cart-item';
 import CartSummary from '@/components/cart/cart-summary';
 import Link from 'next/link';
-import { ShoppingBag } from 'lucide-react';
+import { ShoppingBag, Trash2 } from 'lucide-react';
+import { useCartStore } from '@/store/useCartStore';
+import { Checkbox } from '@/components/ui/checkbox';
 
 export default function CartPage() {
-  // This would normally come from a cart context or API
-  const cartItems = [
-    {
-      id: '1',
-      name: "Premium Quality - stylish new T shirt - Casual Exclusive half Sleeve T Shirt For Men - T Shirt",
-      price: 25,
-      quantity: 1,
-      image: '/images/image 5.png',
-      brandName: "ABC",
-      size: 'XL',
-      color: 'Black'
-    },
-    {
-      id: '2',
-      name: "Premium Quality - stylish new T shirt - Casual Exclusive half Sleeve T Shirt For Men - T Shirt",
-      price: 25,
-      quantity: 2,
-      image: '/images/image 5.png',
-      brandName: "AtoZ",
-      size: 'XL',
-      color: 'Red'
-    },
-  ];
+  const { items, getSummary, toggleSelectAll, removeItem, areAllItemsSelected } = useCartStore();
+  const [mounted, setMounted] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const isEmpty = cartItems.length === 0;
+  // Handle hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+    console.log('Cart items on mount:', items);
+  }, [items]);
+
+  const handleSelectAll = (checked: boolean) => {
+    toggleSelectAll(checked);
+  };
+
+  const handleDeleteSelected = async () => {
+    setIsDeleting(true);
+
+    try {
+      // Get selected items before we start removing them
+      const selectedItems = items.filter((item) => item.selected);
+
+      // Remove each selected item
+      for (const item of selectedItems) {
+        removeItem(item.productId);
+        // Small delay to prevent UI freezing with many items
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      }
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  if (!mounted) {
+    return null; // Return nothing on the server side to prevent hydration mismatch
+  }
+
+  const isEmpty = items.length === 0;
+  const { itemCount } = getSummary();
+  const allSelected = areAllItemsSelected();
 
   return (
     <div className="flex w-full flex-col items-center">
-      <PageHeader
-        title="Cart"
-        backgroundImage="/images/cart-hero.png"
-        // breadcrumbs={[
-        //   { label: 'Home', href: '/' },
-        //   { label: 'Cart', href: '/cart' },
-        // ]}
-      />
+      <PageHeader title="Cart" backgroundImage="/images/cart-hero.png" />
 
       <div className="container py-8">
         {isEmpty ? (
           <div className="py-16 text-center">
             <ShoppingBag className="mx-auto mb-4 h-16 w-16 text-gray-400" />
             <h2 className="mb-2 text-2xl font-bold">Your cart is empty</h2>
-            <p className="mb-8 text-gray-500">Looks like you haven't added anything to your cart yet.</p>
+            <p className="mb-8 text-gray-500">Looks like you haven&apos;t added anything to your cart yet.</p>
             <Button asChild className="bg-black text-white hover:bg-gray-800">
               <Link href="/shop">Continue Shopping</Link>
             </Button>
           </div>
         ) : (
-          <div className="">
-            <div className="lg:col-span-2 mb-8">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+            <div className="lg:col-span-2">
               <div className="overflow-hidden rounded-lg border">
-                <div className="border-b bg-gray-50 p-4">
-                  <h2 className="font-bold">
-                    Shopping Cart ({cartItems.reduce((acc, item) => acc + item.quantity, 0)} items)
-                  </h2>
+                <div className="flex items-center justify-between border-b bg-gray-50 p-4">
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={allSelected}
+                      onCheckedChange={(checked) => handleSelectAll(!!checked)}
+                      id="select-all"
+                      aria-label="Select all items"
+                    />
+                    <label htmlFor="select-all" className="cursor-pointer font-bold">
+                      SELECT ALL ({itemCount} ITEMS)
+                    </label>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    className="flex items-center gap-1 text-red-500"
+                    onClick={handleDeleteSelected}
+                    disabled={isDeleting || !items.some((item) => item.selected)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    DELETE
+                  </Button>
                 </div>
                 <div className="divide-y">
-                  {cartItems.map((item) => (
-                    <CartItem key={item.id} item={item} />
+                  {items.map((item) => (
+                    <CartItem key={item.productId} item={item} />
                   ))}
                 </div>
               </div>
             </div>
             <div className="lg:col-span-1">
-              <CartSummary subtotal={cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0)} />
+              <CartSummary />
               <div className="mt-6">
                 <Button asChild className="w-full bg-black text-white hover:bg-gray-800">
                   <Link href="/checkout">Proceed to Checkout</Link>

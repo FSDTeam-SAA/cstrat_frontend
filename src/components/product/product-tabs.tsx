@@ -1,143 +1,114 @@
 'use client';
 
 import { useState } from 'react';
-import { cn } from '@/lib/utils';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useProduct } from '@/hooks/use-product';
+import type { Product } from '@/types/product';
+import { Skeleton } from '@/components/ui/skeleton';
 
-interface Product {
-  id: string;
-  name: string;
-  description?: string;
+interface ProductTabsProps {
+  productId: string;
+  initialData?: Product | null;
 }
 
-export default function ProductTabs({}: { product: Product }) {
-  const [activeTab, setActiveTab] = useState('descriptions');
+export default function ProductTabs({ productId, initialData }: ProductTabsProps) {
+  const { data: product, isLoading } = useProduct(productId);
+  const [activeTab, setActiveTab] = useState('description');
 
-  const tabs = [
-    { id: 'descriptions', label: 'Descriptions' },
-    { id: 'additional', label: 'Additional Information' },
-    { id: 'reviews', label: 'Reviews' },
-  ];
+  // Use initialData if available, otherwise use fetched data
+  const productData = product || initialData;
+
+  if (isLoading && !initialData) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-10 w-full max-w-md" />
+        <Skeleton className="h-40 w-full" />
+      </div>
+    );
+  }
 
   return (
-    <div>
-      {/* Tab Navigation */}
-      <div className="border-b">
-        <div className="flex space-x-8">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={cn(
-                'py-4 text-sm font-medium transition-colors hover:text-black',
-                activeTab === tab.id ? 'border-b-2 border-black text-black' : 'text-muted-foreground',
-              )}
-            >
-              {tab.label}
-            </button>
-          ))}
+    <Tabs defaultValue="description" value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <TabsList className="grid w-full max-w-md grid-cols-3">
+        <TabsTrigger value="description">Description</TabsTrigger>
+        <TabsTrigger value="details">Details</TabsTrigger>
+        <TabsTrigger value="reviews">Reviews</TabsTrigger>
+      </TabsList>
+      <TabsContent value="description" className="mt-6">
+        <div className="prose max-w-none">
+          <p>{productData?.description || 'No description available.'}</p>
         </div>
-      </div>
-
-      {/* Tab Content */}
-      <div className="py-6">
-        {activeTab === 'descriptions' && (
+      </TabsContent>
+      <TabsContent value="details" className="mt-6">
+        <div className="grid gap-4 md:grid-cols-2">
           <div>
-            <p className="text-muted-foreground">
-              Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
-              industry&apos;s standard dummy text ever since the 1500s, when an unknown printer took a galley of type
-              and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap
-              into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the
-              release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing
-              software like Aldus PageMaker including versions of Lorem Ipsum.
-            </p>
+            <h3 className="text-lg font-medium">Product Details</h3>
+            <ul className="mt-4 space-y-2 text-sm">
+              <li className="flex justify-between">
+                <span className="font-medium">SKU</span>
+                <span>{productData?.sku || 'N/A'}</span>
+              </li>
+              <li className="flex justify-between">
+                <span className="font-medium">Category</span>
+                <span>{productData?.category?.categoryName || 'N/A'}</span>
+              </li>
+              <li className="flex justify-between">
+                <span className="font-medium">Subcategory</span>
+                <span>{productData?.subcategory?.subCategoryName || 'N/A'}</span>
+              </li>
+              <li className="flex justify-between">
+                <span className="font-medium">Type</span>
+                <span className="capitalize">{productData?.type || 'N/A'}</span>
+              </li>
+              <li className="flex justify-between">
+                <span className="font-medium">Status</span>
+                <span className="capitalize">{productData?.status || 'N/A'}</span>
+              </li>
+              <li className="flex justify-between">
+                <span className="font-medium">Sustainability</span>
+                <span className="capitalize">{productData?.sustainability || 'N/A'}</span>
+              </li>
+            </ul>
           </div>
-        )}
-
-        {activeTab === 'additional' && (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4 border-b pb-4">
-              <span className="font-medium">Material</span>
-              <span>100% Cotton</span>
-            </div>
-            <div className="grid grid-cols-2 gap-4 border-b pb-4">
-              <span className="font-medium">Weight</span>
-              <span>180 gsm</span>
-            </div>
-            <div className="grid grid-cols-2 gap-4 border-b pb-4">
-              <span className="font-medium">Care Instructions</span>
-              <span>Machine wash cold, tumble dry low</span>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <span className="font-medium">Country of Origin</span>
-              <span>Made in USA</span>
+          <div>
+            <h3 className="text-lg font-medium">Availability</h3>
+            <ul className="mt-4 space-y-2 text-sm">
+              <li className="flex justify-between">
+                <span className="font-medium">In Stock</span>
+                <span>{productData?.inStock ? 'Yes' : 'No'}</span>
+              </li>
+              <li className="flex justify-between">
+                <span className="font-medium">Quantity</span>
+                <span>{productData?.quantity || 0}</span>
+              </li>
+              <li className="flex justify-between">
+                <span className="font-medium">Customizable</span>
+                <span>{productData?.isCustomizable ? 'Yes' : 'No'}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </TabsContent>
+      <TabsContent value="reviews" className="mt-6">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-medium">Customer Reviews</h3>
+            <div className="flex items-center">
+              <span className="text-sm font-medium">{productData?.rating || 0}/5</span>
+              <span className="ml-2 text-sm text-muted-foreground">
+                ({productData?.reviewCount || 0} {productData?.reviewCount === 1 ? 'review' : 'reviews'})
+              </span>
             </div>
           </div>
-        )}
-
-        {activeTab === 'reviews' && (
-          <div className="space-y-6">
+          {productData?.reviewCount ? (
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="font-medium">John Doe</h4>
-                  <div className="flex items-center">
-                    <div className="flex">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Star key={i} filled={i < 5} />
-                      ))}
-                    </div>
-                    <span className="ml-2 text-sm text-muted-foreground">Verified Purchase</span>
-                  </div>
-                </div>
-                <span className="text-sm text-muted-foreground">June 12, 2023</span>
-              </div>
-              <p className="text-muted-foreground">
-                Great quality t-shirt! The fabric is soft and comfortable, and the design looks exactly as pictured.
-                Highly recommend!
-              </p>
+              <p>Reviews will be displayed here.</p>
             </div>
-
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="font-medium">Jane Smith</h4>
-                  <div className="flex items-center">
-                    <div className="flex">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Star key={i} filled={i < 4} />
-                      ))}
-                    </div>
-                    <span className="ml-2 text-sm text-muted-foreground">Verified Purchase</span>
-                  </div>
-                </div>
-                <span className="text-sm text-muted-foreground">May 28, 2023</span>
-              </div>
-              <p className="text-muted-foreground">
-                The shirt fits well and the material is nice. I would have given 5 stars but it shrunk a bit after the
-                first wash.
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// Star component for reviews
-function Star({ filled }: { filled: boolean }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill={filled ? 'currentColor' : 'none'}
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={`h-4 w-4 ${filled ? 'text-yellow-400' : 'text-gray-300'}`}
-    >
-      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-    </svg>
+          ) : (
+            <p className="text-muted-foreground">No reviews yet. Be the first to review this product!</p>
+          )}
+        </div>
+      </TabsContent>
+    </Tabs>
   );
 }

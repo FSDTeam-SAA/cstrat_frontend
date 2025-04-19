@@ -183,63 +183,22 @@ import Image from 'next/image';
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useQuery } from '@tanstack/react-query';
 
 interface Product {
-  id: string;
+  _id: string;
   name: string;
-  category: string;
   price: number;
-  image: string;
+  images: string[];
+  totalQuantitySold: number;
 }
+
+const API_URL = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/orders/best-selling-products`;
 
 export default function BestSellers() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [visibleItems, setVisibleItems] = useState(4);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-  const products: Product[] = [
-    {
-      id: '1',
-      name: 'MEN SPORTS T-SHIRT',
-      category: 'men',
-      price: 25,
-      image: '/images/best-1.png',
-    },
-    {
-      id: '2',
-      name: 'WOMAN RUNNING KIT',
-      category: 'women',
-      price: 25,
-      image: '/images/best-2.png',
-    },
-    {
-      id: '3',
-      name: 'WOMEN HOODIE',
-      category: 'women',
-      price: 25,
-      image: '/images/best-3.png',
-    },
-    {
-      id: '4',
-      name: 'WOMEN HOODIE',
-      category: 'women',
-      price: 25,
-      image: '/images/best-1.png',
-    },
-    {
-      id: '5',
-      name: 'MEN JACKET',
-      category: 'men',
-      price: 35,
-      image: '/images/best-2.png',
-    },
-    {
-      id: '6',
-      name: 'UNISEX BACKPACK',
-      category: 'accessories',
-      price: 45,
-      image: '/images/best-3.png',
-    },
-  ];
 
   const getVisibleItems = () => {
     if (typeof window !== 'undefined') {
@@ -250,7 +209,17 @@ export default function BestSellers() {
     return 4;
   };
 
-  const [visibleItems, setVisibleItems] = useState(4);
+  // Fetch products with React Query
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['bestSellingProducts'],
+    queryFn: async () => {
+      const res = await fetch(API_URL);
+      const json = await res.json();
+      return json.data as Product[];
+    },
+  });
+
+  const products = data ?? [];
   const maxIndex = Math.max(0, products.length - visibleItems);
 
   useEffect(() => {
@@ -259,16 +228,12 @@ export default function BestSellers() {
     };
 
     handleResize();
-
     window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   useEffect(() => {
-    if (scrollContainerRef.current) {
+    if (scrollContainerRef.current && products.length > 0) {
       const itemWidth = scrollContainerRef.current.scrollWidth / products.length;
       scrollContainerRef.current.scrollTo({
         left: currentIndex * itemWidth,
@@ -277,81 +242,82 @@ export default function BestSellers() {
     }
   }, [currentIndex, products.length]);
 
-  const scrollPrev = () => {
-    setCurrentIndex((prev) => Math.max(0, prev - 1));
-  };
-
-  const scrollNext = () => {
-    setCurrentIndex((prev) => Math.min(maxIndex, prev + 1));
-  };
+  const scrollPrev = () => setCurrentIndex((prev) => Math.max(0, prev - 1));
+  const scrollNext = () => setCurrentIndex((prev) => Math.min(maxIndex, prev + 1));
 
   return (
     <section className="w-full overflow-hidden py-12">
       <div className="container px-4">
         <h2 className="mb-8 border-b pb-2 text-2xl font-bold uppercase md:text-3xl">BEST SELLERS</h2>
-        <div className="relative">
-          <div ref={scrollContainerRef} className="flex gap-4 overflow-x-hidden">
-            {products.map((product) => (
-              <div
-                key={product.id}
-                className={`flex-shrink-0 px-1 w-full sm:w-1/2 lg:w-1/4`}
-              >
-                <div className="group relative overflow-hidden rounded-lg">
-                  <div className="relative aspect-[270/330] w-full">
-                    <Image
-                      src={product.image || '/placeholder.svg'}
-                      alt={product.name}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="flex items-center justify-between gap-2 pt-3">
-                    <div>
-                      <h3 className="md:text-[20px] text-lg font-[600] uppercase leading-[120%]">
-                        {product.name}
-                      </h3>
-                      <p className="md:text-[20px] text-base font-[600]">${product.price}</p>
+
+        {isLoading ? (
+          <p>Loading best sellers...</p>
+        ) : isError ? (
+          <p>Failed to load products.</p>
+        ) : (
+          <div className="relative">
+            <div ref={scrollContainerRef} className="flex gap-4 overflow-x-hidden">
+              {products.map((product) => (
+                <div key={product._id} className="flex-shrink-0 px-1 w-full sm:w-1/2 lg:w-1/4">
+                  <div className="group relative overflow-hidden rounded-lg">
+                    <div className="relative aspect-[270/330] w-full">
+                      <Image
+                        src={product.images?.[0] || '/placeholder.svg'}
+                        alt={product.name}
+                        fill
+                        className="object-cover"
+                      />
                     </div>
-                    <Button
-                      size="icon"
-                      variant="secondary"
-                      className="rounded-lg bg-black text-white hover:bg-gray-800"
-                    >
-                      <Plus className="h-3 w-3" />
-                      <span className="sr-only">Add to cart</span>
-                    </Button>
+                    <div className="flex items-center justify-between gap-2 pt-3">
+                      <div>
+                        <h3 className="md:text-[20px] text-lg font-[600] uppercase leading-[120%]">
+                          {product.name}
+                        </h3>
+                        <p className="md:text-[20px] text-base font-[600]">${product.price}</p>
+                      </div>
+                      <Button
+                        size="icon"
+                        variant="secondary"
+                        className="rounded-lg bg-black text-white hover:bg-gray-800"
+                      >
+                        <Plus className="h-3 w-3" />
+                        <span className="sr-only">Add to cart</span>
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+
+            {/* Navigation Buttons */}
+            <Button
+              variant="outline"
+              size="icon"
+              className={cn(
+                'absolute left-2 sm:-left-12 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white',
+                currentIndex === 0 && 'cursor-not-allowed opacity-50'
+              )}
+              onClick={scrollPrev}
+              disabled={currentIndex === 0}
+            >
+              <ChevronLeft className="h-4 w-4" />
+              <span className="sr-only">Previous</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className={cn(
+                'absolute right-2 sm:-right-12 top-1/2 z-10 -translate-y-1/2 translate-x-1/2 rounded-full bg-white',
+                currentIndex === maxIndex && 'cursor-not-allowed opacity-50'
+              )}
+              onClick={scrollNext}
+              disabled={currentIndex === maxIndex}
+            >
+              <ChevronRight className="h-4 w-4" />
+              <span className="sr-only">Next</span>
+            </Button>
           </div>
-          <Button
-            variant="outline"
-            size="icon"
-            className={cn(
-              'absolute left-2 sm:-left-12 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white',
-              currentIndex === 0 && 'cursor-not-allowed opacity-50'
-            )}
-            onClick={scrollPrev}
-            disabled={currentIndex === 0}
-          >
-            <ChevronLeft className="h-4 w-4" />
-            <span className="sr-only">Previous</span>
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className={cn(
-              'absolute right-2 sm:-right-12 top-1/2 z-10 -translate-y-1/2 translate-x-1/2 rounded-full bg-white',
-              currentIndex === maxIndex && 'cursor-not-allowed opacity-50'
-            )}
-            onClick={scrollNext}
-            disabled={currentIndex === maxIndex}
-          >
-            <ChevronRight className="h-4 w-4" />
-            <span className="sr-only">Next</span>
-          </Button>
-        </div>
+        )}
       </div>
     </section>
   );
