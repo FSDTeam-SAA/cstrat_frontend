@@ -818,7 +818,7 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
 
               {/* Resize handles */}
               <div
-                className="absolute -bottom-3 -right-3 h-6 w-6 cursor-nwse-resize touch-manipulation rounded-full border-2 border-blue-500 bg-white"
+                className="absolute -bottom-3 -right-3 h-4 w-4 cursor-nwse-resize touch-manipulation rounded-full border border-blue-500 bg-white"
                 onMouseDown={(e) => handleResizeMouseDown(e, 'bottomRight')}
                 onTouchStart={(e) => {
                   e.stopPropagation();
@@ -859,27 +859,27 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
                 }}
               ></div>
               <div
-                className="absolute -bottom-3 -left-3 h-6 w-6 cursor-nesw-resize touch-manipulation rounded-full border-2 border-blue-500 bg-white"
+                className="absolute -bottom-3 -left-3 h-4 w-4 cursor-nesw-resize touch-manipulation rounded-full border border-blue-500 bg-white"
                 onMouseDown={(e) => handleResizeMouseDown(e, 'bottomLeft')}
               ></div>
               <div
-                className="absolute -right-3 -top-3 h-6 w-6 cursor-nesw-resize touch-manipulation rounded-full border-2 border-blue-500 bg-white"
+                className="absolute -right-3 -top-3 h-4 w-4 cursor-nesw-resize touch-manipulation rounded-full border border-blue-500 bg-white"
                 onMouseDown={(e) => handleResizeMouseDown(e, 'topRight')}
               ></div>
               <div
-                className="absolute -left-3 -top-3 h-6 w-6 cursor-nwse-resize touch-manipulation rounded-full border-2 border-blue-500 bg-white"
+                className="absolute -left-3 -top-3 h-4 w-4 cursor-nwse-resize touch-manipulation rounded-full border border-blue-500 bg-white"
                 onMouseDown={(e) => handleResizeMouseDown(e, 'topLeft')}
               ></div>
 
               {/* Rotation handle */}
               <div
-                className="absolute -top-8 left-1/2 h-6 w-6 -translate-x-1/2 cursor-move touch-manipulation rounded-full border-2 border-green-500 bg-white"
+                className="absolute -top-8 left-1/2 flex h-5 w-5 -translate-x-1/2 cursor-move touch-manipulation items-center justify-center rounded-full border border-green-500 bg-white"
                 onMouseDown={handleRotateMouseDown}
               ></div>
 
               {/* Remove logo button */}
               <button
-                className="absolute -right-10 -top-3 flex h-8 w-8 touch-manipulation items-center justify-center rounded-full bg-red-500 text-white hover:bg-red-600"
+                className="absolute -right-10 -top-8 flex h-5 w-5 touch-manipulation items-center justify-center rounded-full bg-red-500 text-white hover:bg-red-600"
                 onClick={handleRemoveLogo}
                 title="Remove logo"
               >
