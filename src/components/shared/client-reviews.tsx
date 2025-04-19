@@ -18,9 +18,21 @@ interface Review {
 // Fetch reviews from API
 const fetchReviews = async (): Promise<Review[]> => {
   const res = await fetch('http://localhost:8001/api/v1/reviews/allreviews');
-  const data = await res.json();
+  const data: ApiReview[] = await res.json();
 
-  return data.map((item: any) => ({
+  interface ApiReview {
+    _id: string;
+    user: {
+      name: string;
+    };
+    rating: number;
+    product: {
+      name: string;
+    };
+    review: string;
+  }
+
+  return data.map((item): Review => ({
     id: item._id,
     name: item.user.name,
     role: 'Customer',
@@ -85,7 +97,7 @@ export default function ClientReviews() {
                     </div>
                   </div>
                   <div className="text-center">
-                    <h4 className="mb-2 font-bold">{review.title}</h4>
+                    <h4 className="mb-2 font-bold">Product: {review.title}</h4>
                     <p className="text-gray-600">{review.content}</p>
                   </div>
                 </div>
