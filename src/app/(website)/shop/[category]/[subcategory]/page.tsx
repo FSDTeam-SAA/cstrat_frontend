@@ -56,7 +56,7 @@ export default function CategoryPage({ params }: { params: { category: string; s
         <main>
           <div className="mb-6 flex flex-col">
             <h1 className="text-2xl font-bold">{subcategoryDisplayName}</h1>
-            <p className="text-sm text-muted-foreground">({categoryData.productCount} Products)</p>
+            <p className="text-sm text-muted-foreground">Showing all products</p>
           </div>
 
           {/* Category Tabs - Desktop */}
@@ -71,7 +71,7 @@ export default function CategoryPage({ params }: { params: { category: string; s
 
           {/* Product Grid */}
           <Suspense fallback={<div>Loading products...</div>}>
-            <ProductGrid category={categoryData} subcategory={subcategoryDisplayName} />
+            <ProductGrid />
           </Suspense>
         </main>
       </div>
