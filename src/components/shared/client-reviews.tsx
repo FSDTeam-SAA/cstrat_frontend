@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useQuery } from '@tanstack/react-query';
 import { Star } from 'lucide-react';
 
 interface Review {
@@ -14,55 +15,42 @@ interface Review {
   content: string;
 }
 
+// Fetch reviews from API
+const fetchReviews = async (): Promise<Review[]> => {
+  const res = await fetch('http://localhost:8001/api/v1/reviews/allreviews');
+  const data = await res.json();
+
+  return data.map((item: any) => ({
+    id: item._id,
+    name: item.user.name,
+    // role: 'Customer',
+    // avatar: '/images/review-image.png',
+    rating: item.rating,
+    title: item.product.name,
+    content: item.review,
+  }));
+};
+
 export default function ClientReviews() {
   const [activeIndex, setActiveIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const reviews: Review[] = [
-    {
-      id: '1',
-      name: 'Robert Fox',
-      role: 'Customer',
-      avatar: '/images/review-image.png',
-      rating: 4,
-      title: 'Good Experience',
-      content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    },
-    {
-      id: '2',
-      name: 'Jane Doe',
-      role: 'Customer',
-      avatar: '/images/review-image.png',
-      rating: 5,
-      title: 'Excellent Service',
-      content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    },
-    {
-      id: '3',
-      name: 'John Smith',
-      role: 'Customer',
-      avatar: '/images/review-image.png',
-      rating: 3,
-      title: 'Satisfactory',
-      content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    },
-    {
-      id: '4',
-      name: 'Emily Johnson',
-      role: 'Customer',
-      avatar: '/images/review-image.png',
-      rating: 5,
-      title: 'Amazing!',
-      content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    },
-  ];
+  const { data: reviews = [], isLoading, isError } = useQuery({
+    queryKey: ['reviews'],
+    queryFn: fetchReviews,
+  });
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveIndex((prevIndex) => (prevIndex + 1) % (reviews.length - 2));
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [reviews.length]);
+    if (reviews.length > 2) {
+      const interval = setInterval(() => {
+        setActiveIndex((prevIndex) => (prevIndex + 1) % (reviews.length - 2));
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [reviews]);
+
+  if (isLoading) return <p className="text-center py-10">Loading reviews...</p>;
+  if (isError) return <p className="text-center py-10 text-red-500">Failed to load reviews.</p>;
 
   return (
     <section className="w-full py-12">
@@ -97,7 +85,7 @@ export default function ClientReviews() {
                     </div>
                   </div>
                   <div className="text-center">
-                    <h4 className="mb-2 font-bold">{review.title}</h4>
+                    <h4 className="mb-2 font-bold">Product: {review.title}</h4>
                     <p className="text-gray-600">{review.content}</p>
                   </div>
                 </div>
@@ -107,17 +95,19 @@ export default function ClientReviews() {
         </div>
 
         {/* Pagination Buttons */}
-        <div className="flex justify-center mt-6">
-          {reviews.slice(0, reviews.length - 2).map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setActiveIndex(index)}
-              className={`w-3 h-3 mx-1 rounded-full transition-all ${
-                activeIndex === index ? 'bg-gray-900' : 'bg-gray-400'
-              }`}
-            ></button>
-          ))}
-        </div>
+        {reviews.length > 2 && (
+          <div className="flex justify-center mt-6">
+            {reviews.slice(0, reviews.length - 2).map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setActiveIndex(index)}
+                className={`w-3 h-3 mx-1 rounded-full transition-all ${
+                  activeIndex === index ? 'bg-gray-900' : 'bg-gray-400'
+                }`}
+              ></button>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
