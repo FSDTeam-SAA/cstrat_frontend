@@ -2,8 +2,8 @@
 
 import type React from 'react';
 
-import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
@@ -11,6 +11,9 @@ import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { ChevronDown, SlidersHorizontal } from 'lucide-react';
+import { useFilterStore } from '@/store/filter-store';
+import { useQuery } from '@tanstack/react-query';
+import { fetchCategories } from '@/lib/api';
 
 interface CategoryData {
   name: string;
@@ -19,30 +22,57 @@ interface CategoryData {
   subcategories?: string[];
 }
 
-export default function ProductFilters({ category }: { category: CategoryData; subcategory: string }) {
+export default function ProductFilters({ category, subcategory }: { category: CategoryData; subcategory: string }) {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Get filter values from URL or use defaults
+  // Get filter state from Zustand store
+  const { minPrice, maxPrice, status, sortBy, setPriceRange, setStatus, setSortBy } = useFilterStore();
+  console.log(subcategory);
+  // Fetch categories for the filter
+  const { data: categoriesData } = useQuery({
+    queryKey: ['categories'],
+    queryFn: fetchCategories,
+  });
+
+  // Local state for UI
   const [openSections, setOpenSections] = useState({
-    minimum: true,
-    types: true,
     price: true,
-    sustainability: true,
+    category: true,
+    status: true,
     sort: true,
   });
 
-  // Initialize state from URL parameters
-  const [minPrice, setMinPrice] = useState(searchParams.get('minPrice') || '0');
-  const [maxPrice, setMaxPrice] = useState(searchParams.get('maxPrice') || '200');
-  const [priceRange, setPriceRange] = useState([
-    Number.parseInt(searchParams.get('minPrice') || '0'),
-    Number.parseInt(searchParams.get('maxPrice') || '200'),
+  const [priceRange, setPriceRangeLocal] = useState([
+    Number.parseInt(minPrice.toString()),
+    Number.parseInt(maxPrice.toString()),
   ]);
-  const [minimum, setMinimum] = useState(searchParams.get('minimum') || 'all');
-  const [type, setType] = useState(searchParams.get('type') || 'all');
-  const [sustainability, setSustainability] = useState(searchParams.get('sustainability') || 'all');
-  const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || 'all');
+
+  // Update local state when store changes
+  useEffect(() => {
+    setPriceRangeLocal([Number.parseInt(minPrice.toString()), Number.parseInt(maxPrice.toString())]);
+  }, [minPrice, maxPrice]);
+
+  // Initialize filter state from URL on component mount
+  useEffect(() => {
+    const urlMinPrice = searchParams.get('minPrice');
+    const urlMaxPrice = searchParams.get('maxPrice');
+    const urlStatus = searchParams.get('status');
+    const urlSortBy = searchParams.get('sortBy');
+
+    if (urlMinPrice && urlMaxPrice) {
+      setPriceRange(Number(urlMinPrice), Number(urlMaxPrice));
+    }
+
+    if (urlStatus) {
+      setStatus(urlStatus);
+    }
+
+    if (urlSortBy) {
+      setSortBy(urlSortBy);
+    }
+  }, [searchParams, setPriceRange, setSortBy, setStatus]);
 
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections((prev) => ({
@@ -52,127 +82,50 @@ export default function ProductFilters({ category }: { category: CategoryData; s
   };
 
   const handlePriceRangeChange = (value: number[]) => {
-    setPriceRange(value);
-    setMinPrice(value[0].toString());
-    setMaxPrice(value[1].toString());
+    setPriceRangeLocal(value);
   };
 
   const handleMinPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setMinPrice(value);
     if (value && !isNaN(Number(value))) {
-      setPriceRange([Number(value), priceRange[1]]);
+      setPriceRangeLocal([Number(value), priceRange[1]]);
     }
   };
 
   const handleMaxPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setMaxPrice(value);
     if (value && !isNaN(Number(value))) {
-      setPriceRange([priceRange[0], Number(value)]);
+      setPriceRangeLocal([priceRange[0], Number(value)]);
     }
   };
 
   // Apply filters
   const applyFilters = () => {
+    // Update the Zustand store
+    setPriceRange(priceRange[0], priceRange[1]);
+
+    // Build URL with all current filters
     const params = new URLSearchParams(searchParams.toString());
 
     // Set filter parameters
-    params.set('minPrice', minPrice);
-    params.set('maxPrice', maxPrice);
-    params.set('minimum', minimum);
-    params.set('type', type);
-    params.set('sustainability', sustainability);
+    params.set('minPrice', priceRange[0].toString());
+    params.set('maxPrice', priceRange[1].toString());
+    params.set('status', status);
     params.set('sortBy', sortBy);
 
     // Reset to page 1 when filters change
     params.set('page', '1');
 
     // Update URL with filters
-    router.push(`?${params.toString()}`);
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   const FilterContent = () => (
     <div className="space-y-6">
-      {/* Shop By Minimum */}
-      <div className="border-b pb-4">
-        <button
-          className="flex w-full items-center justify-between font-medium"
-          onClick={() => toggleSection('minimum')}
-        >
-          Shop By Minimum
-          <ChevronDown className={`h-5 w-5 transition-transform ${openSections.minimum ? 'rotate-180' : ''}`} />
-        </button>
-        {openSections.minimum && (
-          <div className="mt-4 space-y-2">
-            <RadioGroup value={minimum} onValueChange={setMinimum}>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="all" id="all-minimum" />
-                <Label htmlFor="all-minimum">All</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="41-or-more" id="41-or-more" />
-                <Label htmlFor="41-or-more">41 or More</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="40-or-less" id="40-or-less" />
-                <Label htmlFor="40-or-less">40 or Less</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="30-or-less" id="30-or-less" />
-                <Label htmlFor="30-or-less">30 or Less</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="20-or-less" id="20-or-less" />
-                <Label htmlFor="20-or-less">20 or Less</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="10-or-less" id="10-or-less" />
-                <Label htmlFor="10-or-less">10 or Less</Label>
-              </div>
-            </RadioGroup>
-          </div>
-        )}
-      </div>
-
-      {/* T-Shirts Types */}
-      <div className="border-b pb-4">
-        <button className="flex w-full items-center justify-between font-medium" onClick={() => toggleSection('types')}>
-          {category.name}
-          <ChevronDown className={`h-5 w-5 transition-transform ${openSections.types ? 'rotate-180' : ''}`} />
-        </button>
-        {openSections.types && (
-          <div className="mt-4 space-y-2">
-            <RadioGroup value={type} onValueChange={setType}>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="all" id="all-types" />
-                <Label htmlFor="all-types">All</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="casual" id="casual" />
-                <Label htmlFor="casual">Casual</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="fleece" id="fleece" />
-                <Label htmlFor="fleece">Fleece</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="popular" id="popular" />
-                <Label htmlFor="popular">Popular</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="newest" id="newest" />
-                <Label htmlFor="newest">Newest</Label>
-              </div>
-            </RadioGroup>
-          </div>
-        )}
-      </div>
-
       {/* Shop By Price */}
       <div className="border-b pb-4">
         <button className="flex w-full items-center justify-between font-medium" onClick={() => toggleSection('price')}>
-          Shop By Price
+          Price Range
           <ChevronDown className={`h-5 w-5 transition-transform ${openSections.price ? 'rotate-180' : ''}`} />
         </button>
         {openSections.price && (
@@ -180,8 +133,8 @@ export default function ProductFilters({ category }: { category: CategoryData; s
             <Slider
               value={priceRange}
               min={0}
-              max={200}
-              step={1}
+              max={1000}
+              step={10}
               onValueChange={handlePriceRangeChange}
               className="py-4"
             />
@@ -190,7 +143,7 @@ export default function ProductFilters({ category }: { category: CategoryData; s
                 <span className="text-sm text-muted-foreground">$</span>
                 <Input
                   type="number"
-                  value={minPrice}
+                  value={priceRange[0]}
                   onChange={handleMinPriceChange}
                   className="border-0 p-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
@@ -200,52 +153,69 @@ export default function ProductFilters({ category }: { category: CategoryData; s
                 <span className="text-sm text-muted-foreground">$</span>
                 <Input
                   type="number"
-                  value={maxPrice}
+                  value={priceRange[1]}
                   onChange={handleMaxPriceChange}
                   className="border-0 p-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
               </div>
             </div>
-            <Button className="w-full" onClick={applyFilters}>
-              Apply
-            </Button>
           </div>
         )}
       </div>
 
-      {/* Sustainability */}
+      {/* Product Status */}
       <div className="border-b pb-4">
         <button
           className="flex w-full items-center justify-between font-medium"
-          onClick={() => toggleSection('sustainability')}
+          onClick={() => toggleSection('status')}
         >
-          Sustainability
-          <ChevronDown className={`h-5 w-5 transition-transform ${openSections.sustainability ? 'rotate-180' : ''}`} />
+          Product Status
+          <ChevronDown className={`h-5 w-5 transition-transform ${openSections.status ? 'rotate-180' : ''}`} />
         </button>
-        {openSections.sustainability && (
+        {openSections.status && (
           <div className="mt-4 space-y-2">
-            <RadioGroup value={sustainability} onValueChange={setSustainability}>
+            <RadioGroup value={status} onValueChange={setStatus}>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="all" id="all-sustainability" />
-                <Label htmlFor="all-sustainability">All</Label>
+                <RadioGroupItem value="all" id="all-status" />
+                <Label htmlFor="all-status">All</Label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="1-for-planet" id="1-for-planet" />
-                <Label htmlFor="1-for-planet">1% for the Planet</Label>
+                <RadioGroupItem value="published" id="published" />
+                <Label htmlFor="published">Published</Label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="b-corp" id="b-corp" />
-                <Label htmlFor="b-corp">B Corp</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="climate-neutral" id="climate-neutral" />
-                <Label htmlFor="climate-neutral">Climate Neutral</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="sustainable" id="sustainable" />
-                <Label htmlFor="sustainable">Sustainable</Label>
+                <RadioGroupItem value="draft" id="draft" />
+                <Label htmlFor="draft">Draft</Label>
               </div>
             </RadioGroup>
+          </div>
+        )}
+      </div>
+
+      {/* Product Categories */}
+      <div className="border-b pb-4">
+        <button
+          className="flex w-full items-center justify-between font-medium"
+          onClick={() => toggleSection('category')}
+        >
+          Categories
+          <ChevronDown className={`h-5 w-5 transition-transform ${openSections.category ? 'rotate-180' : ''}`} />
+        </button>
+        {openSections.category && (
+          <div className="mt-4 space-y-2">
+            <RadioGroup value={category.slug}>
+              {categoriesData?.data?.map((cat) => (
+                <div key={cat._id} className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value={cat.categoryName.toLowerCase().replace(/\s+/g, '-')}
+                    id={`${cat._id}-category`}
+                    disabled
+                  />
+                  <Label htmlFor={`${cat._id}-category`}>{cat.categoryName}</Label>
+                </div>
+              ))}
+            </RadioGroup>
+            <p className="mt-2 text-xs text-muted-foreground">Categories are pre-selected from the URL.</p>
           </div>
         )}
       </div>
@@ -261,11 +231,7 @@ export default function ProductFilters({ category }: { category: CategoryData; s
             <RadioGroup value={sortBy} onValueChange={setSortBy}>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="all" id="all-sort" />
-                <Label htmlFor="all-sort">All</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="recommended" id="recommended" />
-                <Label htmlFor="recommended">Recommended</Label>
+                <Label htmlFor="all-sort">Default</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="price-low" id="price-low" />
@@ -287,6 +253,10 @@ export default function ProductFilters({ category }: { category: CategoryData; s
           </div>
         )}
       </div>
+
+      <Button className="mt-6 w-full" onClick={applyFilters}>
+        Apply Filters
+      </Button>
     </div>
   );
 
@@ -306,17 +276,6 @@ export default function ProductFilters({ category }: { category: CategoryData; s
             <div className="py-4">
               <h2 className="mb-6 text-lg font-semibold">Filters</h2>
               <FilterContent />
-              <Button
-                className="mt-6 w-full"
-                onClick={() => {
-                  applyFilters();
-                  document
-                    .querySelector('[data-radix-collection-item]')
-                    ?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-                }}
-              >
-                Apply Filters
-              </Button>
             </div>
           </SheetContent>
         </Sheet>
@@ -325,9 +284,6 @@ export default function ProductFilters({ category }: { category: CategoryData; s
       {/* Desktop Filters */}
       <div className="hidden md:block">
         <FilterContent />
-        <Button className="mt-6 w-full" onClick={applyFilters}>
-          Apply Filters
-        </Button>
       </div>
     </>
   );
