@@ -1,44 +1,52 @@
 'use client';
-
-import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Heart, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { products } from '@/lib/data';
+import { useRelatedProducts } from '@/hooks/use-product';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface RelatedProductsProps {
-  category: string;
-  subcategory: string;
-  currentProductId: string;
+  productId: string;
+  category?: string;
+  subcategory?: string;
 }
 
-export default function RelatedProducts({ category, subcategory, currentProductId }: RelatedProductsProps) {
-  const [relatedProducts, setRelatedProducts] = useState<typeof products>([]);
+export default function RelatedProducts({ productId, category, subcategory }: RelatedProductsProps) {
+  const { data: relatedProducts, isLoading, error } = useRelatedProducts(productId, category, subcategory);
 
-  useEffect(() => {
-    // Filter products by category and subcategory, excluding current product
-    const filtered = products
-      .filter(
-        (product) =>
-          product.id !== currentProductId && (product.category === category || product.subcategory === subcategory),
-      )
-      .slice(0, 4); // Limit to 4 products
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="flex flex-col overflow-hidden rounded-lg border">
+            <Skeleton className="aspect-square w-full" />
+            <div className="p-4">
+              <Skeleton className="h-5 w-3/4" />
+              <Skeleton className="mt-2 h-4 w-1/4" />
+              <Skeleton className="mt-2 h-3 w-1/2" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
-    setRelatedProducts(filtered);
-  }, [category, subcategory, currentProductId]);
+  if (error) {
+    return <div className="text-center text-red-500">Failed to load related products</div>;
+  }
 
-  if (relatedProducts.length === 0) {
-    return null;
+  if (!relatedProducts || relatedProducts.length === 0) {
+    return <div className="text-center text-muted-foreground">No related products found</div>;
   }
 
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {relatedProducts.map((product) => (
-        <div key={product.id} className="group relative flex flex-col overflow-hidden rounded-lg border">
+        <div key={product._id} className="group relative flex flex-col overflow-hidden rounded-lg border">
           <div className="relative aspect-square overflow-hidden">
             <Image
-              src={product.image || '/placeholder.svg'}
+              src={product.media?.images?.[0] || '/placeholder.svg'}
               alt={product.name}
               width={300}
               height={300}
@@ -64,20 +72,24 @@ export default function RelatedProducts({ category, subcategory, currentProductI
                   key={i}
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
-                  fill={i < 4 ? 'currentColor' : 'none'}
+                  fill={i < (product.rating || 0) ? 'currentColor' : 'none'}
                   stroke="currentColor"
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className={`h-3 w-3 ${i < 4 ? 'text-yellow-400' : 'text-gray-300'}`}
+                  className={`h-3 w-3 ${i < (product.rating || 0) ? 'text-yellow-400' : 'text-gray-300'}`}
                 >
                   <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                 </svg>
               ))}
-              <span className="ml-1 text-xs text-muted-foreground">4.0</span>
+              <span className="ml-1 text-xs text-muted-foreground">{product.rating || 0}</span>
+              {product.reviewCount > 0 && (
+                <span className="ml-1 text-xs text-muted-foreground">({product.reviewCount})</span>
+              )}
             </div>
+            {!product.inStock && <span className="mt-1 text-xs text-red-500">Out of stock</span>}
           </div>
-          <Link href={`/product/${product.id}`} className="absolute inset-0">
+          <Link href={`/product/${product._id}`} className="absolute inset-0">
             <span className="sr-only">View product details</span>
           </Link>
         </div>
