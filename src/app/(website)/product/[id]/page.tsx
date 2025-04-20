@@ -38,9 +38,9 @@ export default async function ProductPage({ params }: { params: { id: string } }
           <h2 className="mb-6 text-2xl font-bold">Related Products</h2>
           <Suspense fallback={<div>Loading related products...</div>}>
             <RelatedProducts
-              productId={params.id}
+              // productId={params.id}
               category={initialProductData?.category?.categoryName}
-              subcategory={initialProductData?.subcategory?.subCategoryName}
+              // subcategory={initialProductData?.subcategory?.subCategoryName}
             />
           </Suspense>
         </div>

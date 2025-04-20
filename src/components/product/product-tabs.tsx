@@ -5,6 +5,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useProduct } from '@/hooks/use-product';
 import type { Product } from '@/types/product';
 import { Skeleton } from '@/components/ui/skeleton';
+import ProductReview from './ProductReview';
+import AddProductReview from './AddProductReview';
 
 interface ProductTabsProps {
   productId: string;
@@ -14,7 +16,7 @@ interface ProductTabsProps {
 export default function ProductTabs({ productId, initialData }: ProductTabsProps) {
   const { data: product, isLoading } = useProduct(productId);
   const [activeTab, setActiveTab] = useState('description');
-
+console.log("product", product?.name);
   // Use initialData if available, otherwise use fetched data
   const productData = product || initialData;
 
@@ -89,10 +91,14 @@ export default function ProductTabs({ productId, initialData }: ProductTabsProps
           </div>
         </div>
       </TabsContent>
+
       <TabsContent value="reviews" className="mt-6">
         <div className="space-y-4">
+<AddProductReview productId={productId}/>
+      
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-medium">Customer Reviews</h3>
+            <h3 className="text-lg font-medium">Customer Reviews </h3>
+         
             <div className="flex items-center">
               <span className="text-sm font-medium">{productData?.rating || 0}/5</span>
               <span className="ml-2 text-sm text-muted-foreground">
@@ -100,13 +106,7 @@ export default function ProductTabs({ productId, initialData }: ProductTabsProps
               </span>
             </div>
           </div>
-          {productData?.reviewCount ? (
-            <div className="space-y-4">
-              <p>Reviews will be displayed here.</p>
-            </div>
-          ) : (
-            <p className="text-muted-foreground">No reviews yet. Be the first to review this product!</p>
-          )}
+          <ProductReview productId={productId} />
         </div>
       </TabsContent>
     </Tabs>
