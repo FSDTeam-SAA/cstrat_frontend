@@ -49,6 +49,8 @@ function ShopMenuData() {
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
+  console.log(categoriesData);
+
   // Fetch subcategories with retry
   const {
     data: subcategoriesData,
@@ -114,7 +116,7 @@ function ShopMenuData() {
   const categorySubcategoriesMap = new Map<string, Subcategory[]>();
 
   subcategories.forEach((subcategory: Subcategory) => {
-    const categoryId = subcategory.category._id;
+    const categoryId = subcategory.category?._id;
     if (!categorySubcategoriesMap.has(categoryId)) {
       categorySubcategoriesMap.set(categoryId, []);
     }
@@ -123,7 +125,7 @@ function ShopMenuData() {
 
   // Filter categories that have at least one subcategory
   const categoriesWithSubcategories = categories.filter(
-    (category) => (categorySubcategoriesMap.get(category._id) || []).length > 0,
+    (category) => (categorySubcategoriesMap.get(category?._id) || []).length > 0,
   );
 
   // If no categories have subcategories, show a message
