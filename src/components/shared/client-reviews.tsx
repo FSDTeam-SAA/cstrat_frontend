@@ -8,17 +8,19 @@ import { Star } from 'lucide-react';
 interface Review {
   id: string;
   name: string;
-  role: string;
+  // role: string;
   avatar: string;
   rating: number;
   title: string;
+  images?: string;
   content: string;
 }
 
 // Fetch reviews from API
 const fetchReviews = async (): Promise<Review[]> => {
-  const res = await fetch('http://localhost:8001/api/v1/reviews/allreviews');
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/reviews/allreviews`);
   const data: ApiReview[] = await res.json();
+  console.log('Fetched reviews:', data); // Debugging log
 
   interface ApiReview {
     _id: string;
@@ -28,17 +30,17 @@ const fetchReviews = async (): Promise<Review[]> => {
     rating: number;
     product: {
       name: string;
-    };
+    } | null;
     review: string;
   }
 
   return data.map((item): Review => ({
     id: item._id,
     name: item.user.name,
-    role: 'Customer',
+    // role: 'Customer',
     avatar: '/images/review-image.png',
     rating: item.rating,
-    title: item.product.name,
+    title: item.product?.name || 'Unknown Product',
     content: item.review,
   }));
 };
@@ -81,11 +83,11 @@ export default function ClientReviews() {
                 <div className="rounded-lg border p-6 h-full">
                   <div className="mb-4 flex items-center gap-4">
                     <div className="relative h-12 w-12 overflow-hidden rounded-full">
-                      <Image src={review.avatar} alt={review.name} fill className="object-cover" />
+                      <Image src= { review?.images|| review.avatar} alt={review.name} fill className="object-cover" />
                     </div>
                     <div>
                       <h3 className="font-medium">{review.name}</h3>
-                      <p className="text-sm text-gray-500">{review.role}</p>
+                      {/* <p className="text-sm text-gray-500">{review.role}</p> */}
                     </div>
                     <div className="ml-auto flex">
                       {Array.from({ length: 5 }).map((_, i) => (
