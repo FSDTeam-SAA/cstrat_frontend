@@ -98,7 +98,7 @@ export default function Navbar() {
                         <Link href="/profile">My Profile</Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link href="/orders">My Orders</Link>
+                        <Link href="/profile/order-history">My Orders</Link>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem className="text-red-500 focus:text-red-500" onClick={logout}>
@@ -158,7 +158,7 @@ export default function Navbar() {
                           My Profile
                         </Link>
                         <Link
-                          href="/orders"
+                          href="/profile/order-history"
                           className="py-2 text-lg font-medium"
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
