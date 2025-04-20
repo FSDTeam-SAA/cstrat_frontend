@@ -1,177 +1,104 @@
-// import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+'use client';
+
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-// import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-// import Link from 'next/link';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useCartStore } from '@/store/useCartStore';
+import { createCustomizedOrder, createPayment } from '@/lib/api-services';
 
-export default function CheckoutForm() {
+export default function PaymentForm() {
+  const router = useRouter();
+  const { items, getDeliveryInfo, clearCart } = useCartStore();
+  const [paymentMethod, setPaymentMethod] = useState('stripe');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handlePlaceOrder = async () => {
+    setIsLoading(true);
+
+    try {
+      const deliveryInfo = getDeliveryInfo();
+
+      if (!deliveryInfo) {
+        alert('Delivery information is missing. Please go back and fill in your delivery details.');
+        router.push('/checkout');
+        return;
+      }
+
+      // Temporary user ID - in a real app, this would come from authentication
+      const userId = '67fb8eebe5a697a3ae53f7d1'; // Example user ID
+
+      // Create orders for each item
+      const orderPromises = items.map(item => 
+        createCustomizedOrder({
+          userId: userId,
+          productId: item.productId,
+          quantity: item.quantity,
+          color: item.color,
+          size: item.size,
+          frontCustomizationPreview: item.frontCustomization?.preview || null,
+          logoImage: item.frontCustomization?.logoUrl || null,
+        })
+      );
+
+      // Wait for all orders to be created
+      const orderResponses = await Promise.all(orderPromises);
+      const orderResponse = orderResponses[0]; // Use first order for payment
+
+      if (orderResponse.status && orderResponse.data._id) {
+        // Create payment
+        const paymentData = {
+          userId: userId,
+          orderId: orderResponse.data._id,
+        };
+
+        const paymentResponse = await createPayment(paymentData);
+
+        if (paymentResponse.status && paymentResponse.url) {
+          // Clear cart after successful order
+          clearCart();
+
+          // Redirect to Stripe checkout
+          window.location.href = paymentResponse.url;
+        } else {
+          throw new Error('Failed to create payment');
+        }
+      } else {
+        throw new Error('Failed to create order');
+      }
+    } catch (error) {
+      console.error('Error placing order:', error);
+      alert('There was an error processing your order. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="space-y-8">
-      
-      <div className="overflow-hidden rounded-lg border">
-        <div className="border-b bg-gray-50 p-4">
-          <h2 className="font-bold">Delivery Information</h2>
+    <div className="rounded-lg border p-6">
+      <h2 className="mb-6 text-xl font-bold">Payment Method</h2>
+
+      <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="space-y-4">
+        <div className="flex items-center space-x-2 rounded-md border p-4">
+          <RadioGroupItem value="stripe" id="stripe" />
+          <Label htmlFor="stripe" className="flex items-center gap-2">
+            <span>Pay with Stripe</span>
+            <Image src="https://v0.blob.com/pjtmy8OGJ.png" alt="Stripe" width={60} height={25} />
+          </Label>
         </div>
-        <div className="space-y-4 p-6">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label className="text-[18px] font-medium" htmlFor="lastName">
-              Full Name
-              </Label>
-              <Input className="h-12 rounded-none" id="lastName" placeholder="Enter your last name" />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-[18px] font-medium" htmlFor="lastName">
-              Region
-              </Label>
-              <Input className="h-12 rounded-none" id="lastName" placeholder="Enter your last name" />
-            </div>
-          </div>
+      </RadioGroup>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label className="text-[18px] font-medium" htmlFor="lastName">
-              Phone Number
-              </Label>
-              <Input className="h-12 rounded-none" id="lastName" placeholder="Enter your last name" />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-[18px] font-medium" htmlFor="lastName">
-              City
-              </Label>
-              <Input className="h-12 rounded-none" id="lastName" placeholder="Enter your last name" />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label className="text-[18px] font-medium" htmlFor="lastName">
-              House No/ Street
-              </Label>
-              <Input className="h-12 rounded-none" id="lastName" placeholder="Enter your last name" />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-[18px] font-medium" htmlFor="lastName">
-              Area
-              </Label>
-              <Input className="h-12 rounded-none" id="lastName" placeholder="Enter your last name" />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-            <Label className='text-[18px] font-medium' htmlFor="lastName">Colony/ Locality</Label>
-            <Input className='h-12 rounded-none' id="lastName" placeholder="Enter your last name" />
-            </div>
-            <div className="space-y-2">
-            <Label className='text-[18px] font-medium' htmlFor="lastName">Address</Label>
-            <Input className='h-12 rounded-none' id="lastName" placeholder="Enter your last name" />
-            </div>
-          </div>
-
-          <div className='flex justify-end'>
-          <button className='w-[100px] h-[50px] bg-black text-white'>Save</button>
-          </div>
-          
-        </div>
+      <div className="mt-8">
+        <Button
+          className="w-full bg-black text-white hover:bg-gray-800"
+          onClick={handlePlaceOrder}
+          disabled={isLoading}
+        >
+          {isLoading ? 'Processing...' : 'Place Order'}
+        </Button>
       </div>
-
-
-
-      {/* <div className="overflow-hidden rounded-lg border">
-        <div className="border-b bg-gray-50 p-4">
-          <h2 className="font-bold">Shipping Address</h2>
-        </div>
-        <div className="space-y-4 p-6">
-          <div className="space-y-2">
-            <Label htmlFor="address">Street Address</Label>
-            <Input id="address" placeholder="Enter your street address" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="apartment">Apartment, suite, etc. (optional)</Label>
-            <Input id="apartment" placeholder="Enter apartment or suite" />
-          </div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <div className="space-y-2">
-              <Label htmlFor="city">City</Label>
-              <Input id="city" placeholder="Enter city" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="state">State/Province</Label>
-              <Select>
-                <SelectTrigger id="state">
-                  <SelectValue placeholder="Select state" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ca">California</SelectItem>
-                  <SelectItem value="ny">New York</SelectItem>
-                  <SelectItem value="tx">Texas</SelectItem>
-                  <SelectItem value="fl">Florida</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="zip">ZIP / Postal Code</Label>
-              <Input id="zip" placeholder="Enter ZIP code" />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="country">Country</Label>
-            <Select>
-              <SelectTrigger id="country">
-                <SelectValue placeholder="Select country" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="us">United States</SelectItem>
-                <SelectItem value="ca">Canada</SelectItem>
-                <SelectItem value="uk">United Kingdom</SelectItem>
-                <SelectItem value="au">Australia</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </div> */}
-
-      {/* <div className="overflow-hidden rounded-lg border">
-        <div className="border-b bg-gray-50 p-4">
-          <h2 className="font-bold">Shipping Method</h2>
-        </div>
-        <div className="p-6">
-          <RadioGroup defaultValue="standard">
-            <div className="mb-2 flex items-center justify-between rounded-lg border p-4">
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="standard" id="standard" />
-                <Label htmlFor="standard">Standard Shipping (3-5 business days)</Label>
-              </div>
-              <span className="font-bold">Free</span>
-            </div>
-            <div className="mb-2 flex items-center justify-between rounded-lg border p-4">
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="express" id="express" />
-                <Label htmlFor="express">Express Shipping (1-2 business days)</Label>
-              </div>
-              <span className="font-bold">$15.00</span>
-            </div>
-            <div className="flex items-center justify-between rounded-lg border p-4">
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="overnight" id="overnight" />
-                <Label htmlFor="overnight">Overnight Shipping (Next business day)</Label>
-              </div>
-              <span className="font-bold">$25.00</span>
-            </div>
-          </RadioGroup>
-        </div>
-      </div> */}
-
-      {/* <div className="flex justify-between">
-        <Button variant="outline" asChild>
-          <Link href="/cart">Return to Cart</Link>
-        </Button>
-        <Button asChild className="bg-black text-white hover:bg-gray-800">
-          <Link href="/checkout/payment">Continue to Payment</Link>
-        </Button>
-      </div> */}
     </div>
   );
 }

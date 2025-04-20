@@ -7,7 +7,7 @@ export default function CartSummary() {
   const { getSummary } = useCartStore();
 
   // Memoize the summary calculation to prevent unnecessary recalculations
-  const { subtotal, shipping, total } = useMemo(() => getSummary(), [getSummary]);
+  const { subtotal, shipping, total, itemCount } = useMemo(() => getSummary(), [getSummary]);
 
   return (
     <div className="rounded-lg border p-6">
@@ -15,7 +15,7 @@ export default function CartSummary() {
 
       <div className="space-y-4">
         <div className="flex justify-between border-b pb-4">
-          <span>Subtotal:</span>
+          <span>Subtotal ({itemCount} items):</span>
           <span className="font-medium">${subtotal.toFixed(2)}</span>
         </div>
 

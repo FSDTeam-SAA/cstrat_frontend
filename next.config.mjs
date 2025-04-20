@@ -10,6 +10,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'cstrat.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'v0.blob.com',
+      },
     ],
   },
 };
