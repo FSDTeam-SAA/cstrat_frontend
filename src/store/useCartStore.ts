@@ -1,9 +1,10 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import type { CartItem, CartSummary } from '@/types/cart';
+import type { CartItem, CartSummary, DeliveryInformation } from '@/types/cart';
 
 interface CartStore {
   items: CartItem[];
+  deliveryInfo: DeliveryInformation | null;
   addItem: (item: CartItem) => void;
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
@@ -15,12 +16,15 @@ interface CartStore {
   getSelectedItems: () => CartItem[];
   isItemSelected: (productId: string) => boolean;
   areAllItemsSelected: () => boolean;
+  setDeliveryInfo: (info: DeliveryInformation) => void;
+  getDeliveryInfo: () => DeliveryInformation | null;
 }
 
 export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
       items: [],
+      deliveryInfo: null,
 
       addItem: (item) => {
         console.log('Adding item to cart:', item);
@@ -94,6 +98,7 @@ export const useCartStore = create<CartStore>()(
           shipping,
           total: subtotal + shipping,
           itemCount: items.reduce((count, item) => count + item.quantity, 0),
+          selectedItemCount: items.filter((item) => item.selected).length,
         };
       },
 
@@ -110,11 +115,19 @@ export const useCartStore = create<CartStore>()(
         const { items } = get();
         return items.length > 0 && items.every((item) => item.selected);
       },
+
+      setDeliveryInfo: (info) => {
+        set({ deliveryInfo: info });
+      },
+
+      getDeliveryInfo: () => {
+        return get().deliveryInfo;
+      },
     }),
     {
       name: 'cart-storage',
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ items: state.items }),
+      partialize: (state) => ({ items: state.items, deliveryInfo: state.deliveryInfo }),
       // Add debugging to see what's being stored
       onRehydrateStorage: () => (state) => {
         console.log('Rehydrated cart state:', state);
