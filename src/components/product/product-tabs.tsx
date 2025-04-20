@@ -6,6 +6,7 @@ import { useProduct } from '@/hooks/use-product';
 import type { Product } from '@/types/product';
 import { Skeleton } from '@/components/ui/skeleton';
 import ProductReview from './ProductReview';
+import AddProductReview from './AddProductReview';
 
 interface ProductTabsProps {
   productId: string;
@@ -93,7 +94,7 @@ console.log("product", product?.name);
 
       <TabsContent value="reviews" className="mt-6">
         <div className="space-y-4">
-
+<AddProductReview productId={productId}/>
       
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-medium">Customer Reviews </h3>
