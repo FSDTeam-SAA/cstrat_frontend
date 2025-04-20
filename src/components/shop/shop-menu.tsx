@@ -114,7 +114,7 @@ function ShopMenuData() {
   const categorySubcategoriesMap = new Map<string, Subcategory[]>();
 
   subcategories.forEach((subcategory: Subcategory) => {
-    const categoryId = subcategory.category._id;
+    const categoryId = subcategory.category?._id;
     if (!categorySubcategoriesMap.has(categoryId)) {
       categorySubcategoriesMap.set(categoryId, []);
     }
