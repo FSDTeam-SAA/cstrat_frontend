@@ -36,7 +36,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       quantity: 1,
       image: product.media?.images?.[0] || '/placeholder.svg',
       brandName: product.category?.categoryName || 'Brand Name',
-      size,
+      size, // Store as a simple string, not a JSON string
       color,
       selected: true,
       frontCustomization: {

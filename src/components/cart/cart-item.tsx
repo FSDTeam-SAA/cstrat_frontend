@@ -79,6 +79,9 @@ export default function CartItem({ item }: CartItemProps) {
     }
   }
 
+  // Calculate item total price
+  const itemTotal = item.price * quantity;
+
   return (
     <div className="flex items-center justify-start gap-4 border-b p-4">
       <div className="flex flex-1 items-center gap-2">
@@ -109,7 +112,7 @@ export default function CartItem({ item }: CartItemProps) {
 
       <div className="flex flex-1 items-center justify-end gap-6">
         <div className="min-w-[80px] flex-shrink-0 text-right">
-          <p className="font-bold text-red-400">${(item.price * quantity).toFixed(2)}</p>
+          <p className="font-bold text-red-400">${itemTotal.toFixed(2)}</p>
           <div className="mt-2 flex items-center justify-end gap-2">
             <button
               onClick={handleRemoveItem}

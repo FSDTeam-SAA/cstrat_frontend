@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
 import CartItem from '@/components/cart/cart-item';
@@ -11,6 +12,7 @@ import { useCartStore } from '@/store/useCartStore';
 import { Checkbox } from '@/components/ui/checkbox';
 
 export default function CartPage() {
+  const router = useRouter();
   const { items, getSummary, toggleSelectAll, removeItem, areAllItemsSelected } = useCartStore();
   const [mounted, setMounted] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -41,6 +43,21 @@ export default function CartPage() {
     } finally {
       setIsDeleting(false);
     }
+  };
+
+  const handleProceedToCheckout = () => {
+    if (items.length === 0) {
+      alert('Your cart is empty. Please add items to your cart before proceeding to checkout.');
+      return;
+    }
+
+    const selectedItems = items.filter((item) => item.selected);
+    if (selectedItems.length === 0) {
+      alert('Please select at least one item to proceed to checkout.');
+      return;
+    }
+
+    router.push('/checkout');
   };
 
   if (!mounted) {
@@ -101,8 +118,8 @@ export default function CartPage() {
             <div className="lg:col-span-1">
               <CartSummary />
               <div className="mt-6">
-                <Button asChild className="w-full bg-black text-white hover:bg-gray-800">
-                  <Link href="/checkout">Proceed to Checkout</Link>
+                <Button className="w-full bg-black text-white hover:bg-gray-800" onClick={handleProceedToCheckout}>
+                  Proceed to Checkout
                 </Button>
               </div>
             </div>
