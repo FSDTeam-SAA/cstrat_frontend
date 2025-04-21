@@ -53,13 +53,15 @@ export function UserProfile() {
             Updating...
           </div>
         ) : user?.avatar ? (
+          <div className="w-[112px] h-[112px] rounded-full overflow-hidden border border-gray-200">
           <Image
             src={user.avatar}
             alt={user.name?.charAt(0) || 'D'}
             width={112}
             height={112}
-            className="rounded-full border border-gray-200 object-cover"
+            className="object-cover w-full h-full"
           />
+        </div>
         ) : (
           <div className="w-full h-full flex items-center justify-center rounded-full border border-gray-200 bg-gray-100 text-3xl font-semibold text-gray-600">
             {user?.name?.charAt(0).toUpperCase() || 'D'}
