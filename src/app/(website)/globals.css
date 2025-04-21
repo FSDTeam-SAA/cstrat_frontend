@@ -71,6 +71,7 @@
   body {
     @apply bg-background text-foreground;
   }
+  
 }
 /* Custom styles  */
 @layer components {
@@ -82,7 +83,7 @@
   }
   .paragraph {
     @apply font-poppins text-[16px] font-normal leading-[24px] tracking-normal text-[#C5C5C5];
-  }         
+  }
   .challange-title {
     @apply !text-[32px] font-semibold leading-[38.4px] text-[#ECECEC];
   }
