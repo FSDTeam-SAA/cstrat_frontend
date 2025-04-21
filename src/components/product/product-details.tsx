@@ -1013,23 +1013,25 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
         </div>
 
         {/* Logo Upload */}
-      {productData.isCustomizeable &&  (<div className="mt-6">
-          <Button
-            variant="outline"
-            className="flex h-12 w-full items-center justify-center gap-2"
-            onClick={handleLogoUpload}
-            disabled={!canCustomizeCurrentView()}
-          >
-            <Upload className="h-5 w-5" />
-            Upload Logo for {selectedImageIndex === 0 ? 'Front' : selectedImageIndex === 1 ? 'Back' : 'Current'} View
-          </Button>
-          <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
-          {!canCustomizeCurrentView() && (
-            <p className="mt-2 text-sm text-amber-600">
-              Please select front or back view (first two thumbnails) to upload a logo
-            </p>
-          )}
-        </div>)}
+        {productData.isCustomizable && (
+          <div className="mt-6">
+            <Button
+              variant="outline"
+              className="flex h-12 w-full items-center justify-center gap-2"
+              onClick={handleLogoUpload}
+              disabled={!canCustomizeCurrentView()}
+            >
+              <Upload className="h-5 w-5" />
+              Upload Logo for {selectedImageIndex === 0 ? 'Front' : selectedImageIndex === 1 ? 'Back' : 'Current'} View
+            </Button>
+            <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+            {!canCustomizeCurrentView() && (
+              <p className="mt-2 text-sm text-amber-600">
+                Please select front or back view (first two thumbnails) to upload a logo
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Quantity and Add to Cart */}
         <div className="mt-6 flex items-center gap-4">

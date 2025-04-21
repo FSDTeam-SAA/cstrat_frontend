@@ -37,7 +37,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       image: product.media?.images?.[0] || '/placeholder.svg',
       brandName: product.category?.categoryName || 'Brand Name',
       size, // Store as a simple string, not a JSON string
-      color,
+      color: color?.color || null,
       selected: true,
       frontCustomization: {
         logoUrl: null,
@@ -76,6 +76,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       });
     }
   };
+  console.log('Image', product.colors[0].images[0]);
 
   return (
     <div
@@ -87,7 +88,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <Link href={`/product/${product._id}`}>
           <div className="relative aspect-square overflow-hidden">
             <Image
-              src={product.media?.images?.[0] || '/placeholder.svg'}
+              src={product.media?.images?.[0] || product.colors[0].images[0]}
               alt={product.name}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-105"
