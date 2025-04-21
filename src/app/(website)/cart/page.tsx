@@ -110,7 +110,9 @@ export default function CartPage() {
                 </div>
                 <div className="divide-y">
                   {items.map((item) => (
-                    <CartItem key={item.productId} item={item} />
+                    <div key={item.name}>
+                      <CartItem item={item} />
+                    </div>
                   ))}
                 </div>
               </div>
