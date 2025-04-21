@@ -60,9 +60,9 @@ export default function CategoryPage({ params }: { params: { category: string; s
           </div>
 
           {/* Category Tabs - Desktop */}
-          <div className="mb-6 hidden gap-2 md:flex">
+          {/* <div className="mb-6 hidden gap-2 md:flex">
             <CategoryTabs category={categoryData} currentSubcategory={subcategoryDisplayName} />
-          </div>
+          </div> */}
 
           {/* Mobile Filters Button */}
           <div className="mb-6 md:hidden">

@@ -23,7 +23,10 @@ export interface Product {
   quantity: number;
   inStock: boolean;
   sizes: string[];
-  colors: string[];
+  colors: {
+    color: string;
+    images: string[];
+  }[];
   status: string;
   type: string;
   sustainability: string;

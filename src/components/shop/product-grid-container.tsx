@@ -135,14 +135,10 @@ export default function ProductGrid() {
               <Link href={`/product/${product.id}`}>
                 <div className="relative aspect-square overflow-hidden">
                   <Image
-                    src={product.media.images[0] || '/placeholder.svg'}
+                    src={product.media.images[0] || product.colors[0].images[0]}
                     alt={product.name}
                     fill
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    onError={(e) => {
-                      // Fallback if image fails to load
-                      e.currentTarget.src = '/placeholder.svg';
-                    }}
                   />
                 </div>
               </Link>

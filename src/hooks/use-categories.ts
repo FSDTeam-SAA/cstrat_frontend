@@ -1,39 +1,54 @@
 'use client';
 
-import React from 'react';
-
 import { useQuery } from '@tanstack/react-query';
-import { fetchCategories, fetchSubcategories, fetchSubcategoriesByCategory } from '@/lib/api';
+import {
+  fetchCategories,
+  fetchSubcategories,
+  fetchSubcategoriesByCategory,
+  type Subcategory,
+  type CategoriesResponse,
+  type SubcategoriesResponse,
+} from '@/lib/api';
+import { useMemo } from 'react';
+
+// Constants for query keys
+const QUERY_KEYS = {
+  categories: 'categories',
+  subcategories: 'subcategories',
+} as const;
 
 // Hook to fetch all categories
 export function useCategories() {
-  return useQuery({
-    queryKey: ['categories'],
+  return useQuery<CategoriesResponse, Error>({
+    queryKey: [QUERY_KEYS.categories],
     queryFn: fetchCategories,
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
+    select: (data) => data, // Optional transform of the data
   });
 }
 
 // Hook to fetch all subcategories
 export function useSubcategories() {
-  return useQuery({
-    queryKey: ['subcategories'],
+  return useQuery<SubcategoriesResponse, Error>({
+    queryKey: [QUERY_KEYS.subcategories],
     queryFn: fetchSubcategories,
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
   });
 }
 
 // Hook to fetch subcategories for a specific category
-export function useSubcategoriesByCategory(categoryId: string) {
-  return useQuery({
-    queryKey: ['subcategories', categoryId],
-    queryFn: () => fetchSubcategoriesByCategory(categoryId),
+export function useSubcategoriesByCategory(categoryId: string | null) {
+  return useQuery<Subcategory[], Error>({
+    queryKey: [QUERY_KEYS.subcategories, categoryId],
+    queryFn: () => fetchSubcategoriesByCategory(categoryId!),
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-    // Only fetch if categoryId is provided
-    enabled: !!categoryId,
+    enabled: !!categoryId, // Only fetch if categoryId is provided
+    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
   });
 }
 
@@ -46,7 +61,7 @@ export function useShopMenu() {
   const error = categoriesQuery.error || subcategoriesQuery.error;
 
   // Process the data to create a structured menu
-  const menuData = React.useMemo(() => {
+  const menuData = useMemo(() => {
     if (isLoading || error || !categoriesQuery.data || !subcategoriesQuery.data) {
       return [];
     }
@@ -54,18 +69,18 @@ export function useShopMenu() {
     const categories = categoriesQuery.data.data || [];
     const subcategories = subcategoriesQuery.data.subCategories || [];
 
-    // Create a map of category ID to subcategories
-    const categorySubcategoriesMap = new Map();
+    // Create a map of category ID to subcategories for better performance
+    const categorySubcategoriesMap = new Map<string, Subcategory[]>();
 
     subcategories.forEach((subcategory) => {
       const categoryId = subcategory.category._id;
       if (!categorySubcategoriesMap.has(categoryId)) {
         categorySubcategoriesMap.set(categoryId, []);
       }
-      categorySubcategoriesMap.get(categoryId).push(subcategory);
+      categorySubcategoriesMap.get(categoryId)?.push(subcategory);
     });
 
-    // Create the menu structure
+    // Create the menu structure with proper typing
     return categories
       .map((category) => {
         const categorySubcategories = categorySubcategoriesMap.get(category._id) || [];
@@ -90,16 +105,35 @@ export function useShopMenu() {
           })),
         };
       })
-      .filter((category) => category.subcategories.length > 0); // Only include categories with subcategories
+      .filter((category) => category.subcategories.length > 0);
   }, [categoriesQuery.data, subcategoriesQuery.data, isLoading, error]);
 
   return {
     menuData,
     isLoading,
     error,
+    isFetching: categoriesQuery.isFetching || subcategoriesQuery.isFetching,
     refetch: () => {
       categoriesQuery.refetch();
       subcategoriesQuery.refetch();
     },
   };
+}
+
+// Types for the returned menu structure
+export interface MenuSubcategory {
+  id: string;
+  name: string;
+  description: string;
+  slug: string;
+  categoryId: string;
+}
+
+export interface MenuCategory {
+  id: string;
+  name: string;
+  description: string;
+  image?: string;
+  slug: string;
+  subcategories: MenuSubcategory[];
 }
