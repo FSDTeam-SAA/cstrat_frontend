@@ -13,6 +13,10 @@ interface RelatedProductsProps {
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 interface Product {
+  colors?: {
+    images?: string[];
+    color?: string;
+  }[];
   id: string;
   name: string;
   price: number;
@@ -41,7 +45,7 @@ export default function RelatedProducts({ category }: RelatedProductsProps) {
         {Array.from({ length: 4 }).map((_, i) => (
           <div key={i} className="flex flex-col overflow-hidden rounded-lg border">
             <Skeleton className="aspect-square w-full" />
-            <div className="p-4 space-y-2">
+            <div className="space-y-2 p-4">
               <Skeleton className="h-5 w-3/4" />
               <Skeleton className="h-4 w-1/4" />
               <Skeleton className="h-3 w-1/2" />
@@ -66,7 +70,7 @@ export default function RelatedProducts({ category }: RelatedProductsProps) {
         <div key={product.id} className="group relative flex flex-col overflow-hidden rounded-lg border">
           <div className="relative aspect-square overflow-hidden">
             <Image
-              src={product.media?.images?.[0] || '/placeholder.svg'}
+              src={product.media?.images?.[0] || product.colors?.[0].images?.[0] || '/placeholder.jpg'}
               alt={product.name}
               width={300}
               height={300}

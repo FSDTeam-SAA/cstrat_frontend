@@ -6,10 +6,17 @@ import { ReactNode } from 'react';
 interface Props {
   children: ReactNode;
 }
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const AppProvider = ({ children }: Props) => {
   // Create a client
-  const queryClient = new QueryClient();
   return (
     <QueryClientProvider client={queryClient}>
       {children} 

@@ -13,6 +13,7 @@ import { useProduct } from '@/hooks/use-product';
 import type { Product } from '@/types/product';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCartStore } from '@/store/useCartStore';
+import { toast } from 'sonner';
 
 interface LogoCustomization {
   logoUrl: string | null;
@@ -527,12 +528,9 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
 
       // Add to cart using the Zustand store
       useCartStore.getState().addItem(cartItem);
-
-      // Show confirmation
-      alert(`Added ${quantity} ${productData.name} to cart!`);
-    } catch (error) {
-      console.error('Error adding to cart:', error);
-      alert('Failed to add to cart. Please try again.');
+      toast.success(`Added ${quantity} ${productData.name} to cart!`);
+    } catch {
+      toast.error('Failed to add to cart. Please try again.');
     }
   };
 
@@ -1015,23 +1013,25 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
         </div>
 
         {/* Logo Upload */}
-        <div className="mt-6">
-          <Button
-            variant="outline"
-            className="flex h-12 w-full items-center justify-center gap-2"
-            onClick={handleLogoUpload}
-            disabled={!canCustomizeCurrentView()}
-          >
-            <Upload className="h-5 w-5" />
-            Upload Logo for {selectedImageIndex === 0 ? 'Front' : selectedImageIndex === 1 ? 'Back' : 'Current'} View
-          </Button>
-          <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
-          {!canCustomizeCurrentView() && (
-            <p className="mt-2 text-sm text-amber-600">
-              Please select front or back view (first two thumbnails) to upload a logo
-            </p>
-          )}
-        </div>
+        {productData.isCustomizable && (
+          <div className="mt-6">
+            <Button
+              variant="outline"
+              className="flex h-12 w-full items-center justify-center gap-2"
+              onClick={handleLogoUpload}
+              disabled={!canCustomizeCurrentView()}
+            >
+              <Upload className="h-5 w-5" />
+              Upload Logo for {selectedImageIndex === 0 ? 'Front' : selectedImageIndex === 1 ? 'Back' : 'Current'} View
+            </Button>
+            <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+            {!canCustomizeCurrentView() && (
+              <p className="mt-2 text-sm text-amber-600">
+                Please select front or back view (first two thumbnails) to upload a logo
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Quantity and Add to Cart */}
         <div className="mt-6 flex items-center gap-4">

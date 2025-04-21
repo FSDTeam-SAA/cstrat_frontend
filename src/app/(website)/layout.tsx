@@ -3,11 +3,11 @@ import type { Metadata } from 'next';
 import { Montserrat } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/shared/navbar';
-import Footer from '@/components/shared/footer';
 // import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from '@/context/auth-context';
 import AppProvider from '@/components/provider/app-provider';
-import { Toaster } from '@/components/ui/sonner';
+import { Toaster } from 'sonner';
+import FooterComponent from '@/components/shared/FooterComponent';
 
 const montserrat = Montserrat({ subsets: ['latin'] });
 
@@ -29,8 +29,9 @@ export default function RootLayout({
           <div className="">
             <Navbar />
             <AppProvider>{children}</AppProvider>
+
             <Toaster />
-            <Footer />
+            <FooterComponent />
           </div>
         </AuthProvider>
         {/* </ThemeProvider> */}
