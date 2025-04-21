@@ -6,13 +6,19 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { toast } from "sonner"
 import ProtectedRoute from "@/components/ProtectedRoute"
 import { useAuth } from "@/context/auth-context"
 
 export default function PersonalInformation() {
-  const { user, token } = useAuth() // Get the token from auth context
+  const { user, token, refetchUser } = useAuth()
   const queryClient = useQueryClient()
 
   const [formData, setFormData] = useState({
@@ -25,7 +31,6 @@ export default function PersonalInformation() {
 
   const updateProfileMutation = useMutation({
     mutationFn: async (profileData: Omit<typeof formData, "email">) => {
-      // Check if token exists
       if (!token) {
         throw new Error("Authentication token is missing")
       }
@@ -34,7 +39,7 @@ export default function PersonalInformation() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Add the token to the request
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(profileData),
       })
@@ -46,10 +51,9 @@ export default function PersonalInformation() {
 
       return response.json()
     },
-    onSuccess: (data) => {
-      // Invalidate and refetch any queries that depend on user data
-      queryClient.invalidateQueries({ queryKey: ["user"] })
-
+    onSuccess: async (data) => {
+      await refetchUser() // 🔄 Refresh auth context with latest user data
+      queryClient.invalidateQueries({ queryKey: ["user"] }) // optional
       toast.success(data.message || "Profile updated successfully")
     },
     onError: (error: Error) => {
@@ -66,14 +70,11 @@ export default function PersonalInformation() {
     setFormData((prev) => ({ ...prev, gender: value }))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Omit email as it's not needed in the request body
-    const {  ...profileData } = formData
-
-    // Execute the mutation
-    updateProfileMutation.mutate(profileData)
+    const { name, phone, gender, address } = formData
+    updateProfileMutation.mutate({ name, phone, gender, address })
   }
 
   return (
@@ -85,12 +86,24 @@ export default function PersonalInformation() {
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>
-              <Input id="name" name="name" value={formData.name} onChange={handleChange} required />
+              <Input
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="phone">Phone Number</Label>
-              <Input id="phone" name="phone" value={formData.phone} onChange={handleChange} required />
+              <Input
+                id="phone"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                required
+              />
             </div>
 
             <div className="space-y-2">
@@ -101,7 +114,6 @@ export default function PersonalInformation() {
                 type="email"
                 value={formData.email}
                 onChange={handleChange}
-                required
                 disabled
                 className="bg-gray-100"
               />
@@ -128,7 +140,7 @@ export default function PersonalInformation() {
             <Input
               id="address"
               name="address"
-              placeholder="Address Here..."
+              placeholder="Address here..."
               value={formData.address}
               onChange={handleChange}
             />
