@@ -1,6 +1,12 @@
 "use client"
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+} from "react"
 import { useRouter } from "next/navigation"
 
 interface User {
@@ -13,24 +19,27 @@ interface User {
   image?: string
   address?: string
   gender?: string
+  avatar?: string
 }
 
 interface AuthContextType {
   user: User | null
   token: string | null
   isAuthenticated: boolean
-  login: (token: string, userData?: Partial<User>) => void
+  login: (token: string, userData?: Partial<User>) => Promise<void>
   logout: () => void
   updateUser: (userData: Partial<User>) => void
+  refetchUser: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   token: null,
   isAuthenticated: false,
-  login: () => {},
+  login: async () => {},
   logout: () => {},
   updateUser: () => {},
+  refetchUser: async () => {},
 })
 
 export const useAuth = () => useContext(AuthContext)
@@ -46,41 +55,72 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
-  // Load auth state from localStorage on initial render
+  const fetchFullUserData = async (userId: string) => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/auth/users/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      const data = await res.json()
+
+      if (data.status && data.user) {
+        setUser(data.user)
+        localStorage.setItem("auth_user", JSON.stringify(data.user))
+      }
+    } catch (err) {
+      console.error("Failed to fetch full user data", err)
+    }
+  }
+
+  const refetchUser = async () => {
+    if (user?._id) {
+      await fetchFullUserData(user._id)
+    }
+  }
+
   useEffect(() => {
     const storedToken = localStorage.getItem("auth_token")
     const storedUser = localStorage.getItem("auth_user")
 
-    if (storedToken) {
-      setToken(storedToken)
-      setIsAuthenticated(true)
+    const init = async () => {
+      if (storedToken) {
+        setToken(storedToken)
+        setIsAuthenticated(true)
 
-      if (storedUser) {
-        try {
-          setUser(JSON.parse(storedUser))
-        } catch (error) {
-          console.error("Failed to parse user data", error)
+        if (storedUser) {
+          try {
+            const parsedUser = JSON.parse(storedUser)
+            setUser(parsedUser)
+
+            if (parsedUser._id) {
+              await fetchFullUserData(parsedUser._id)
+            }
+          } catch (error) {
+            console.error("Failed to parse user data", error)
+          }
         }
       }
+
+      setLoading(false)
     }
 
-    setLoading(false)
+    init()
   }, [])
 
-  // Function to login user
-  const login = (newToken: string, userData?: Partial<User>) => {
+  const login = async (newToken: string, userData?: Partial<User>) => {
     setToken(newToken)
     setIsAuthenticated(true)
     localStorage.setItem("auth_token", newToken)
 
-    // Extract user info from JWT if available
     try {
-     
       const tokenParts = newToken.split(".")
       if (tokenParts.length === 3) {
         const payload = JSON.parse(atob(tokenParts[1]))
-        const extractedUser = {
+        const extractedUser: Partial<User> = {
           id: payload.id || "",
+          _id: payload._id || payload.id || "",
           name: payload.name || "User",
           email: payload.email || "",
           role: payload.role || "",
@@ -89,27 +129,33 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         setUser(extractedUser as User)
         localStorage.setItem("auth_user", JSON.stringify(extractedUser))
+
+        if (extractedUser._id) {
+          await fetchFullUserData(extractedUser._id)
+        }
       }
     } catch (error) {
       console.error("Failed to parse token", error)
 
-      // If token parsing fails but we have userData, use that
       if (userData) {
-       
-        const newUser = {
+        const fallbackUser: Partial<User> = {
           id: userData.id || "",
+          _id: userData._id || userData.id || "",
           name: userData.name || "User",
           email: userData.email || "",
           role: userData.role || "",
-
         }
-        setUser(newUser as User)
-        localStorage.setItem("auth_user", JSON.stringify(newUser))
+
+        setUser(fallbackUser as User)
+        localStorage.setItem("auth_user", JSON.stringify(fallbackUser))
+
+        if (fallbackUser._id) {
+          await fetchFullUserData(fallbackUser._id)
+        }
       }
     }
   }
 
-  // Function to logout user
   const logout = () => {
     setUser(null)
     setToken(null)
@@ -119,7 +165,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     router.push("/")
   }
 
-  // Function to update user data
   const updateUser = (userData: Partial<User>) => {
     if (user) {
       const updatedUser = { ...user, ...userData }
@@ -137,10 +182,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         login,
         logout,
         updateUser,
+        refetchUser,
       }}
     >
       {!loading && children}
     </AuthContext.Provider>
   )
 }
-
