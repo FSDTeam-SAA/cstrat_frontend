@@ -72,6 +72,7 @@ export default function Footer() {
             <div className="space-y-4">
               <h3 className="text-lg font-bold">Shop</h3>
               <ul className="space-y-2">
+<<<<<<< HEAD
                 {categoryData?.data?.map((category) => (
                   <li key={category._id}>
                     <a href="#" className="text-sm hover:underline">
@@ -79,6 +80,33 @@ export default function Footer() {
                     </a>
                   </li>
                 ))}
+=======
+                <li>
+                  <Link href="/shop/clothing" className="text-sm hover:underline">
+                    Clothing
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/shop/bags" className="text-sm hover:underline">
+                    Bags
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/shop/writing" className="text-sm hover:underline">
+                    Writing Items
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/shop/tech" className="text-sm hover:underline">
+                    Tech Products
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/shop/drinkware" className="text-sm hover:underline">
+                    Drink Ware
+                  </Link>
+                </li>
+>>>>>>> ab4f8dd369f9c20a841cbd3f6c16a74d51f72ade
               </ul>
             </div>
 
@@ -87,10 +115,37 @@ export default function Footer() {
               <h3 className="text-lg font-bold">Collection</h3>
               <ul className="space-y-2">
                 <li>
+<<<<<<< HEAD
                   <Link href="#best-sellers" className="text-sm hover:underline">
                     Best Sellers
                   </Link>
                 </li>
+=======
+                  <Link href="/collection/best-sellers" className="text-sm hover:underline">
+                    Best Sellers
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/collection/buying-guide" className="text-sm hover:underline">
+                    Buying Guide
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/collection/golf" className="text-sm hover:underline">
+                    Golf
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/collection/new-arrivals" className="text-sm hover:underline">
+                    New Arrivals
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/collection/budget-friendly" className="text-sm hover:underline">
+                    Budget Friendly
+                  </Link>
+                </li>
+>>>>>>> ab4f8dd369f9c20a841cbd3f6c16a74d51f72ade
               </ul>
             </div>
 
@@ -99,13 +154,36 @@ export default function Footer() {
               <h3 className="text-lg font-bold">Support</h3>
               <ul className="space-y-2">
                 <li>
+<<<<<<< HEAD
+=======
+                  <Link href="/faq" className="text-sm hover:underline">
+                    FAQ
+                  </Link>
+                </li>
+                <li>
+>>>>>>> ab4f8dd369f9c20a841cbd3f6c16a74d51f72ade
                   <Link href="/privacy-policy" className="text-sm hover:underline">
                     Privacy Policy
                   </Link>
                 </li>
                 <li>
+<<<<<<< HEAD
                   <Link href="/temrs-conditions" className="text-sm hover:underline">
                     Terms of Service
+=======
+                  <Link href="/terms-conditions" className="text-sm hover:underline">
+                    Terms and conditions
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/support/shipping" className="text-sm hover:underline">
+                    Shipping
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/support/returns" className="text-sm hover:underline">
+                    Returns
+>>>>>>> ab4f8dd369f9c20a841cbd3f6c16a74d51f72ade
                   </Link>
                 </li>
               </ul>
