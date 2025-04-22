@@ -28,6 +28,7 @@ interface ProductDetailsProps {
 }
 
 export default function ProductDetails({ productId, initialData }: ProductDetailsProps) {
+  console.log(initialData);
   // Fetch product data with TanStack Query
   const { data: product, isLoading, error } = useProduct(productId);
 
@@ -74,7 +75,9 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
   // Set default color and size when product data is loaded
   useEffect(() => {
     if (productData) {
-      if (productData.colors && productData.colors.length > 0) {
+      if (productData.isCustomizable && productData.colors && productData.colors.length > 0) {
+        setSelectedColor(productData.colors[0]._id);
+      } else if (productData.colors && productData.colors.length > 0) {
         setSelectedColor(productData.colors[0]);
       }
 
@@ -108,8 +111,8 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
   };
 
   // Handle color selection
-  const handleColorSelect = (color: string) => {
-    setSelectedColor(color);
+  const handleColorSelect = (colorId: string) => {
+    setSelectedColor(colorId);
     setSelectedImageIndex(0); // Reset to first image when color changes
   };
 
@@ -675,8 +678,18 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
   // Get current logo for rendering
   const currentLogo = getCurrentLogo();
 
-  // Use product images if available
-  const productImages = productData?.media?.images || [];
+  // Use product images based on product type and selected color
+  const getProductImages = () => {
+    if (!productData) return [];
+
+    if (productData.isCustomizable && productData.colors && productData.colors.length > 0) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const selectedColorObj = productData.colors.find((color: any) => color._id === selectedColor);
+      return selectedColorObj?.images || [];
+    } else {
+      return productData.media?.images || [];
+    }
+  };
 
   // Generate color buttons based on product data
   const renderColorOptions = () => {
@@ -686,20 +699,36 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
 
     return (
       <div className="mt-2 flex flex-wrap gap-3">
-        {productData.colors.map((color: string) => (
-          <button
-            key={color}
-            className={cn(
-              'relative h-12 w-12 rounded-full border-2 sm:h-10 sm:w-10',
-              selectedColor === color ? 'border-black' : 'border-transparent hover:border-gray-300',
-            )}
-            style={{ backgroundColor: color }}
-            onClick={() => handleColorSelect(color)}
-            aria-label={`Select ${color} color`}
-          >
-            {selectedColor === color && <Check className="absolute inset-0 m-auto h-5 w-5 text-white" />}
-          </button>
-        ))}
+        {productData.isCustomizable
+          ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            productData.colors.map((color: any) => (
+              <button
+                key={color._id}
+                className={cn(
+                  'relative h-12 w-12 rounded-full border-2 sm:h-10 sm:w-10',
+                  selectedColor === color._id ? 'border-black' : 'border-transparent hover:border-gray-300',
+                )}
+                style={{ backgroundColor: color.hex }}
+                onClick={() => handleColorSelect(color._id)}
+                aria-label={`Select ${color.name} color`}
+              >
+                {selectedColor === color._id && <Check className="absolute inset-0 m-auto h-5 w-5 text-white" />}
+              </button>
+            ))
+          : productData.colors.map((color: string) => (
+              <button
+                key={color}
+                className={cn(
+                  'relative h-12 w-12 rounded-full border-2 sm:h-10 sm:w-10',
+                  selectedColor === color ? 'border-black' : 'border-transparent hover:border-gray-300',
+                )}
+                style={{ backgroundColor: color }}
+                onClick={() => handleColorSelect(color)}
+                aria-label={`Select ${color} color`}
+              >
+                {selectedColor === color && <Check className="absolute inset-0 m-auto h-5 w-5 text-white" />}
+              </button>
+            ))}
       </div>
     );
   };
@@ -729,6 +758,9 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
       </div>
     );
   };
+
+  // Get product images
+  const productImages = getProductImages();
 
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
@@ -1000,13 +1032,11 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
           <div className="mt-1 text-sm text-green-600">{productData.discountParcentage}% off</div>
         )}
 
-        {/* Color Selection */}
         <div className="mt-6">
           <h3 className="font-medium">Select Colors</h3>
           {renderColorOptions()}
         </div>
 
-        {/* Size Selection */}
         <div className="mt-6">
           <h3 className="font-medium">Choose Size</h3>
           {renderSizeOptions()}
