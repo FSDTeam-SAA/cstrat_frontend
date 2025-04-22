@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
 import Hideon from '@/provider/Hideon';
 import { useQuery } from '@tanstack/react-query';
-import { fetchCategories, fetchSubcategories, Subcategory } from '@/lib/api';
+import { fetchCategories, Subcategory } from '@/lib/api';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -17,12 +17,12 @@ export default function Footer() {
   });
 
   // Fetch subcategories with retry
-  const { data: subcategoriesData } = useQuery({
-    queryKey: ['subcategories'],
-    queryFn: fetchSubcategories,
-    retry: 3,
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-  });
+  // const { data: subcategoriesData } = useQuery({
+  //   queryKey: ['subcategories'],
+  //   queryFn: fetchSubcategories,
+  //   retry: 3,
+  //   retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+  // });
 
   // Create a map of category ID to subcategories
   const categorySubcategoriesMap = new Map<string, Subcategory[]>();
@@ -74,16 +74,11 @@ export default function Footer() {
               <ul className="space-y-2">
                 {categoryData?.data?.map((category) => (
                   <li key={category._id}>
-                    <a
-                      href={`${category.categoryName}/${subcategoriesData?.subCategories[0].subCategoryName.replace(/\s+/g, '-').toLowerCase()}`}
-                      className="text-sm hover:underline"
-                    >
+                    <a href="#" className="text-sm hover:underline">
                       {category.categoryName}
                     </a>
                   </li>
                 ))}
-
-                
               </ul>
             </div>
 
