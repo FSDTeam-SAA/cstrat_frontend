@@ -1042,12 +1042,8 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
           {renderSizeOptions()}
         </div>
 
-<<<<<<< HEAD
         {/* Logo Upload */}
         {productData.isCustomizable && (
-=======
-        {productData?.isCustomizable && (
->>>>>>> ab4f8dd369f9c20a841cbd3f6c16a74d51f72ade
           <div className="mt-6">
             <Button
               variant="outline"

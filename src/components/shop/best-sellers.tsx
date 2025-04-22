@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
 
 interface Product {
   _id: string;
@@ -83,12 +84,14 @@ export default function BestSellers() {
                 <div key={product._id} className="w-full flex-shrink-0 px-1 sm:w-1/2 lg:w-1/4">
                   <div className="group relative overflow-hidden rounded-lg">
                     <div className="relative aspect-[270/330] w-full">
-                      <Image
-                        src={product.images?.[0] || '/placeholder.svg'}
-                        alt={product.name}
-                        fill
-                        className="object-cover"
-                      />
+                      <Link href={`/product/${product._id}`} className="block h-full w-full">
+                        <Image
+                          src={product.images?.[0] || '/placeholder.svg'}
+                          alt={product.name}
+                          fill
+                          className="object-cover"
+                        />
+                      </Link>
                     </div>
                     <div className="flex items-center justify-between gap-2 pt-3">
                       <div>
