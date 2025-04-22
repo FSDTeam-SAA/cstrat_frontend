@@ -88,7 +88,7 @@ export default function Navbar() {
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" className="hidden items-center gap-2 text-white md:flex">
                         <User className="h-4 w-4" />
-                        <span className="hidden md:inline">{user?.name || 'Account'}</span>
+                        <span className="hidden md:inline capitalize">{user?.name || 'Account'}</span>
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">
