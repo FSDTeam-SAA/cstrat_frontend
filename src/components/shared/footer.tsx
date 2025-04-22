@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
 import Hideon from '@/provider/Hideon';
 import { useQuery } from '@tanstack/react-query';
-import { fetchCategories, fetchSubcategories, Subcategory } from '@/lib/api';
+import { fetchCategories, Subcategory } from '@/lib/api';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -17,12 +17,12 @@ export default function Footer() {
   });
 
   // Fetch subcategories with retry
-  const { data: subcategoriesData } = useQuery({
-    queryKey: ['subcategories'],
-    queryFn: fetchSubcategories,
-    retry: 3,
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-  });
+  // const { data: subcategoriesData } = useQuery({
+  //   queryKey: ['subcategories'],
+  //   queryFn: fetchSubcategories,
+  //   retry: 3,
+  //   retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+  // });
 
   // Create a map of category ID to subcategories
   const categorySubcategoriesMap = new Map<string, Subcategory[]>();
@@ -72,18 +72,31 @@ export default function Footer() {
             <div className="space-y-4">
               <h3 className="text-lg font-bold">Shop</h3>
               <ul className="space-y-2">
-                {categoryData?.data?.map((category) => (
-                  <li key={category._id}>
-                    <a
-                      href={`${category.categoryName}/${subcategoriesData?.subCategories[0].subCategoryName.replace(/\s+/g, '-').toLowerCase()}`}
-                      className="text-sm hover:underline"
-                    >
-                      {category.categoryName}
-                    </a>
-                  </li>
-                ))}
-
-                
+                <li>
+                  <Link href="/shop/clothing" className="text-sm hover:underline">
+                    Clothing
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/shop/bags" className="text-sm hover:underline">
+                    Bags
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/shop/writing" className="text-sm hover:underline">
+                    Writing Items
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/shop/tech" className="text-sm hover:underline">
+                    Tech Products
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/shop/drinkware" className="text-sm hover:underline">
+                    Drink Ware
+                  </Link>
+                </li>
               </ul>
             </div>
 
@@ -109,8 +122,18 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/temrs-conditions" className="text-sm hover:underline">
-                    Terms of Service
+                  <Link href="/terms-conditions" className="text-sm hover:underline">
+                    Terms and conditions
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/support/shipping" className="text-sm hover:underline">
+                    Shipping
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/support/returns" className="text-sm hover:underline">
+                    Returns
                   </Link>
                 </li>
               </ul>
