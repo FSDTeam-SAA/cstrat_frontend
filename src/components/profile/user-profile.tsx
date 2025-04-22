@@ -78,7 +78,7 @@ export function UserProfile() {
           className="hidden"
         />
       </div>
-      {user && <h2 className="text-xl font-bold">{user.name}</h2>}
+      {user && <h2 className="text-xl font-bold capitalize">{user.name}</h2>}
       {user && <p className="text-sm text-gray-500">{user.email}</p>}
     </div>
   );
