@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
+import { useCartStore } from '@/store/useCartStore';
+import { toast } from 'sonner';
 
 interface Product {
   _id: string;
@@ -14,6 +16,8 @@ interface Product {
   price: number;
   images: string[];
   totalQuantitySold: number;
+  sizes?: string[];
+  colors?: string[];
 }
 
 const API_URL = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/orders/best-selling-products`;
@@ -65,6 +69,78 @@ export default function BestSellers() {
     }
   }, [currentIndex, products.length]);
 
+  // Add to cart
+  // const addToCart = async () => {
+  //   try {
+  //     if (!productData) {
+  //       throw new Error('Product data not available');
+  //     }
+
+  //     if (!selectedSize) {
+  //       alert('Please select a size');
+  //       return;
+  //     }
+
+  //     // Generate previews for front and back
+  //     let frontPreview = null;
+  //     let backPreview = null;
+
+  //     try {
+  //       if (frontLogo.logoUrl) {
+  //         // Temporarily switch to front view to generate preview
+  //         const currentIndex = selectedImageIndex;
+  //         setSelectedImageIndex(0);
+  //         frontPreview = await generatePreviewImage();
+  //         setSelectedImageIndex(currentIndex);
+  //       }
+
+  //       if (backLogo.logoUrl) {
+  //         // Temporarily switch to back view to generate preview
+  //         const currentIndex = selectedImageIndex;
+  //         setSelectedImageIndex(1);
+  //         backPreview = await generatePreviewImage();
+  //         setSelectedImageIndex(currentIndex);
+  //       }
+  //     } catch (previewError) {
+  //       console.error('Error generating preview images:', previewError);
+  //       // Continue without previews if they fail
+  //     }
+
+  //     // Create cart item with all customizations
+  //     const cartItem = {
+  //       productId: productData._id,
+  //       name: productData.name,
+  //       price: productData.price,
+  //       color: selectedColor,
+  //       size: selectedSize,
+  //       quantity,
+  //       frontCustomization: {
+  //         logoUrl: frontLogo.logoUrl,
+  //         position: frontLogo.position,
+  //         size: frontLogo.size,
+  //         rotation: frontLogo.rotation,
+  //         preview: frontPreview,
+  //       },
+  //       backCustomization: {
+  //         logoUrl: backLogo.logoUrl,
+  //         position: backLogo.position,
+  //         size: backLogo.size,
+  //         rotation: backLogo.rotation,
+  //         preview: backPreview,
+  //       },
+  //     };
+
+  //     console.log('Adding to cart:', cartItem);
+
+  //     // Add to cart using the Zustand store
+  //     useCartStore.getState().addItem(cartItem);
+  //     toast.success(`Added ${quantity} ${productData.name} to cart!`);
+  //   } catch (error) {
+  //     console.error('Error adding to cart:', error);
+  //     toast.error('Failed to add to cart. Please try again.');
+  //   }
+  // };
+
   const scrollPrev = () => setCurrentIndex((prev) => Math.max(0, prev - 1));
   const scrollNext = () => setCurrentIndex((prev) => Math.min(maxIndex, prev + 1));
 
@@ -102,6 +178,37 @@ export default function BestSellers() {
                         size="icon"
                         variant="secondary"
                         className="rounded-lg bg-black text-white hover:bg-gray-800"
+                        onClick={() => {
+                          // Create a cart item with default values
+                          const cartItem = {
+                            productId: product._id,
+                            name: product.name,
+                            price: product.price,
+                            quantity: 1,
+                            image: product.images?.[0] || '/placeholder.svg',
+                            size: product.sizes?.[0] || 'M', // Default size
+                            color: product.colors?.[0] || null, // Default color
+                            selected: true,
+                            frontCustomization: {
+                              logoUrl: null,
+                              position: { x: 50, y: 30 },
+                              size: 20,
+                              rotation: 0,
+                              preview: null,
+                            },
+                            backCustomization: {
+                              logoUrl: null,
+                              position: { x: 50, y: 30 },
+                              size: 20,
+                              rotation: 0,
+                              preview: null,
+                            },
+                          };
+
+                          // Add to cart using the Zustand store
+                          useCartStore.getState().addItem(cartItem);
+                          toast.success(`Added ${product.name} to cart!`);
+                        }}
                       >
                         <Plus className="h-3 w-3" />
                         <span className="sr-only">Add to cart</span>
