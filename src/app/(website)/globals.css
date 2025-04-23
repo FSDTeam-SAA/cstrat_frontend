@@ -71,7 +71,6 @@
   body {
     @apply bg-background text-foreground;
   }
-  
 }
 /* Custom styles  */
 @layer components {
@@ -90,4 +89,12 @@
   .challange-subTitle {
     @apply text-[24px] font-semibold leading-[28.4px] text-[#ECECEC];
   }
+}
+
+.group:hover .group-hover\:translate-y-0 {
+  transform: translateY(0);
+}
+
+.group:hover .group-hover\:scale-105 {
+  transform: scale(1.05);
 }

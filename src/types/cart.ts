@@ -10,6 +10,7 @@ export interface CartCustomization {
 }
 
 export interface CartItem {
+  id: string; // Add this new field
   productId: string;
   name: string;
   price: number;
