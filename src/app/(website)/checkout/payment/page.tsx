@@ -11,6 +11,8 @@ import Image from 'next/image';
 import { createCustomizedOrder, createPayment } from '@/lib/api-services';
 import { useAuth } from '@/context/auth-context';
 
+
+
 export default function PaymentPage() {
   const router = useRouter();
   const { items, getDeliveryInfo, clearCart } = useCartStore();
@@ -24,118 +26,224 @@ export default function PaymentPage() {
     setMounted(true);
   }, []);
 console.log("user", user)
-  const handlePlaceOrder = async () => {
-    setIsLoading(true);
-    setError(null);
 
-    try {
-      const deliveryInfo = getDeliveryInfo();
+const handlePlaceOrder = async () => {
+  setIsLoading(true);
+  setError(null);
 
-      if (!deliveryInfo) {
-        alert('Delivery information is missing. Please go back and fill in your delivery details.');
-        router.push('/checkout');
-        return;
-      }
+  try {
+    const deliveryInfo = getDeliveryInfo();
 
-      // Get only selected items
-      const selectedItems = items.filter((item) => item.selected);
+    if (!deliveryInfo) {
+      alert('Delivery information is missing. Please go back and fill in your delivery details.');
+      router.push('/checkout');
+      return;
+    }
 
-      if (selectedItems.length === 0) {
-        alert('No items selected for checkout');
-        router.push('/cart');
-        return;
-      }
+    const selectedItems = items.filter((item) => item.selected);
 
-      // Process each selected item as a separate order
-      // In a real app, you might want to batch these or handle them differently
-      if (!user?._id) {
-        throw new Error('User ID is required to place an order');
-      }
-      const userId = user._id;
-      let lastOrderId = null;
+    if (selectedItems.length === 0) {
+      alert('No items selected for checkout');
+      router.push('/cart');
+      return;
+    }
 
-      for (const item of selectedItems) {
-        // Extract a simple string size from the size field
-        let sizeValue = 'M'; // Default size
-        if (item.size) {
-          if (typeof item.size === 'string') {
-            // If it's a JSON string like "[\"M\"]", parse it
-            if (item.size.startsWith('[') && item.size.includes('"')) {
-              try {
-                const parsed = JSON.parse(item.size);
-                if (Array.isArray(parsed) && parsed.length > 0) {
-                  sizeValue = parsed[0];
-                }
-              } catch {
-                // If parsing fails, use the string as is, but clean it up
-                sizeValue = item.size.replace(/[[\]"\\]/g, '');
+    if (!user?._id) {
+      throw new Error('User ID is required to place an order');
+    }
+
+    const userId = user._id;
+    const orderIds: string[] = [];
+
+    for (const item of selectedItems) {
+      let sizeValue = 'M';
+      if (item.size) {
+        if (typeof item.size === 'string') {
+          if (item.size.startsWith('[') && item.size.includes('"')) {
+            try {
+              const parsed = JSON.parse(item.size);
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                sizeValue = parsed[0];
               }
-            } else {
-              // Use the string as is
-              sizeValue = item.size;
+            } catch {
+              sizeValue = item.size.replace(/[[\]"\\]/g, '');
             }
+          } else {
+            sizeValue = item.size;
           }
         }
-
-        // Create order data for this item
-        const orderData = {
-          userId: userId,
-          productId: item.productId,
-          color: item.color === null ? 'null' : String(item.color),
-          size: sizeValue,
-          quantity: item.quantity,
-          frontCustomizationPreview: item.frontCustomization?.preview || null,
-          logoImage: item.frontCustomization?.logoUrl || null,
-        };
-
-        console.log(`Creating order for product ${item.productId}:`, orderData);
-
-        // Create order for this item
-        const orderResponse = await createCustomizedOrder(orderData);
-        console.log(`Order response for product ${item.productId}:`, orderResponse);
-
-        if (orderResponse.status && orderResponse.data && orderResponse.data._id) {
-          lastOrderId = orderResponse.data._id;
-        } else {
-          throw new Error(
-            `Failed to create order for product ${item.productId}: ${orderResponse.message || 'Unknown error'}`,
-          );
-        }
       }
 
-      // If we have at least one successful order, proceed with payment
-      if (lastOrderId) {
-        // Create payment for the last order
-        // In a real app, you might want to handle multiple orders differently
-        const paymentData = {
-          userId: userId,
-          orderId: lastOrderId,
-        };
+      const orderData = {
+        userId: userId,
+        productId: item.productId,
+        color: item.color === null ? 'null' : String(item.color),
+        size: sizeValue,
+        quantity: item.quantity,
+        frontCustomizationPreview: item.frontCustomization?.preview || null,
+        logoImage: item.frontCustomization?.logoUrl || null,
+      };
 
-        console.log('Creating payment with data:', paymentData);
-        const paymentResponse = await createPayment(paymentData);
-        console.log('Payment response:', paymentResponse);
+      console.log(`Creating order for product ${item.productId}:`, orderData);
 
-        if (paymentResponse.status && paymentResponse.url) {
-          // Clear cart after successful order
-          clearCart();
+      const orderResponse = await createCustomizedOrder(orderData);
+      console.log(`Order response for product ${item.productId}:`, orderResponse);
 
-          // Redirect to Stripe checkout
-          window.location.href = paymentResponse.url;
-        } else {
-          throw new Error('Failed to create payment: ' + (paymentResponse.message || 'Unknown error'));
-        }
+      if (orderResponse.status && orderResponse.data && orderResponse.data._id) {
+        orderIds.push(orderResponse.data._id);
       } else {
-        throw new Error('No orders were created successfully');
+        throw new Error(
+          `Failed to create order for product ${item.productId}: ${orderResponse.message || 'Unknown error'}`,
+        );
       }
-    } catch (error) {
-      console.error('Error placing order:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      setError(`There was an error processing your order: ${errorMessage}`);
-    } finally {
-      setIsLoading(false);
     }
-  };
+
+    if (orderIds.length > 0) {
+      const paymentData = {
+        userId: userId,
+        orderId: orderIds,
+      };
+
+      console.log('Creating payment with data:', paymentData);
+      const paymentResponse = await createPayment(paymentData);
+      console.log('Payment response:', paymentResponse);
+
+      if (paymentResponse.status && paymentResponse.url) {
+        clearCart();
+        window.location.href = paymentResponse.url;
+      } else {
+        throw new Error('Failed to create payment: ' + (paymentResponse.message || 'Unknown error'));
+      }
+    } else {
+      throw new Error('No orders were created successfully');
+    }
+  } catch (error) {
+    console.error('Error placing order:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    setError(`There was an error processing your order: ${errorMessage}`);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+
+
+// ===============
+
+  // const handlePlaceOrder = async () => {
+  //   setIsLoading(true);
+  //   setError(null);
+
+  //   try {
+  //     const deliveryInfo = getDeliveryInfo();
+
+  //     if (!deliveryInfo) {
+  //       alert('Delivery information is missing. Please go back and fill in your delivery details.');
+  //       router.push('/checkout');
+  //       return;
+  //     }
+
+  //     // Get only selected items
+  //     const selectedItems = items.filter((item) => item.selected);
+
+  //     if (selectedItems.length === 0) {
+  //       alert('No items selected for checkout');
+  //       router.push('/cart');
+  //       return;
+  //     }
+
+  //     // Process each selected item as a separate order
+  //     // In a real app, you might want to batch these or handle them differently
+  //     if (!user?._id) {
+  //       throw new Error('User ID is required to place an order');
+  //     }
+  //     const userId = user._id;
+  //     let lastOrderId = null;
+
+  //     for (const item of selectedItems) {
+  //       // Extract a simple string size from the size field
+  //       let sizeValue = 'M'; // Default size
+  //       if (item.size) {
+  //         if (typeof item.size === 'string') {
+  //           // If it's a JSON string like "[\"M\"]", parse it
+  //           if (item.size.startsWith('[') && item.size.includes('"')) {
+  //             try {
+  //               const parsed = JSON.parse(item.size);
+  //               if (Array.isArray(parsed) && parsed.length > 0) {
+  //                 sizeValue = parsed[0];
+  //               }
+  //             } catch {
+  //               // If parsing fails, use the string as is, but clean it up
+  //               sizeValue = item.size.replace(/[[\]"\\]/g, '');
+  //             }
+  //           } else {
+  //             // Use the string as is
+  //             sizeValue = item.size;
+  //           }
+  //         }
+  //       }
+
+  //       // Create order data for this item
+  //       const orderData = {
+  //         userId: userId,
+  //         productId: item.productId,
+  //         color: item.color === null ? 'null' : String(item.color),
+  //         size: sizeValue,
+  //         quantity: item.quantity,
+  //         frontCustomizationPreview: item.frontCustomization?.preview || null,
+  //         logoImage: item.frontCustomization?.logoUrl || null,
+  //       };
+
+  //       console.log(`Creating order for product ${item.productId}:`, orderData);
+
+  //       // Create order for this item
+  //       const orderResponse = await createCustomizedOrder(orderData);
+  //       console.log(`Order response for product ${item.productId}:`, orderResponse);
+
+  //       if (orderResponse.status && orderResponse.data && orderResponse.data._id) {
+  //         lastOrderId = orderResponse.data._id;
+  //       } else {
+  //         throw new Error(
+  //           `Failed to create order for product ${item.productId}: ${orderResponse.message || 'Unknown error'}`,
+  //         );
+  //       }
+  //     }
+
+  //     // If we have at least one successful order, proceed with payment
+  //     if (lastOrderId) {
+  //       // Create payment for the last order
+  //       // In a real app, you might want to handle multiple orders differently
+  //       const paymentData = {
+  //         userId: userId,
+  //         orderId: lastOrderId,
+  //       };
+
+  //       console.log('Creating payment with data:', paymentData);
+  //       const paymentResponse = await createPayment(paymentData);
+  //       console.log('Payment response:', paymentResponse);
+
+  //       if (paymentResponse.status && paymentResponse.url) {
+  //         // Clear cart after successful order
+  //         clearCart();
+
+  //         // Redirect to Stripe checkout
+  //         window.location.href = paymentResponse.url;
+  //       } else {
+  //         throw new Error('Failed to create payment: ' + (paymentResponse.message || 'Unknown error'));
+  //       }
+  //     } else {
+  //       throw new Error('No orders were created successfully');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error placing order:', error);
+  //     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+  //     setError(`There was an error processing your order: ${errorMessage}`);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+
 
   if (!mounted) {
     return null; // Return nothing on the server side to prevent hydration mismatch
