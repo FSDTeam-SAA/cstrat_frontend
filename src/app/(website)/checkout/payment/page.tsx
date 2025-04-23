@@ -23,7 +23,7 @@ export default function PaymentPage() {
   useEffect(() => {
     setMounted(true);
   }, []);
-
+console.log("user", user)
   const handlePlaceOrder = async () => {
     setIsLoading(true);
     setError(null);
@@ -48,10 +48,10 @@ export default function PaymentPage() {
 
       // Process each selected item as a separate order
       // In a real app, you might want to batch these or handle them differently
-      if (!user?.id) {
+      if (!user?._id) {
         throw new Error('User ID is required to place an order');
       }
-      const userId = user.id;
+      const userId = user._id;
       let lastOrderId = null;
 
       for (const item of selectedItems) {
