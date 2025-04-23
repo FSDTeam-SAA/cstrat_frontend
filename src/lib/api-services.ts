@@ -1,4 +1,4 @@
-import type { OrderResponse, PaymentRequest, PaymentResponse } from '@/types/cart';
+import type { OrderResponse, PaymentResponse } from '@/types/cart';
 import { base64ToImageFile } from './base64ToImageFile';
 
 const API_BASE_URL = 'http://localhost:8001/api/v1';
@@ -109,7 +109,7 @@ async function dataURLtoBlob(dataURL: string): Promise<Blob> {
 }
 
 // Create payment for an order
-export async function createPayment(paymentData: PaymentRequest): Promise<PaymentResponse> {
+export async function createPayment(paymentData: {userId: string, orderId: string[]}): Promise<PaymentResponse> {
   try {
     console.log('Creating payment with data:', paymentData);
 
