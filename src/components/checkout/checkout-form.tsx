@@ -51,7 +51,7 @@ export default function PaymentForm() {
         // Create payment
         const paymentData = {
           userId: userId,
-          orderId: orderResponse.data._id,
+          orderId: [orderResponse.data._id],
         };
 
         const paymentResponse = await createPayment(paymentData);
