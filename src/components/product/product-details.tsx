@@ -1,45 +1,45 @@
-'use client';
+"use client"
 
-import type React from 'react';
+import type React from "react"
 
-import { useState, useRef, useEffect } from 'react';
-import Image from 'next/image';
-import { Upload, Minus, Plus, ShoppingCart, Check, Eye, RotateCw, X, Download } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { StarRating } from '@/components/ui/star-rating';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { useProduct } from '@/hooks/use-product';
-import type { Product } from '@/types/product';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useCartStore } from '@/store/useCartStore';
-import { toast } from 'sonner';
+import { useState, useRef, useEffect } from "react"
+import Image from "next/image"
+import { Upload, Minus, Plus, ShoppingCart, Check, Eye, RotateCw, X, Download } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
+import { StarRating } from "@/components/ui/star-rating"
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import { useProduct } from "@/hooks/use-product"
+import type { Product } from "@/types/product"
+import { Skeleton } from "@/components/ui/skeleton"
+import { useCartStore } from "@/store/useCartStore"
+import { toast } from "sonner"
 
 interface LogoCustomization {
-  logoUrl: string | null;
-  position: { x: number; y: number };
-  size: number;
-  rotation: number;
+  logoUrl: string | null
+  position: { x: number; y: number }
+  size: number
+  rotation: number
 }
 
 interface ProductDetailsProps {
-  productId: string;
-  initialData?: Product | null;
+  productId: string
+  initialData?: Product | null
 }
 
 export default function ProductDetails({ productId, initialData }: ProductDetailsProps) {
-  console.log(initialData);
+  console.log(initialData)
   // Fetch product data with TanStack Query
-  const { data: product, isLoading, error } = useProduct(productId);
+  const { data: product, isLoading, error } = useProduct(productId)
 
   // Use initialData if available, otherwise use fetched data
-  const productData = product || initialData;
+  const productData = product || initialData
 
   // State for product customization
-  const [selectedColor, setSelectedColor] = useState<string | null>(null);
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [quantity, setQuantity] = useState(1);
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [selectedColor, setSelectedColor] = useState<string | null>(null)
+  const [selectedSize, setSelectedSize] = useState<string | null>(null)
+  const [quantity, setQuantity] = useState(1)
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
 
   // Front and back logo customizations
   const [frontLogo, setFrontLogo] = useState<LogoCustomization>({
@@ -47,45 +47,45 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
     position: { x: 50, y: 30 },
     size: 20,
     rotation: 0,
-  });
+  })
 
   const [backLogo, setBackLogo] = useState<LogoCustomization>({
     logoUrl: null,
     position: { x: 50, y: 30 },
     size: 20,
     rotation: 0,
-  });
+  })
 
   // UI state
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStartPos, setDragStartPos] = useState({ x: 0, y: 0 });
-  const [isRotating, setIsRotating] = useState(false);
-  const [rotateStartAngle, setRotateStartAngle] = useState(0);
+  const [isDragging, setIsDragging] = useState(false)
+  const [dragStartPos, setDragStartPos] = useState({ x: 0, y: 0 })
+  const [isRotating, setIsRotating] = useState(false)
+  const [rotateStartAngle, setRotateStartAngle] = useState(0)
 
   // Preview state
-  const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [previewLoading, setPreviewLoading] = useState(false)
 
   // Refs
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const imageContainerRef = useRef<HTMLDivElement>(null);
-  const logoRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const imageContainerRef = useRef<HTMLDivElement>(null)
+  const logoRef = useRef<HTMLDivElement>(null)
 
   // Set default color and size when product data is loaded
   useEffect(() => {
     if (productData) {
       if (productData.isCustomizable && productData.colors && productData.colors.length > 0) {
-        setSelectedColor(productData.colors[0]._id);
+        setSelectedColor(productData.colors[0]._id)
       } else if (productData.colors && productData.colors.length > 0) {
-        setSelectedColor(productData.colors[0]);
+        setSelectedColor(productData.colors[0])
       }
 
       if (productData.sizes && productData.sizes.length > 0) {
-        setSelectedSize(productData.sizes[0]);
+        setSelectedSize(productData.sizes[0])
       }
     }
-  }, [productData]);
+  }, [productData])
 
   // Get current logo customization based on selected image
   const getCurrentLogo = (): LogoCustomization => {
@@ -93,416 +93,485 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
       ? frontLogo
       : selectedImageIndex === 1
         ? backLogo
-        : { logoUrl: null, position: { x: 50, y: 30 }, size: 20, rotation: 0 };
-  };
+        : { logoUrl: null, position: { x: 50, y: 30 }, size: 20, rotation: 0 }
+  }
 
   // Update current logo customization
   const updateCurrentLogo = (updates: Partial<LogoCustomization>) => {
     if (selectedImageIndex === 0) {
-      setFrontLogo({ ...frontLogo, ...updates });
+      setFrontLogo({ ...frontLogo, ...updates })
     } else if (selectedImageIndex === 1) {
-      setBackLogo({ ...backLogo, ...updates });
+      setBackLogo({ ...backLogo, ...updates })
     }
-  };
+  }
 
   // Check if current view can be customized
   const canCustomizeCurrentView = () => {
-    return selectedImageIndex === 0 || selectedImageIndex === 1;
-  };
+    return selectedImageIndex === 0 || selectedImageIndex === 1
+  }
 
   // Handle color selection
   const handleColorSelect = (colorId: string) => {
-    setSelectedColor(colorId);
-    setSelectedImageIndex(0); // Reset to first image when color changes
-  };
+    setSelectedColor(colorId)
+    setSelectedImageIndex(0) // Reset to first image when color changes
+  }
 
   // Handle size selection
   const handleSizeSelect = (size: string) => {
-    setSelectedSize(size);
-  };
+    setSelectedSize(size)
+  }
 
   // Handle quantity changes
   const decreaseQuantity = () => {
-    if (quantity > 1) setQuantity(quantity - 1);
-  };
+    if (quantity > 1) setQuantity(quantity - 1)
+  }
 
   const increaseQuantity = () => {
-    setQuantity(quantity + 1);
-  };
+    setQuantity(quantity + 1)
+  }
 
   // Handle logo upload
   const handleLogoUpload = () => {
     if (!canCustomizeCurrentView()) {
-      alert('You can only customize the front and back views (first two thumbnails)');
-      return;
+      alert("You can only customize the front and back views (first two thumbnails)")
+      return
     }
 
-    fileInputRef.current?.click();
-  };
+    fileInputRef.current?.click()
+  }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const file = e.target.files?.[0]
+    if (!file) return
 
     // Check file type
-    if (!file.type.startsWith('image/')) {
-      alert('Please upload an image file');
-      return;
+    if (!file.type.startsWith("image/")) {
+      alert("Please upload an image file")
+      return
     }
 
     // Check file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert('File size should be less than 5MB');
-      return;
+      alert("File size should be less than 5MB")
+      return
     }
 
-    const reader = new FileReader();
+    const reader = new FileReader()
     reader.onload = (event) => {
       updateCurrentLogo({
         logoUrl: event.target?.result as string,
         position: { x: 50, y: 30 },
         size: 20,
         rotation: 0,
-      });
-    };
-    reader.readAsDataURL(file);
-  };
+      })
+    }
+    reader.readAsDataURL(file)
+  }
 
   // Remove logo
   const handleRemoveLogo = () => {
-    updateCurrentLogo({ logoUrl: null });
-  };
+    updateCurrentLogo({ logoUrl: null })
+  }
 
   // Handle logo drag
   const handleMouseDown = (e: React.MouseEvent) => {
-    const currentLogo = getCurrentLogo();
-    if (!currentLogo.logoUrl || !imageContainerRef.current) return;
+    const currentLogo = getCurrentLogo()
+    if (!currentLogo.logoUrl || !imageContainerRef.current) return
 
-    setIsDragging(true);
+    setIsDragging(true)
 
     // Get starting position
     setDragStartPos({
       x: e.clientX,
       y: e.clientY,
-    });
+    })
 
     // Prevent default behavior
-    e.preventDefault();
-  };
+    e.preventDefault()
+  }
 
   // Add touch event handlers for mobile
   const handleTouchStart = (e: React.TouchEvent) => {
-    const currentLogo = getCurrentLogo();
-    if (!currentLogo.logoUrl || !imageContainerRef.current) return;
+    const currentLogo = getCurrentLogo()
+    if (!currentLogo.logoUrl || !imageContainerRef.current) return
 
-    setIsDragging(true);
+    setIsDragging(true)
 
     // Get starting position from first touch
-    const touch = e.touches[0];
+    const touch = e.touches[0]
     setDragStartPos({
       x: touch.clientX,
       y: touch.clientY,
-    });
-  };
+    })
+  }
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !imageContainerRef.current) return;
+    if (!isDragging || !imageContainerRef.current) return
 
-    const currentLogo = getCurrentLogo();
-    const containerRect = imageContainerRef.current.getBoundingClientRect();
-    const deltaX = e.clientX - dragStartPos.x;
-    const deltaY = e.clientY - dragStartPos.y;
+    const currentLogo = getCurrentLogo()
+    const containerRect = imageContainerRef.current.getBoundingClientRect()
+    const deltaX = e.clientX - dragStartPos.x
+    const deltaY = e.clientY - dragStartPos.y
 
     // Calculate new position as percentage of container
-    const newX = currentLogo.position.x + (deltaX / containerRect.width) * 100;
-    const newY = currentLogo.position.y + (deltaY / containerRect.height) * 100;
+    const newX = currentLogo.position.x + (deltaX / containerRect.width) * 100
+    const newY = currentLogo.position.y + (deltaY / containerRect.height) * 100
 
     // Constrain to container bounds with some padding for the logo
-    const padding = currentLogo.size / 2;
-    const constrainedX = Math.max(padding, Math.min(100 - padding, newX));
-    const constrainedY = Math.max(padding, Math.min(100 - padding, newY));
+    const padding = currentLogo.size / 2
+    const constrainedX = Math.max(padding, Math.min(100 - padding, newX))
+    const constrainedY = Math.max(padding, Math.min(100 - padding, newY))
 
     updateCurrentLogo({
       position: {
         x: constrainedX,
         y: constrainedY,
       },
-    });
+    })
 
     setDragStartPos({
       x: e.clientX,
       y: e.clientY,
-    });
-  };
+    })
+  }
 
   const handleMouseUp = () => {
-    setIsDragging(false);
-    setIsRotating(false);
-  };
+    setIsDragging(false)
+    setIsRotating(false)
+  }
 
   // Handle logo resize with corner handles
   const handleResizeMouseDown = (e: React.MouseEvent, corner: string) => {
-    const currentLogo = getCurrentLogo();
-    if (!currentLogo.logoUrl || !imageContainerRef.current || !logoRef.current) return;
+    const currentLogo = getCurrentLogo()
+    if (!currentLogo.logoUrl || !imageContainerRef.current || !logoRef.current) return
 
-    e.stopPropagation(); // Prevent triggering drag
+    e.stopPropagation() // Prevent triggering drag
 
-    const containerRect = imageContainerRef.current.getBoundingClientRect();
-    const startSize = currentLogo.size;
-    const startMouseX = e.clientX;
-    const startMouseY = e.clientY;
+    const containerRect = imageContainerRef.current.getBoundingClientRect()
+    const startSize = currentLogo.size
+    const startMouseX = e.clientX
+    const startMouseY = e.clientY
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
       // Calculate distance moved
-      const deltaX = moveEvent.clientX - startMouseX;
-      const deltaY = moveEvent.clientY - startMouseY;
+      const deltaX = moveEvent.clientX - startMouseX
+      const deltaY = moveEvent.clientY - startMouseY
 
       // Determine direction based on corner
-      let sizeDelta = 0;
+      let sizeDelta = 0
 
       switch (corner) {
-        case 'topLeft':
-          sizeDelta = -Math.max(deltaX, deltaY);
-          break;
-        case 'topRight':
-          sizeDelta = Math.max(deltaX, -deltaY);
-          break;
-        case 'bottomLeft':
-          sizeDelta = Math.max(-deltaX, deltaY);
-          break;
-        case 'bottomRight':
-          sizeDelta = Math.max(deltaX, deltaY);
-          break;
+        case "topLeft":
+          sizeDelta = -Math.max(deltaX, deltaY)
+          break
+        case "topRight":
+          sizeDelta = Math.max(deltaX, -deltaY)
+          break
+        case "bottomLeft":
+          sizeDelta = Math.max(-deltaX, deltaY)
+          break
+        case "bottomRight":
+          sizeDelta = Math.max(deltaX, deltaY)
+          break
       }
 
       // Convert to percentage of container width
-      const percentDelta = (sizeDelta / containerRect.width) * 100;
+      const percentDelta = (sizeDelta / containerRect.width) * 100
 
       // Apply new size with constraints
-      const newSize = Math.max(10, Math.min(60, startSize + percentDelta));
-      updateCurrentLogo({ size: newSize });
-    };
+      const newSize = Math.max(10, Math.min(60, startSize + percentDelta))
+      updateCurrentLogo({ size: newSize })
+    }
 
     const handleMouseUp = () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
+      document.removeEventListener("mousemove", handleMouseMove)
+      document.removeEventListener("mouseup", handleMouseUp)
+    }
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  };
+    document.addEventListener("mousemove", handleMouseMove)
+    document.addEventListener("mouseup", handleMouseUp)
+  }
 
   // Handle logo rotation
   const handleRotateMouseDown = (e: React.MouseEvent) => {
-    const currentLogo = getCurrentLogo();
-    if (!currentLogo.logoUrl || !logoRef.current) return;
+    const currentLogo = getCurrentLogo()
+    if (!currentLogo.logoUrl || !logoRef.current) return
 
-    e.stopPropagation(); // Prevent triggering drag
-    setIsRotating(true);
+    e.stopPropagation() // Prevent triggering drag
+    setIsRotating(true)
 
-    const logoRect = logoRef.current.getBoundingClientRect();
+    const logoRect = logoRef.current.getBoundingClientRect()
     const logoCenter = {
       x: logoRect.left + logoRect.width / 2,
       y: logoRect.top + logoRect.height / 2,
-    };
+    }
 
     // Calculate initial angle
-    const initialAngle = Math.atan2(e.clientY - logoCenter.y, e.clientX - logoCenter.x) * (180 / Math.PI);
+    const initialAngle = Math.atan2(e.clientY - logoCenter.y, e.clientX - logoCenter.x) * (180 / Math.PI)
 
-    setRotateStartAngle(initialAngle - currentLogo.rotation);
+    setRotateStartAngle(initialAngle - currentLogo.rotation)
 
     const handleRotateMove = (moveEvent: MouseEvent) => {
       // Calculate new angle
-      const newAngle = Math.atan2(moveEvent.clientY - logoCenter.y, moveEvent.clientX - logoCenter.x) * (180 / Math.PI);
+      const newAngle = Math.atan2(moveEvent.clientY - logoCenter.y, moveEvent.clientX - logoCenter.x) * (180 / Math.PI)
 
       // Apply rotation (accounting for initial offset)
-      updateCurrentLogo({ rotation: newAngle - rotateStartAngle });
-    };
+      updateCurrentLogo({ rotation: newAngle - rotateStartAngle })
+    }
 
     const handleRotateUp = () => {
-      setIsRotating(false);
-      document.removeEventListener('mousemove', handleRotateMove);
-      document.removeEventListener('mouseup', handleRotateUp);
-    };
+      setIsRotating(false)
+      document.removeEventListener("mousemove", handleRotateMove)
+      document.removeEventListener("mouseup", handleRotateUp)
+    }
 
-    document.addEventListener('mousemove', handleRotateMove);
-    document.addEventListener('mouseup', handleRotateUp);
-  };
+    document.addEventListener("mousemove", handleRotateMove)
+    document.addEventListener("mouseup", handleRotateUp)
+  }
 
   // Generate preview image for current view
   const generatePreviewImage = async (): Promise<string> => {
     return new Promise((resolve, reject) => {
       try {
-        const currentLogo = getCurrentLogo();
-        const productImages = productData?.media?.images || [];
+        const currentLogo = getCurrentLogo()
+        const productImages = productData?.media?.images || []
 
         // Create a new canvas
-        const canvas = document.createElement('canvas');
-        canvas.width = 600;
-        canvas.height = 600;
+        const canvas = document.createElement("canvas")
+        canvas.width = 600
+        canvas.height = 600
 
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext("2d")
         if (!ctx) {
-          console.error('Failed to get canvas context');
-          reject(new Error('Could not get canvas context'));
-          return;
+          console.error("Failed to get canvas context")
+          reject(new Error("Could not get canvas context"))
+          return
         }
 
         // Create a new image for the product using the native Image constructor
-        const productImage = new window.Image();
-        productImage.crossOrigin = 'anonymous';
-        productImage.src = productImages[selectedImageIndex] || '/placeholder.svg';
+        const productImage = new window.Image()
+        productImage.crossOrigin = "anonymous"
+
+        // Check if we're using a placeholder or a real image
+        const imageSrc = productImages[selectedImageIndex]
+        if (!imageSrc || imageSrc === "/placeholder.svg") {
+          // For placeholder images, use a simple colored rectangle instead
+          ctx.fillStyle = "#f3f4f6" // Light gray background
+          ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+          // Draw a placeholder text
+          ctx.fillStyle = "#9ca3af"
+          ctx.font = "bold 24px Arial"
+          ctx.textAlign = "center"
+          ctx.fillText("Product Image", canvas.width / 2, canvas.height / 2)
+
+          // If there's no logo, resolve immediately
+          if (!currentLogo.logoUrl) {
+            const dataUrl = canvas.toDataURL("image/png")
+            resolve(dataUrl)
+            return
+          }
+
+          // If there is a logo, continue with logo processing
+          const logoImage = new window.Image()
+          if (!currentLogo.logoUrl.startsWith("data:")) {
+            logoImage.crossOrigin = "anonymous"
+          }
+          logoImage.src = currentLogo.logoUrl
+
+          logoImage.onload = () => {
+            try {
+              // Calculate logo dimensions and position
+              const logoWidth = (currentLogo.size / 100) * canvas.width
+              const logoHeight = (logoImage.height / logoImage.width) * logoWidth
+              const logoX = (currentLogo.position.x / 100) * canvas.width - logoWidth / 2
+              const logoY = (currentLogo.position.y / 100) * canvas.height - logoHeight / 2
+
+              // Save the current state
+              ctx.save()
+
+              // Move to the center of where the logo should be
+              ctx.translate(logoX + logoWidth / 2, logoY + logoHeight / 2)
+
+              // Rotate around this center
+              ctx.rotate((currentLogo.rotation * Math.PI) / 180)
+
+              // Draw the logo centered at the origin (which is now at the logo's center)
+              ctx.drawImage(logoImage, -logoWidth / 2, -logoHeight / 2, logoWidth, logoHeight)
+
+              // Restore the context to its original state
+              ctx.restore()
+
+              // Convert canvas to data URL
+              const dataUrl = canvas.toDataURL("image/png")
+              resolve(dataUrl)
+            } catch (error) {
+              console.error("Error drawing logo on canvas:", error)
+              reject(error)
+            }
+          }
+
+          logoImage.onerror = (error) => {
+            console.error("Error loading logo image:", error)
+            reject(new Error("Failed to load logo image"))
+          }
+
+          return
+        }
+
+        // For real product images, proceed normally
+        productImage.src = imageSrc
 
         // Handle product image load
         productImage.onload = () => {
           // Draw the product image
-          ctx.drawImage(productImage, 0, 0, canvas.width, canvas.height);
+          ctx.drawImage(productImage, 0, 0, canvas.width, canvas.height)
 
           // If there's no logo, just return the product image
           if (!currentLogo.logoUrl) {
-            const dataUrl = canvas.toDataURL('image/png');
-            resolve(dataUrl);
-            return;
+            const dataUrl = canvas.toDataURL("image/png")
+            resolve(dataUrl)
+            return
           }
 
           // Create a new image for the logo using the native Image constructor
-          const logoImage = new window.Image();
+          const logoImage = new window.Image()
 
           // For data URLs, we don't need to set crossOrigin
-          if (!currentLogo.logoUrl.startsWith('data:')) {
-            logoImage.crossOrigin = 'anonymous';
+          if (!currentLogo.logoUrl.startsWith("data:")) {
+            logoImage.crossOrigin = "anonymous"
           }
 
-          logoImage.src = currentLogo.logoUrl;
+          logoImage.src = currentLogo.logoUrl
 
           // Handle logo image load
           logoImage.onload = () => {
             try {
               // Calculate logo dimensions and position
-              const logoWidth = (currentLogo.size / 100) * canvas.width;
-              const logoHeight = (logoImage.height / logoImage.width) * logoWidth;
-              const logoX = (currentLogo.position.x / 100) * canvas.width - logoWidth / 2;
-              const logoY = (currentLogo.position.y / 100) * canvas.height - logoHeight / 2;
+              const logoWidth = (currentLogo.size / 100) * canvas.width
+              const logoHeight = (logoImage.height / logoImage.width) * logoWidth
+              const logoX = (currentLogo.position.x / 100) * canvas.width - logoWidth / 2
+              const logoY = (currentLogo.position.y / 100) * canvas.height - logoHeight / 2
 
               // Save the current state
-              ctx.save();
+              ctx.save()
 
               // Move to the center of where the logo should be
-              ctx.translate(logoX + logoWidth / 2, logoY + logoHeight / 2);
+              ctx.translate(logoX + logoWidth / 2, logoY + logoHeight / 2)
 
               // Rotate around this center
-              ctx.rotate((currentLogo.rotation * Math.PI) / 180);
+              ctx.rotate((currentLogo.rotation * Math.PI) / 180)
 
               // Draw the logo centered at the origin (which is now at the logo's center)
-              ctx.drawImage(logoImage, -logoWidth / 2, -logoHeight / 2, logoWidth, logoHeight);
+              ctx.drawImage(logoImage, -logoWidth / 2, -logoHeight / 2, logoWidth, logoHeight)
 
               // Restore the context to its original state
-              ctx.restore();
+              ctx.restore()
 
               // Convert canvas to data URL
-              const dataUrl = canvas.toDataURL('image/png');
-              resolve(dataUrl);
+              const dataUrl = canvas.toDataURL("image/png")
+              resolve(dataUrl)
             } catch (error) {
-              console.error('Error drawing logo on canvas:', error);
-              reject(error);
+              console.error("Error drawing logo on canvas:", error)
+              reject(error)
             }
-          };
+          }
 
           // Handle logo image error
           logoImage.onerror = (error) => {
-            console.error('Error loading logo image:', error);
-            reject(new Error('Failed to load logo image'));
-          };
-        };
+            console.error("Error loading logo image:", error)
+            reject(new Error("Failed to load logo image"))
+          }
+        }
 
         // Handle product image error
         productImage.onerror = (error) => {
-          console.error('Error loading product image:', error);
-          reject(new Error('Failed to load product image'));
-        };
+          console.error("Error loading product image:", error)
+          reject(new Error("Failed to load product image"))
+        }
       } catch (error) {
-        console.error('Unexpected error in generatePreviewImage:', error);
-        reject(error);
+        console.error("Unexpected error in generatePreviewImage:", error)
+        reject(error)
       }
-    });
-  };
+    })
+  }
 
   // Handle preview dialog open
   const handlePreviewOpen = async () => {
     try {
-      setPreviewLoading(true);
-      setIsDialogOpen(true);
+      setPreviewLoading(true)
+      setIsDialogOpen(true)
 
-      console.log('Generating preview for:', selectedImageIndex);
-      console.log('Current logo:', getCurrentLogo());
+      console.log("Generating preview for:", selectedImageIndex)
+      console.log("Current logo:", getCurrentLogo())
 
-      const previewImage = await generatePreviewImage();
-      console.log('Preview generated successfully');
+      const previewImage = await generatePreviewImage()
+      console.log("Preview generated successfully")
 
-      setPreviewImageUrl(previewImage);
+      setPreviewImageUrl(previewImage)
     } catch (error) {
-      console.error('Error generating preview:', error);
-      alert('Failed to generate preview. Please try again.');
+      console.error("Error generating preview:", error)
+      alert("Failed to generate preview. Please try again.")
     } finally {
-      setPreviewLoading(false);
+      setPreviewLoading(false)
     }
-  };
+  }
 
   // Handle image download
   const handleDownloadImage = () => {
     if (!previewImageUrl) {
-      console.error('No preview image URL available for download');
-      return;
+      console.error("No preview image URL available for download")
+      return
     }
 
     try {
-      const link = document.createElement('a');
-      link.href = previewImageUrl;
-      link.download = `${productData?.name || 'product'}-${selectedImageIndex === 0 ? 'front' : 'back'}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const link = document.createElement("a")
+      link.href = previewImageUrl
+      link.download = `${productData?.name || "product"}-${selectedImageIndex === 0 ? "front" : "back"}.png`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
     } catch (error) {
-      console.error('Error downloading image:', error);
-      alert('Failed to download image. Please try again.');
+      console.error("Error downloading image:", error)
+      alert("Failed to download image. Please try again.")
     }
-  };
+  }
 
   // Add to cart
   const addToCart = async () => {
     try {
       if (!productData) {
-        throw new Error('Product data not available');
+        throw new Error("Product data not available")
       }
 
       if (!selectedSize) {
-        alert('Please select a size');
-        return;
+        alert("Please select a size")
+        return
       }
-
-      // if (!selectedColor) {
-      //   alert('Please select a color');
-      //   return;
-      // }
 
       // Generate previews for front and back
-      let frontPreview = null;
-      let backPreview = null;
+      let frontPreview = null
+      let backPreview = null
 
-      if (frontLogo.logoUrl) {
-        // Temporarily switch to front view to generate preview
-        const currentIndex = selectedImageIndex;
-        setSelectedImageIndex(0);
-        frontPreview = await generatePreviewImage();
-        setSelectedImageIndex(currentIndex);
-      }
+      try {
+        if (frontLogo.logoUrl) {
+          // Temporarily switch to front view to generate preview
+          const currentIndex = selectedImageIndex
+          setSelectedImageIndex(0)
+          frontPreview = await generatePreviewImage()
+          setSelectedImageIndex(currentIndex)
+        }
 
-      if (backLogo.logoUrl) {
-        // Temporarily switch to back view to generate preview
-        const currentIndex = selectedImageIndex;
-        setSelectedImageIndex(1);
-        backPreview = await generatePreviewImage();
-        setSelectedImageIndex(currentIndex);
+        if (backLogo.logoUrl) {
+          // Temporarily switch to back view to generate preview
+          const currentIndex = selectedImageIndex
+          setSelectedImageIndex(1)
+          backPreview = await generatePreviewImage()
+          setSelectedImageIndex(currentIndex)
+        }
+      } catch (previewError) {
+        console.error("Error generating preview images:", previewError)
+        // Continue without previews if they fail
       }
 
       // Create cart item with all customizations
@@ -511,7 +580,7 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
         name: productData.name,
         price: productData.price,
         color: selectedColor,
-        size: selectedSize, // Store as a simple string, not a JSON string
+        size: selectedSize,
         quantity,
         frontCustomization: {
           logoUrl: frontLogo.logoUrl,
@@ -527,108 +596,111 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
           rotation: backLogo.rotation,
           preview: backPreview,
         },
-      };
+      }
+
+      console.log("Adding to cart:", cartItem)
 
       // Add to cart using the Zustand store
-      useCartStore.getState().addItem(cartItem);
-      toast.success(`Added ${quantity} ${productData.name} to cart!`);
-    } catch {
-      toast.error('Failed to add to cart. Please try again.');
+      useCartStore.getState().addItem(cartItem)
+      toast.success(`Added ${quantity} ${productData.name} to cart!`)
+    } catch (error) {
+      console.error("Error adding to cart:", error)
+      toast.error("Failed to add to cart. Please try again.")
     }
-  };
+  }
 
   // Handle touch move for dragging and rotating
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!imageContainerRef.current) return;
+    if (!imageContainerRef.current) return
 
     // Handle dragging
     if (isDragging) {
-      const currentLogo = getCurrentLogo();
-      const containerRect = imageContainerRef.current.getBoundingClientRect();
-      const touch = e.touches[0];
+      const currentLogo = getCurrentLogo()
+      const containerRect = imageContainerRef.current.getBoundingClientRect()
+      const touch = e.touches[0]
 
-      const deltaX = touch.clientX - dragStartPos.x;
-      const deltaY = touch.clientY - dragStartPos.y;
+      const deltaX = touch.clientX - dragStartPos.x
+      const deltaY = touch.clientY - dragStartPos.y
 
       // Calculate new position as percentage of container
-      const newX = currentLogo.position.x + (deltaX / containerRect.width) * 100;
-      const newY = currentLogo.position.y + (deltaY / containerRect.height) * 100;
+      const newX = currentLogo.position.x + (deltaX / containerRect.width) * 100
+      const newY = currentLogo.position.y + (deltaY / containerRect.height) * 100
 
       // Constrain to container bounds with some padding for the logo
-      const padding = currentLogo.size / 2;
-      const constrainedX = Math.max(padding, Math.min(100 - padding, newX));
-      const constrainedY = Math.max(padding, Math.min(100 - padding, newY));
+      const padding = currentLogo.size / 2
+      const constrainedX = Math.max(padding, Math.min(100 - padding, newX))
+      const constrainedY = Math.max(padding, Math.min(100 - padding, newY))
 
       updateCurrentLogo({
         position: {
           x: constrainedX,
           y: constrainedY,
         },
-      });
+      })
 
       setDragStartPos({
         x: touch.clientX,
         y: touch.clientY,
-      });
+      })
     }
 
     // Handle rotation
     if (isRotating && logoRef.current) {
-      const logoRect = logoRef.current.getBoundingClientRect();
+      const logoRect = logoRef.current.getBoundingClientRect()
       const logoCenter = {
         x: logoRect.left + logoRect.width / 2,
         y: logoRect.top + logoRect.height / 2,
-      };
+      }
 
-      const touch = e.touches[0];
-      const newAngle = Math.atan2(touch.clientY - logoCenter.y, touch.clientX - logoCenter.x) * (180 / Math.PI);
+      const touch = e.touches[0]
+      const newAngle = Math.atan2(touch.clientY - logoCenter.y, touch.clientX - logoCenter.x) * (180 / Math.PI)
 
       // Apply rotation (accounting for initial offset)
-      updateCurrentLogo({ rotation: newAngle - rotateStartAngle });
+      updateCurrentLogo({ rotation: newAngle - rotateStartAngle })
     }
-  };
+  }
 
   const handleTouchEnd = () => {
-    setIsDragging(false);
-    setIsRotating(false);
-  };
+    setIsDragging(false)
+    setIsRotating(false)
+  }
 
   // Setup touch event listeners with { passive: false } to allow preventDefault
   useEffect(() => {
-    const container = imageContainerRef.current;
-    if (!container) return;
+    const container = imageContainerRef.current
+    if (!container) return
 
     // Function to handle touch move with passive: false
     const handleTouchMoveNonPassive = (e: TouchEvent) => {
       if (isDragging || isRotating) {
-        e.preventDefault();
+        e.preventDefault()
       }
-    };
+    }
 
     // Add event listener with passive: false
-    container.addEventListener('touchmove', handleTouchMoveNonPassive, { passive: false });
+    container.addEventListener("touchmove", handleTouchMoveNonPassive, { passive: false })
 
     // Clean up
     return () => {
-      container.removeEventListener('touchmove', handleTouchMoveNonPassive);
-    };
-  }, [isDragging, isRotating]);
+      container.removeEventListener("touchmove", handleTouchMoveNonPassive)
+    }
+  }, [isDragging, isRotating])
 
   // Clean up on unmount
   useEffect(() => {
     return () => {
       // Revoke object URLs if needed
-      if (frontLogo.logoUrl && frontLogo.logoUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(frontLogo.logoUrl);
+      if (frontLogo.logoUrl && frontLogo.logoUrl.startsWith("blob:")) {
+        URL.revokeObjectURL(frontLogo.logoUrl)
       }
-      if (backLogo.logoUrl && backLogo.logoUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(backLogo.logoUrl);
+      if (backLogo.logoUrl && backLogo.logoUrl.startsWith("blob:")) {
+        URL.revokeObjectURL(backLogo.logoUrl)
       }
-      if (previewImageUrl && previewImageUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(previewImageUrl);
+      if (previewImageUrl && previewImageUrl.startsWith("blob:")) {
+        URL.revokeObjectURL(previewImageUrl)
       }
-    };
-  }, [frontLogo.logoUrl, backLogo.logoUrl, previewImageUrl]);
+    }
+  }, [frontLogo.logoUrl, backLogo.logoUrl, previewImageUrl])
 
   // Loading state
   if (isLoading && !initialData) {
@@ -657,7 +729,7 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   // Error state
@@ -669,32 +741,32 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
           <p className="mt-2">Please try again later</p>
         </div>
       </div>
-    );
+    )
   }
 
   // Get product rating or default
-  const rating = productData?.rating || 0;
+  const rating = productData?.rating || 0
 
   // Get current logo for rendering
-  const currentLogo = getCurrentLogo();
+  const currentLogo = getCurrentLogo()
 
   // Use product images based on product type and selected color
   const getProductImages = () => {
-    if (!productData) return [];
+    if (!productData) return []
 
     if (productData.isCustomizable && productData.colors && productData.colors.length > 0) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const selectedColorObj = productData.colors.find((color: any) => color._id === selectedColor);
-      return selectedColorObj?.images || [];
+      const selectedColorObj = productData.colors.find((color: any) => color._id === selectedColor)
+      return selectedColorObj?.images || []
     } else {
-      return productData.media?.images || [];
+      return productData.media?.images || []
     }
-  };
+  }
 
   // Generate color buttons based on product data
   const renderColorOptions = () => {
     if (!productData?.colors || productData.colors.length === 0) {
-      return <div className="text-sm text-muted-foreground">No color options available for this product</div>;
+      return <div className="text-sm text-muted-foreground">No color options available for this product</div>
     }
 
     return (
@@ -705,8 +777,8 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
               <button
                 key={color._id}
                 className={cn(
-                  'relative h-12 w-12 rounded-full border-2 sm:h-10 sm:w-10',
-                  selectedColor === color._id ? 'border-black' : 'border-transparent hover:border-gray-300',
+                  "relative h-12 w-12 rounded-full border-2 sm:h-10 sm:w-10",
+                  selectedColor === color._id ? "border-black" : "border-transparent hover:border-gray-300",
                 )}
                 style={{ backgroundColor: color.hex }}
                 onClick={() => handleColorSelect(color._id)}
@@ -719,8 +791,8 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
               <button
                 key={color}
                 className={cn(
-                  'relative h-12 w-12 rounded-full border-2 sm:h-10 sm:w-10',
-                  selectedColor === color ? 'border-black' : 'border-transparent hover:border-gray-300',
+                  "relative h-12 w-12 rounded-full border-2 sm:h-10 sm:w-10",
+                  selectedColor === color ? "border-black" : "border-transparent hover:border-gray-300",
                 )}
                 style={{ backgroundColor: color }}
                 onClick={() => handleColorSelect(color)}
@@ -730,13 +802,13 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
               </button>
             ))}
       </div>
-    );
-  };
+    )
+  }
 
   // Generate size buttons based on product data
   const renderSizeOptions = () => {
     if (!productData?.sizes || productData.sizes.length === 0) {
-      return <div className="text-sm text-muted-foreground">No size options available for this product</div>;
+      return <div className="text-sm text-muted-foreground">No size options available for this product</div>
     }
 
     return (
@@ -745,10 +817,10 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
           <button
             key={size}
             className={cn(
-              'h-12 min-w-[80px] touch-manipulation rounded-md border px-3 sm:h-10',
+              "h-12 min-w-[80px] touch-manipulation rounded-md border px-3 sm:h-10",
               selectedSize === size
-                ? 'border-black bg-black text-white'
-                : 'border-gray-300 bg-white hover:border-gray-900',
+                ? "border-black bg-black text-white"
+                : "border-gray-300 bg-white hover:border-gray-900",
             )}
             onClick={() => handleSizeSelect(size)}
           >
@@ -756,11 +828,11 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
           </button>
         ))}
       </div>
-    );
-  };
+    )
+  }
 
   // Get product images
-  const productImages = getProductImages();
+  const productImages = getProductImages()
 
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
@@ -771,14 +843,14 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
             <button
               key={index}
               className={cn(
-                'relative aspect-square overflow-hidden rounded-md border',
-                selectedImageIndex === index ? 'border-black' : 'border-gray-200',
+                "relative aspect-square overflow-hidden rounded-md border",
+                selectedImageIndex === index ? "border-black" : "border-gray-200",
               )}
               onClick={() => setSelectedImageIndex(index)}
             >
               <Image
-                src={image || '/placeholder.svg'}
-                alt={`${productData?.name || 'Product'} view ${index + 1}`}
+                src={image || "/placeholder.svg"}
+                alt={`${productData?.name || "Product"} view ${index + 1}`}
                 width={80}
                 height={80}
                 className="h-full w-full object-cover"
@@ -787,7 +859,7 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
               {(index === 0 || index === 1) && (
                 <div
                   className="absolute right-1 top-1 h-3 w-3 rounded-full bg-green-500"
-                  title={index === 0 ? 'Front view (customizable)' : 'Back view (customizable)'}
+                  title={index === 0 ? "Front view (customizable)" : "Back view (customizable)"}
                 />
               )}
             </button>
@@ -811,8 +883,8 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
           {/* Product base image */}
           {productImages.length > 0 ? (
             <Image
-              src={productImages[selectedImageIndex] || '/placeholder.svg'}
-              alt={`${productData?.name || 'Product'}`}
+              src={productImages[selectedImageIndex] || "/placeholder.svg"}
+              alt={`${productData?.name || "Product"}`}
               width={600}
               height={600}
               className="h-full w-full object-contain"
@@ -832,14 +904,14 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
                 left: `${currentLogo.position.x}%`,
                 top: `${currentLogo.position.y}%`,
                 width: `${currentLogo.size}%`,
-                height: 'auto',
+                height: "auto",
                 transform: `translate(-50%, -50%) rotate(${currentLogo.rotation}deg)`,
               }}
               onMouseDown={handleMouseDown}
               onTouchStart={handleTouchStart}
             >
               <Image
-                src={currentLogo.logoUrl || '/placeholder.svg'}
+                src={currentLogo.logoUrl || "/placeholder.svg"}
                 alt="Custom logo"
                 width={200}
                 height={200}
@@ -849,56 +921,56 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
               {/* Resize handles */}
               <div
                 className="absolute -bottom-3 -right-3 h-6 w-6 cursor-nwse-resize touch-manipulation rounded-full border-2 border-blue-500 bg-white"
-                onMouseDown={(e) => handleResizeMouseDown(e, 'bottomRight')}
+                onMouseDown={(e) => handleResizeMouseDown(e, "bottomRight")}
                 onTouchStart={(e) => {
-                  e.stopPropagation();
-                  const currentLogo = getCurrentLogo();
-                  if (!currentLogo.logoUrl || !imageContainerRef.current || !logoRef.current) return;
+                  e.stopPropagation()
+                  const currentLogo = getCurrentLogo()
+                  if (!currentLogo.logoUrl || !imageContainerRef.current || !logoRef.current) return
 
-                  const containerRect = imageContainerRef.current.getBoundingClientRect();
-                  const touch = e.touches[0];
-                  const startSize = currentLogo.size;
-                  const startTouchX = touch.clientX;
-                  const startTouchY = touch.clientY;
+                  const containerRect = imageContainerRef.current.getBoundingClientRect()
+                  const touch = e.touches[0]
+                  const startSize = currentLogo.size
+                  const startTouchX = touch.clientX
+                  const startTouchY = touch.clientY
 
                   const handleTouchMove = (moveEvent: TouchEvent) => {
-                    moveEvent.preventDefault(); // Prevent scrolling
-                    const moveTouch = moveEvent.touches[0];
-                    const deltaX = moveTouch.clientX - startTouchX;
-                    const deltaY = moveTouch.clientY - startTouchY;
+                    moveEvent.preventDefault() // Prevent scrolling
+                    const moveTouch = moveEvent.touches[0]
+                    const deltaX = moveTouch.clientX - startTouchX
+                    const deltaY = moveTouch.clientY - startTouchY
 
                     // For bottom right, we want to increase size when dragging outward
-                    const sizeDelta = Math.max(deltaX, deltaY);
+                    const sizeDelta = Math.max(deltaX, deltaY)
 
                     // Convert to percentage of container width
-                    const percentDelta = (sizeDelta / containerRect.width) * 100;
+                    const percentDelta = (sizeDelta / containerRect.width) * 100
 
                     // Apply new size with constraints
-                    const newSize = Math.max(10, Math.min(60, startSize + percentDelta));
-                    updateCurrentLogo({ size: newSize });
-                  };
+                    const newSize = Math.max(10, Math.min(60, startSize + percentDelta))
+                    updateCurrentLogo({ size: newSize })
+                  }
 
                   const handleTouchEnd = () => {
-                    document.removeEventListener('touchmove', handleTouchMove);
-                    document.removeEventListener('touchend', handleTouchEnd);
-                  };
+                    document.removeEventListener("touchmove", handleTouchMove)
+                    document.removeEventListener("touchend", handleTouchEnd)
+                  }
 
                   // Add with passive: false to allow preventDefault
-                  document.addEventListener('touchmove', handleTouchMove, { passive: false });
-                  document.addEventListener('touchend', handleTouchEnd);
+                  document.addEventListener("touchmove", handleTouchMove, { passive: false })
+                  document.addEventListener("touchend", handleTouchEnd)
                 }}
               ></div>
               <div
                 className="absolute -bottom-3 -left-3 h-6 w-6 cursor-nesw-resize touch-manipulation rounded-full border-2 border-blue-500 bg-white"
-                onMouseDown={(e) => handleResizeMouseDown(e, 'bottomLeft')}
+                onMouseDown={(e) => handleResizeMouseDown(e, "bottomLeft")}
               ></div>
               <div
                 className="absolute -right-3 -top-3 h-6 w-6 cursor-nesw-resize touch-manipulation rounded-full border-2 border-blue-500 bg-white"
-                onMouseDown={(e) => handleResizeMouseDown(e, 'topRight')}
+                onMouseDown={(e) => handleResizeMouseDown(e, "topRight")}
               ></div>
               <div
                 className="absolute -left-3 -top-3 h-6 w-6 cursor-nwse-resize touch-manipulation rounded-full border-2 border-blue-500 bg-white"
-                onMouseDown={(e) => handleResizeMouseDown(e, 'topLeft')}
+                onMouseDown={(e) => handleResizeMouseDown(e, "topLeft")}
               ></div>
 
               {/* Rotation handle */}
@@ -921,12 +993,12 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
           {/* View indicator */}
           <div className="absolute left-2 top-2 rounded bg-black/70 px-2 py-1 text-xs text-white">
             {selectedImageIndex === 0
-              ? 'Front View'
+              ? "Front View"
               : selectedImageIndex === 1
-                ? 'Back View'
+                ? "Back View"
                 : selectedImageIndex === 2
-                  ? 'Side View'
-                  : 'View ' + (selectedImageIndex + 1)}
+                  ? "Side View"
+                  : "View " + (selectedImageIndex + 1)}
             {!canCustomizeCurrentView() && <span className="ml-1">(Not customizable)</span>}
           </div>
 
@@ -950,7 +1022,7 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
                       <div className="p-4">
                         <div className="mb-4 flex items-center justify-between">
                           <h2 className="text-xl font-bold">
-                            {selectedImageIndex === 0 ? 'Front View Preview' : 'Back View Preview'}
+                            {selectedImageIndex === 0 ? "Front View Preview" : "Back View Preview"}
                           </h2>
                           <Button
                             variant="outline"
@@ -968,7 +1040,7 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
                             <div className="flex h-full items-center justify-center">Loading preview...</div>
                           ) : previewImageUrl ? (
                             <Image
-                              src={previewImageUrl || '/placeholder.svg'}
+                              src={previewImageUrl || "/placeholder.svg"}
                               alt="Customized product preview"
                               width={600}
                               height={600}
@@ -987,8 +1059,8 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
                       className="rounded-md p-2 transition-colors hover:bg-gray-700"
                       title="Reset Rotation"
                       onClick={(e) => {
-                        e.stopPropagation();
-                        updateCurrentLogo({ rotation: 0 });
+                        e.stopPropagation()
+                        updateCurrentLogo({ rotation: 0 })
                       }}
                     >
                       <RotateCw size={18} />
@@ -1010,7 +1082,7 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
 
       {/* Product Info */}
       <div className="order-3 md:col-span-6">
-        <h1 className="text-3xl font-bold">{productData?.name || 'Product Name'}</h1>
+        <h1 className="text-3xl font-bold">{productData?.name || "Product Name"}</h1>
 
         {/* Rating */}
         <div className="mt-2 flex items-center gap-2">
@@ -1022,10 +1094,10 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
         </div>
 
         {/* Description */}
-        <p className="mt-4 text-muted-foreground">{productData?.description || 'No description available.'}</p>
+        <p className="mt-4 text-muted-foreground">{productData?.description || "No description available."}</p>
 
         {/* Price */}
-        <div className="mt-6 text-2xl font-bold">${productData?.price?.toFixed(2) || '0.00'}</div>
+        <div className="mt-6 text-2xl font-bold">${productData?.price?.toFixed(2) || "0.00"}</div>
 
         {/* Discount */}
         {productData?.discountParcentage > 0 && (
@@ -1052,7 +1124,7 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
               disabled={!canCustomizeCurrentView()}
             >
               <Upload className="h-5 w-5" />
-              Upload Logo for {selectedImageIndex === 0 ? 'Front' : selectedImageIndex === 1 ? 'Back' : 'Current'} View
+              Upload Logo for {selectedImageIndex === 0 ? "Front" : selectedImageIndex === 1 ? "Back" : "Current"} View
             </Button>
             <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
             {!canCustomizeCurrentView() && (
@@ -1098,8 +1170,8 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
         {/* Stock status */}
         {productData && (
           <div className="mt-4">
-            <p className={`text-sm ${productData.inStock ? 'text-green-600' : 'text-red-600'}`}>
-              {productData.inStock ? `In Stock (${productData.quantity} available)` : 'Out of Stock'}
+            <p className={`text-sm ${productData.inStock ? "text-green-600" : "text-red-600"}`}>
+              {productData.inStock ? `In Stock (${productData.quantity} available)` : "Out of Stock"}
             </p>
           </div>
         )}
@@ -1109,23 +1181,23 @@ export default function ProductDetails({ productId, initialData }: ProductDetail
           <div className="mt-6 grid gap-2 text-sm">
             <div className="flex justify-between border-b pb-2">
               <span className="font-medium">SKU:</span>
-              <span>{productData.sku || 'N/A'}</span>
+              <span>{productData.sku || "N/A"}</span>
             </div>
             <div className="flex justify-between border-b pb-2">
               <span className="font-medium">Category:</span>
-              <span>{productData.category?.categoryName || 'N/A'}</span>
+              <span>{productData.category?.categoryName || "N/A"}</span>
             </div>
             <div className="flex justify-between border-b pb-2">
               <span className="font-medium">Subcategory:</span>
-              <span>{productData.subcategory?.subCategoryName || 'N/A'}</span>
+              <span>{productData.subcategory?.subCategoryName || "N/A"}</span>
             </div>
             <div className="flex justify-between border-b pb-2">
               <span className="font-medium">Type:</span>
-              <span className="capitalize">{productData.type || 'N/A'}</span>
+              <span className="capitalize">{productData.type || "N/A"}</span>
             </div>
           </div>
         )}
       </div>
     </div>
-  );
+  )
 }
