@@ -3,7 +3,7 @@
 import { useEffect, useRef, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Star, Plus } from 'lucide-react';
+import { Star, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Pagination,
@@ -19,11 +19,15 @@ import { getProducts } from '@/lib/api';
 import { useFilterStore } from '@/store/filter-store';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
+import { useCartStore } from '@/store/useCartStore';
+import { toast } from 'sonner';
+import { useWishlistStore } from '@/store/use-wishlist-store';
 
 export default function ProductGrid() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const gridRef = useRef<HTMLDivElement>(null);
+  const { addItem, removeItem, isInWishlist } = useWishlistStore();
 
   // Get filter state from Zustand store
   const { minPrice, maxPrice, status, page, limit, sortBy, setPage, setCategory, setSubcategory } = useFilterStore();
@@ -130,10 +134,11 @@ export default function ProductGrid() {
     <div className="space-y-6" ref={gridRef}>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {products.map((product) => (
-          <div key={product.id} className="group overflow-hidden rounded-lg border">
+          <div key={product.id} className="group relative overflow-hidden rounded-lg">
             <div className="relative">
+              {/* Product Image */}
               <Link href={`/product/${product.id}`}>
-                <div className="relative aspect-square overflow-hidden">
+                <div className="relative aspect-[270/330] w-full">
                   <Image
                     src={product.media.images[0] || product.colors[0].images[0]}
                     alt={product.name}
@@ -142,9 +147,82 @@ export default function ProductGrid() {
                   />
                 </div>
               </Link>
+
+              {/* Wishlist Button */}
+              <button
+                className="absolute right-2 top-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/80 shadow-md transition-all hover:bg-white"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const isInList = isInWishlist(product.id);
+                  if (isInList) {
+                    removeItem(product.id);
+                    toast.success(`Removed ${product.name} from wishlist`);
+                  } else {
+                    addItem({
+                      id: product.id,
+                      name: product.name,
+                      price: product.price,
+                      image: product.media?.images?.[0] || product.colors[0]?.images[0] || '/placeholder.svg',
+                      rating: product.rating || 5,
+                    });
+                    toast.success(`Added ${product.name} to wishlist`);
+                  }
+                }}
+              >
+                <Heart
+                  className={`h-5 w-5 transition-colors ${
+                    isInWishlist(product.id) ? 'fill-red-500 text-red-500' : 'text-gray-700 hover:text-red-500'
+                  }`}
+                />
+              </button>
+
+              {/* Add to Cart Overlay on Hover */}
+              <div className="absolute inset-x-0 bottom-0 translate-y-full bg-black/70 p-4 transition-transform duration-300 group-hover:translate-y-0">
+                <Button
+                  className="w-full bg-white text-black hover:bg-gray-100"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const cartItem = {
+                      id: `${product.id}-${Date.now()}`,
+                      productId: product.id,
+                      name: product.name,
+                      price: product.price,
+                      quantity: 1,
+                      image: product.media?.images?.[0] || product.colors[0]?.images[0] || '/placeholder.svg',
+                      brandName: product.category || 'Brand Name',
+                      size: product.sizes ? product.sizes[Math.floor(Math.random() * product.sizes.length)] : 'M',
+                      color: product.colors?.length
+                        ? product.colors[Math.floor(Math.random() * product.colors.length)].name
+                        : null,
+                      selected: true,
+                      frontCustomization: {
+                        logoUrl: null,
+                        position: { x: 50, y: 30 },
+                        size: 20,
+                        rotation: 0,
+                        preview: null,
+                      },
+                      backCustomization: {
+                        logoUrl: null,
+                        position: { x: 50, y: 30 },
+                        size: 20,
+                        rotation: 0,
+                        preview: null,
+                      },
+                    };
+
+                    useCartStore.getState().addItem(cartItem);
+                    toast.success(`Added ${product.name} to cart!`);
+                  }}
+                >
+                  Move to Cart
+                </Button>
+              </div>
             </div>
+
+            {/* Product Info */}
             <div className="p-4">
-              <div className="mb-1 flex items-center">
+              <div className="mb-2 flex items-center">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Star
                     key={i}
@@ -159,14 +237,8 @@ export default function ProductGrid() {
                 ))}
                 <span className="ml-1 text-sm text-gray-500">{product.rating}/5</span>
               </div>
-              <h3 className="mb-1 line-clamp-1 text-lg font-bold">{product.name}</h3>
-              <div className="flex items-center justify-between">
-                <p className="text-xl font-bold">${product.price.toFixed(2)}</p>
-                <Button size="icon" className="rounded-full bg-black text-white hover:bg-gray-800">
-                  <Plus className="h-4 w-4" />
-                  <span className="sr-only">Add to cart</span>
-                </Button>
-              </div>
+              <h3 className="mb-1 text-lg font-bold">{product.name}</h3>
+              <p className="text-xl font-bold">${product.price.toFixed(2)}</p>
             </div>
           </div>
         ))}

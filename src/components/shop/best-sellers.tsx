@@ -181,6 +181,7 @@ export default function BestSellers() {
                         onClick={() => {
                           // Create a cart item with default values
                           const cartItem = {
+                            id: `${product._id}-${Date.now()}`,
                             productId: product._id,
                             name: product.name,
                             price: product.price,
