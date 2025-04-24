@@ -3,7 +3,7 @@
 import { useEffect, useRef, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Star, Heart } from 'lucide-react';
+import { Star, Heart, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Pagination,
@@ -177,9 +177,13 @@ export default function ProductGrid() {
               </button>
 
               {/* Add to Cart Overlay on Hover */}
-              <div className="absolute inset-x-0 bottom-0 translate-y-full bg-black/70 p-4 transition-transform duration-300 group-hover:translate-y-0">
-                <Button
-                  className="w-full bg-white text-black hover:bg-gray-100"
+              {/* <div className="absolute inset-x-0 bottom-0 hidden -translate-y-1/2 bg-black/70 p-4 transition-transform duration-300 group-hover:block">
+                <Button className="w-full bg-white text-black hover:bg-gray-100">Move to Cart</Button>
+              </div> */}
+              {/* <div className="absolute inset-0 flex items-center justify-center bg-black/70 opacity-0 transition-opacity group-hover:opacity-100"> */}
+              {/* <button
+                  className="flex items-center gap-2 rounded-md bg-white/90 px-4 py-2 text-black shadow-md transition-colors hover:bg-white"
+                  aria-label="Move to cart"
                   onClick={(e) => {
                     e.preventDefault();
                     const cartItem = {
@@ -215,9 +219,10 @@ export default function ProductGrid() {
                     toast.success(`Added ${product.name} to cart!`);
                   }}
                 >
-                  Move to Cart
-                </Button>
-              </div>
+                  <ShoppingCart className="h-4 w-4" />
+                  add to Cart
+                </button> */}
+              {/* </div> */}
             </div>
 
             {/* Product Info */}
@@ -237,8 +242,54 @@ export default function ProductGrid() {
                 ))}
                 <span className="ml-1 text-sm text-gray-500">{product.rating}/5</span>
               </div>
-              <h3 className="mb-1 text-lg font-bold">{product.name}</h3>
-              <p className="text-xl font-bold">${product.price.toFixed(2)}</p>
+              <div>
+                <div>
+                  <div className="flex items-center justify-between">
+                    <h3 className="mb-1 text-lg font-bold">{product.name}</h3>
+                    <button
+                      className="flex items-center gap-2 rounded-md bg-black px-2 py-2 text-white shadow-md transition-colors hover:bg-black/80"
+                      aria-label="Move to cart"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const cartItem = {
+                          id: `${product.id}-${Date.now()}`,
+                          productId: product.id,
+                          name: product.name,
+                          price: product.price,
+                          quantity: 1,
+                          image: product.media?.images?.[0] || product.colors[0]?.images[0] || '/placeholder.svg',
+                          brandName: product.category || 'Brand Name',
+                          size: product.sizes ? product.sizes[Math.floor(Math.random() * product.sizes.length)] : 'M',
+                          color: product.colors?.length
+                            ? product.colors[Math.floor(Math.random() * product.colors.length)].name
+                            : null,
+                          selected: true,
+                          frontCustomization: {
+                            logoUrl: null,
+                            position: { x: 50, y: 30 },
+                            size: 20,
+                            rotation: 0,
+                            preview: null,
+                          },
+                          backCustomization: {
+                            logoUrl: null,
+                            position: { x: 50, y: 30 },
+                            size: 20,
+                            rotation: 0,
+                            preview: null,
+                          },
+                        };
+
+                        useCartStore.getState().addItem(cartItem);
+                        toast.success(`Added ${product.name} to cart!`);
+                      }}
+                    >
+                      <ShoppingCart className="h-6 w-6" />
+                    </button>
+                  </div>
+                  <p className="text-xl font-bold">${product.price.toFixed(2)}</p>
+                </div>
+              </div>
             </div>
           </div>
         ))}

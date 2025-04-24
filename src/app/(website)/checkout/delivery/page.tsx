@@ -7,7 +7,7 @@ export default function DeliveryPage() {
     <div className="flex w-full flex-col items-center">
       <PageHeader
         title="Delivery Information"
-        backgroundImage="/images/delivery-bg.jpg"
+        backgroundImage="/images/delivery-hero.jpg"
         breadcrumbs={[
           { label: 'Home', href: '/' },
           { label: 'Checkout', href: '/checkout' },
