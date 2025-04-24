@@ -14,6 +14,7 @@ export function connectStores() {
 
       if (item) {
         const cartItem: CartItem = {
+          id: `${item.id}-${Date.now()}`, // Ensure unique ID
           productId: item.id,
           name: item.name,
           price: item.price,
