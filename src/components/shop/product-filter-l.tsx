@@ -12,8 +12,8 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { ChevronDown, SlidersHorizontal } from 'lucide-react';
 import { useFilterStore } from '@/store/filter-store';
-import { useQuery } from '@tanstack/react-query';
-import { fetchCategories } from '@/lib/api';
+// import { useQuery } from '@tanstack/react-query';
+// import { fetchCategories } from '@/lib/api';
 
 interface CategoryData {
   name: string;
@@ -31,10 +31,10 @@ export default function ProductFilters({ category, subcategory }: { category: Ca
   const { minPrice, maxPrice, status, sortBy, setPriceRange, setStatus, setSortBy } = useFilterStore();
   console.log(subcategory);
   // Fetch categories for the filter
-  const { data: categoriesData } = useQuery({
-    queryKey: ['categories'],
-    queryFn: fetchCategories,
-  });
+  // const { data: categoriesData } = useQuery({
+  //   queryKey: ['categories'],
+  //   queryFn: fetchCategories,
+  // });
 
   // Local state for UI
   const [openSections, setOpenSections] = useState({
@@ -61,18 +61,23 @@ export default function ProductFilters({ category, subcategory }: { category: Ca
     const urlStatus = searchParams.get('status');
     const urlSortBy = searchParams.get('sortBy');
 
-    if (urlMinPrice && urlMaxPrice) {
-      setPriceRange(Number(urlMinPrice), Number(urlMaxPrice));
+    const min = urlMinPrice ? Math.max(0, Number(urlMinPrice)) : 0;
+    const max = urlMaxPrice ? Math.min(1000, Number(urlMaxPrice)) : 1000;
+
+    if (min !== minPrice || max !== maxPrice) {
+      setPriceRange(min, max);
+      setPriceRangeLocal([min, max]);
     }
 
-    if (urlStatus) {
+    if (urlStatus && urlStatus !== status) {
       setStatus(urlStatus);
     }
 
-    if (urlSortBy) {
+    if (urlSortBy && urlSortBy !== sortBy) {
       setSortBy(urlSortBy);
     }
-  }, [searchParams, setPriceRange, setSortBy, setStatus]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections((prev) => ({
@@ -82,21 +87,42 @@ export default function ProductFilters({ category, subcategory }: { category: Ca
   };
 
   const handlePriceRangeChange = (value: number[]) => {
-    setPriceRangeLocal(value);
+    // Ensure values are within bounds
+    const min = Math.max(0, Math.min(value[0], value[1]));
+    const max = Math.max(value[0], Math.min(1000, value[1]));
+    setPriceRangeLocal([min, max]);
   };
 
   const handleMinPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (value && !isNaN(Number(value))) {
-      setPriceRangeLocal([Number(value), priceRange[1]]);
+    const value = Number(e.target.value);
+    if (!isNaN(value)) {
+      const min = Math.max(0, Math.min(value, priceRange[1]));
+      setPriceRangeLocal([min, priceRange[1]]);
     }
   };
 
   const handleMaxPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (value && !isNaN(Number(value))) {
-      setPriceRangeLocal([priceRange[0], Number(value)]);
+    const value = Number(e.target.value);
+    if (!isNaN(value)) {
+      const max = Math.max(priceRange[0], Math.min(1000, value));
+      setPriceRangeLocal([priceRange[0], max]);
     }
+  };
+
+  const handleStatusChange = (value: string) => {
+    setStatus(value);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('status', value);
+    params.set('page', '1');
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  const handleSortChange = (value: string) => {
+    setSortBy(value);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('sortBy', value);
+    params.set('page', '1');
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   // Apply filters
@@ -107,17 +133,34 @@ export default function ProductFilters({ category, subcategory }: { category: Ca
     // Build URL with all current filters
     const params = new URLSearchParams(searchParams.toString());
 
-    // Set filter parameters
-    params.set('minPrice', priceRange[0].toString());
-    params.set('maxPrice', priceRange[1].toString());
-    params.set('status', status);
-    params.set('sortBy', sortBy);
+    // Clean up existing parameters
+    params.delete('minPrice');
+    params.delete('maxPrice');
+    params.delete('status');
+    params.delete('sortBy');
+    params.delete('page');
 
-    // Reset to page 1 when filters change
-    params.set('page', '1');
+    // Set new filter parameters
+    if (priceRange[0] > 0) params.set('minPrice', priceRange[0].toString());
+    if (priceRange[1] < 1000) params.set('maxPrice', priceRange[1].toString());
+    if (status !== 'all') params.set('status', status);
+    if (sortBy !== 'all') params.set('sortBy', sortBy);
+    params.set('page', '1'); // Reset to first page
 
     // Update URL with filters
-    router.push(`${pathname}?${params.toString()}`);
+    const newUrl = `${pathname}${params.toString() ? `?${params.toString()}` : ''}`;
+    router.push(newUrl);
+  };
+
+  const resetAllFilters = () => {
+    setPriceRange(0, 1000);
+    setStatus('all');
+    setSortBy('all');
+    setPriceRangeLocal([0, 1000]);
+
+    // Clear URL parameters
+    // const params = new URLSearchParams();
+    router.push(pathname);
   };
 
   const FilterContent = () => (
@@ -174,7 +217,7 @@ export default function ProductFilters({ category, subcategory }: { category: Ca
         </button>
         {openSections.status && (
           <div className="mt-4 space-y-2">
-            <RadioGroup value={status} onValueChange={setStatus}>
+            <RadioGroup value={status} onValueChange={handleStatusChange}>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="all" id="all-status" />
                 <Label htmlFor="all-status">All</Label>
@@ -203,19 +246,10 @@ export default function ProductFilters({ category, subcategory }: { category: Ca
         </button>
         {openSections.category && (
           <div className="mt-4 space-y-2">
-            <RadioGroup value={category.slug}>
-              {categoriesData?.data?.map((cat) => (
-                <div key={cat._id} className="flex items-center space-x-2">
-                  <RadioGroupItem
-                    value={cat.categoryName.toLowerCase().replace(/\s+/g, '-')}
-                    id={`${cat._id}-category`}
-                    disabled
-                  />
-                  <Label htmlFor={`${cat._id}-category`}>{cat.categoryName}</Label>
-                </div>
-              ))}
-            </RadioGroup>
-            <p className="mt-2 text-xs text-muted-foreground">Categories are pre-selected from the URL.</p>
+            <div className="rounded-md border bg-gray-50 p-4">
+              <p className="font-medium">{category.name}</p>
+              <p className="mt-1 text-sm text-muted-foreground">Currently browsing: {subcategory}</p>
+            </div>
           </div>
         )}
       </div>
@@ -228,7 +262,7 @@ export default function ProductFilters({ category, subcategory }: { category: Ca
         </button>
         {openSections.sort && (
           <div className="mt-4 space-y-2">
-            <RadioGroup value={sortBy} onValueChange={setSortBy}>
+            <RadioGroup value={sortBy} onValueChange={handleSortChange}>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="all" id="all-sort" />
                 <Label htmlFor="all-sort">Default</Label>
@@ -254,9 +288,14 @@ export default function ProductFilters({ category, subcategory }: { category: Ca
         )}
       </div>
 
-      <Button className="mt-6 w-full" onClick={applyFilters}>
-        Apply Filters
-      </Button>
+      <div className="mt-6 flex gap-2">
+        <Button variant="outline" className="flex-1" onClick={resetAllFilters}>
+          Reset
+        </Button>
+        <Button className="flex-1" onClick={applyFilters}>
+          Apply Filters
+        </Button>
+      </div>
     </div>
   );
 

@@ -44,7 +44,7 @@ export default function ProductGrid() {
     setSubcategory(subcategory.toLowerCase().replace(/\s+/g, '-'));
   }, [category, subcategory, setCategory, setSubcategory]);
 
-  // Query products
+  // Query products with all filters
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['products', category, subcategory, minPrice, maxPrice, status, page, limit, sortBy],
     queryFn: () =>
@@ -53,14 +53,25 @@ export default function ProductGrid() {
         subcategory,
         minPrice,
         maxPrice,
-        status,
+        status: status !== 'all' ? status : undefined,
         page,
         limit,
         sortBy,
       }),
-    staleTime: 5000, // Adjust the time (in milliseconds) as needed
-    enabled: !!category, // wait until category is extracted
+    staleTime: 5000,
   });
+
+  // Refetch when filters change
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (minPrice) params.set('minPrice', minPrice.toString());
+    if (maxPrice) params.set('maxPrice', maxPrice.toString());
+    if (status !== 'all') params.set('status', status);
+    if (sortBy !== 'all') params.set('sortBy', sortBy);
+    params.set('page', '1'); // Reset to first page when filters change
+
+    window.history.replaceState({}, '', `${pathname}?${params.toString()}`);
+  }, [minPrice, maxPrice, status, sortBy, pathname, searchParams]);
 
   const scrollToTop = () => {
     gridRef.current?.scrollIntoView({ behavior: 'smooth' });

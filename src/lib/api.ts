@@ -122,7 +122,7 @@ function getSortParams(sortBy: string): { sort?: string; order?: 'asc' | 'desc' 
     case 'popular':
       return { sort: 'popularity', order: 'desc' };
     default:
-      return {};
+      return {}; // For 'all' or default sorting
   }
 }
 
@@ -217,32 +217,19 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Product
 
     // Handle sorting
     if (filters.sortBy && filters.sortBy !== 'all') {
-      const { sort, order } = getSortParams(filters.sortBy);
-      if (sort) url.searchParams.append('sort', sort);
-      if (order) url.searchParams.append('order', order);
+      const sortParams = getSortParams(filters.sortBy);
+      if (sortParams.sort) url.searchParams.append('sortBy', sortParams.sort);
+      if (sortParams.order) url.searchParams.append('order', sortParams.order);
     }
 
     console.log('Fetching products with URL:', url.toString());
 
-    const response = await fetch(url.toString(), {
-      // Add cache control headers
-      headers: {
-        'Cache-Control': 'no-cache',
-        Pragma: 'no-cache',
-      },
-    });
-
+    const response = await fetch(url.toString());
     if (!response.ok) {
-      const errorText = await response.text().catch(() => 'Unknown error');
-      throw new Error(`API error (${response.status}): ${errorText}`);
+      throw new Error(`API error (${response.status})`);
     }
 
     const data = await response.json();
-
-    if (!data.status) {
-      throw new Error(data.message || 'Failed to fetch products');
-    }
-
     return data;
   } catch (error) {
     console.error('Error fetching products:', error);
