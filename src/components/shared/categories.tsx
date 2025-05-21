@@ -15,7 +15,7 @@ interface ApiCategory {
 }
 
 const fetchCategories = async (): Promise<ApiCategory[]> => {
-  const res = await fetch('http://localhost:8001/api/v1/categories?page=1&limit=10');
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/categories?page=1&limit=10`);
   const json = await res.json();
   return json.data || [];
 };

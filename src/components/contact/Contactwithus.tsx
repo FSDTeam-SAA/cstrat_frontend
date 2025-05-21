@@ -21,7 +21,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 // API function to send contact form data
 const sendContactForm = async (data: FormValues) => {
-  const response = await fetch('http://localhost:8001/api/v1/contact/send', {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/contact/send`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
