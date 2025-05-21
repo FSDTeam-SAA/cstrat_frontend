@@ -16,11 +16,15 @@ export default function AboutPage() {
           <div>
             <h1 className="mb-6 text-3xl font-bold md:text-4xl">About Drip Swag</h1>
             <p className="mb-6 text-gray-600">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget euismod velit. Ut dapibus est urna.
-              Suspendisse dictum facilisis ullamcorper. Maecenas vitae efficitur tortor, in placerat dui. Morbi
-              condimentum porttitor turpis sed ultrices. Suspendisse auctor faucibus magna, imperdiet maximus orci
-              ultricies a. Cras placerat elit a sagittis tristique. Etiam imperdiet pulvinar nisi in pellentesque. Sed
-              ante orci, egestas id quam nec, eleifend varius magna. Fusce massa nisi, aliquam at cursus eu.
+            At Drip Swag, we’re more than just a promotional products company—we’re your partner in creating unforgettable brand experiences. Specializing in customization, we transform your vision into unique, high-quality products that leave a lasting impression. From bold apparel to standout accessories, we craft items that embody your brand’s vibe and connect with your audience.
+            </p>
+            <p className="mb-6 text-gray-600">
+            With our state-of-the-art, full-service warehouse, we offer a wide range of in-house decoration techniques, including screen printing, embroidery, direct-to-film (DTF), heat press, and laser engraving. This allows us to deliver precision, speed, and unparalleled quality on every project, no matter the size or complexity. Our team is passionate about innovation, ensuring every product we create is as distinctive as your brand.
+            </p>
+            <p className="mb-6 text-gray-600">
+            Choose Drip Swag for promotional products that don’t just promote—they inspire, engage, and drip with style. Let’s make your next campaign unforgettable!
+
+
             </p>
 
             <h2 className="mb-4 text-2xl font-bold">Our Mission</h2>
