@@ -30,6 +30,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     const color = product.colors && product.colors.length > 0 ? product.colors[0] : null;
 
     const cartItem = {
+      id: product._id,
       productId: product._id,
       name: product.name,
       price: product.price,

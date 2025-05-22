@@ -1,81 +1,75 @@
-"use client"
+'use client';
 
-import type React from "react"
-import { useState } from "react"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { toast } from "sonner"
-import ProtectedRoute from "@/components/ProtectedRoute"
-import { useAuth } from "@/context/auth-context"
+import type React from 'react';
+import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { toast } from 'sonner';
+import ProtectedRoute from '@/components/ProtectedRoute';
+import { useAuth } from '@/context/auth-context';
 
 export default function PersonalInformation() {
-  const { user, token, refetchUser } = useAuth()
-  const queryClient = useQueryClient()
+  const { user, token, refetchUser } = useAuth();
+  const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState({
-    name: user?.name || "",
-    phone: user?.phone || "",
-    email: user?.email || "",
-    gender: user?.gender || "",
-    address: user?.address || "",
-  })
+    name: user?.name || '',
+    phone: user?.phone || '',
+    email: user?.email || '',
+    gender: user?.gender || '',
+    address: user?.address || '',
+  });
 
   const updateProfileMutation = useMutation({
-    mutationFn: async (profileData: Omit<typeof formData, "email">) => {
+    mutationFn: async (profileData: Omit<typeof formData, 'email'>) => {
       if (!token) {
-        throw new Error("Authentication token is missing")
+        throw new Error('Authentication token is missing');
       }
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/auth/profile`, {
-        method: "PUT",
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(profileData),
-      })
+      });
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || "Failed to update profile")
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update profile');
       }
 
-      return response.json()
+      return response.json();
     },
     onSuccess: async (data) => {
-      await refetchUser() // 🔄 Refresh auth context with latest user data
-      queryClient.invalidateQueries({ queryKey: ["user"] }) // optional
-      toast.success(data.message || "Profile updated successfully")
+      await refetchUser(); // 🔄 Refresh auth context with latest user data
+      queryClient.invalidateQueries({ queryKey: ['user'] }); // optional
+      toast.success(data.message || 'Profile updated successfully');
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Failed to update profile")
+      toast.error(error.message || 'Failed to update profile');
     },
-  })
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-  const handleGenderChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, gender: value }))
-  }
+  // const handleGenderChange = (value: string) => {
+  //   setFormData((prev) => ({ ...prev, gender: value }));
+  // };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    const { name, phone, gender, address } = formData
-    updateProfileMutation.mutate({ name, phone, gender, address })
-  }
+    const { name, phone, gender, address } = formData;
+    updateProfileMutation.mutate({ name, phone, gender, address });
+  };
 
   return (
     <ProtectedRoute>
@@ -86,24 +80,12 @@ export default function PersonalInformation() {
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-              />
+              <Input id="name" name="name" value={formData.name} onChange={handleChange} required />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="phone">Phone Number</Label>
-              <Input
-                id="phone"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                required
-              />
+              <Input id="phone" name="phone" value={formData.phone} onChange={handleChange} required />
             </div>
 
             <div className="space-y-2">
@@ -120,9 +102,9 @@ export default function PersonalInformation() {
               <p className="text-xs text-gray-500">Email cannot be changed</p>
             </div>
 
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <Label htmlFor="gender">Gender</Label>
-              <Select value={formData.gender} onValueChange={handleGenderChange}>
+              <Select value={formData.gender} onValueChange={handleGenderChange} disabled>
                 <SelectTrigger id="gender">
                   <SelectValue placeholder="Select gender" />
                 </SelectTrigger>
@@ -132,7 +114,7 @@ export default function PersonalInformation() {
                   <SelectItem value="other">Other</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
+            </div> */}
           </div>
 
           <div className="space-y-2">
@@ -152,11 +134,11 @@ export default function PersonalInformation() {
               className="bg-black text-white hover:bg-black/90"
               disabled={updateProfileMutation.isPending}
             >
-              {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}
+              {updateProfileMutation.isPending ? 'Saving...' : 'Save Changes'}
             </Button>
           </div>
         </form>
       </div>
     </ProtectedRoute>
-  )
+  );
 }

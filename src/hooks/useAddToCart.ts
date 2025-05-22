@@ -61,6 +61,7 @@ export const useAddToCart = () => {
 
       // Create cart item
       const cartItem = {
+        id: productData._id,
         productId: productData._id,
         name: productData.name,
         price: productData.price,

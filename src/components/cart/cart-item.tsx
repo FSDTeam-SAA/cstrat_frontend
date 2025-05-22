@@ -24,31 +24,37 @@ export default function CartItem({ item }: CartItemProps) {
     setQuantity(item.quantity);
   }, [item.quantity]);
 
-  // Debounce quantity updates to prevent excessive store updates
+  // Update the useEffect for quantity changes
   useEffect(() => {
     const timer = setTimeout(() => {
       if (quantity !== item.quantity) {
         updateQuantity(item.productId, quantity);
       }
-    }, 300);
+    }, 100); // Reduced debounce time for more responsive updates
 
     return () => clearTimeout(timer);
   }, [quantity, item.quantity, item.productId, updateQuantity]);
 
+  // Update the quantity handlers to be more immediate
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number.parseInt(e.target.value);
     if (!isNaN(value) && value > 0) {
       setQuantity(value);
+      updateQuantity(item.productId, value); // Immediate update
     }
   };
 
   const incrementQuantity = () => {
-    setQuantity((prev) => prev + 1);
+    const newQuantity = quantity + 1;
+    setQuantity(newQuantity);
+    updateQuantity(item.productId, newQuantity); // Immediate update
   };
 
   const decrementQuantity = () => {
     if (quantity > 1) {
-      setQuantity((prev) => prev - 1);
+      const newQuantity = quantity - 1;
+      setQuantity(newQuantity);
+      updateQuantity(item.productId, newQuantity); // Immediate update
     }
   };
 

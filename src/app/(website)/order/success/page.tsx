@@ -6,16 +6,16 @@ import { useEffect, useState } from 'react';
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useCartStore } from '@/store/useCartStore';
 
 export default function PaymentSuccessPage() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get('session_id');
-  console.log(sessionId);
   const [status, setStatus] = useState<string | null>(null);
 
   useEffect(() => {
     if (sessionId) {
-      fetch(`http://localhost:8001/api/v1/payments/verify/${sessionId}`)
+      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/payments/verify/${sessionId}`)
         .then((res) => res.json())
         .then((data) => {
           setStatus(data?.status || 'error');
@@ -34,6 +34,11 @@ export default function PaymentSuccessPage() {
 }
 
 function SuccessUI() {
+  const { clearCart } = useCartStore();
+  useEffect(() => {
+    clearCart();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <div className="flex h-screen flex-col items-center justify-center px-6 text-center">
       <CheckCircle className="h-20 w-20 text-green-500" />

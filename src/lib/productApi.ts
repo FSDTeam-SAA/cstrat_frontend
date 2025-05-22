@@ -5,7 +5,7 @@
  */
 export async function getProduct(id: string) {
   try {
-    const response = await fetch(`http://localhost:8001/api/v1/products/getallproducts/${id}`);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/products/getallproducts/${id}`);
 
     if (!response.ok) {
       throw new Error(`Failed to fetch product: ${response.status}`);
@@ -24,7 +24,7 @@ export async function getProduct(id: string) {
  */
 export async function getAllProducts() {
   try {
-    const response = await fetch(`http://localhost:8001/api/v1/products/getallproducts`);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/products/getallproducts`);
 
     if (!response.ok) {
       throw new Error(`Failed to fetch products: ${response.status}`);

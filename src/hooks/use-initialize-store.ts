@@ -28,6 +28,7 @@ export function useInitializeStores() {
         // Add sample cart items
         const sampleCartItems = [
           {
+            id: '1',
             productId: '1',
             name: 'Premium Quality - stylish new T shirt - Casual Exclusive half Sleeve T Shirt For Men - T Shirt',
             price: 50,
@@ -53,6 +54,7 @@ export function useInitializeStores() {
             },
           },
           {
+            id: '2',
             productId: '2',
             name: 'Premium Quality - stylish new T shirt - Casual Exclusive half Sleeve T Shirt For Men - T Shirt',
             price: 50,

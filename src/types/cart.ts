@@ -10,6 +10,7 @@ export interface CartCustomization {
 }
 
 export interface CartItem {
+  id: string; // Add this new field
   productId: string;
   name: string;
   price: number;
@@ -28,6 +29,7 @@ export interface CartSummary {
   shipping: number;
   total: number;
   itemCount: number;
+  selectedItemCount: number;
 }
 
 export interface DeliveryInformation {

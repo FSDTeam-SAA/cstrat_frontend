@@ -27,27 +27,41 @@ export const useCartStore = create<CartStore>()(
       deliveryInfo: null,
 
       addItem: (item) => {
-        console.log('Adding item to cart:', item);
         const { items } = get();
+
+        // Check if the item already exists with same productId, size, and color
         const existingItemIndex = items.findIndex(
-          (i) => i.productId === item.productId && i.size === item.size && i.color === item.color,
+          (existingItem) =>
+            existingItem.productId === item.productId &&
+            existingItem.size === item.size &&
+            existingItem.color === item.color,
         );
 
         if (existingItemIndex !== -1) {
-          // Create a new array with the updated item
-          const newItems = [...items];
-          newItems[existingItemIndex] = {
-            ...newItems[existingItemIndex],
-            quantity: newItems[existingItemIndex].quantity + (item.quantity || 1),
+          // If item exists, update its quantity
+          const updatedItems = [...items];
+          updatedItems[existingItemIndex] = {
+            ...updatedItems[existingItemIndex],
+            quantity: updatedItems[existingItemIndex].quantity + item.quantity,
           };
-          set({ items: newItems });
-        } else {
-          set({ items: [...items, { ...item, selected: true }] });
+
+          set({ items: updatedItems });
+          return;
         }
 
-        console.log('Cart after adding item:', [...get().items]);
+        // If item doesn't exist, add it as new
+        const uniqueId = `${item.productId}-${item.size}-${item.color}`;
+        set({
+          items: [
+            ...items,
+            {
+              ...item,
+              id: uniqueId,
+              selected: true,
+            },
+          ],
+        });
       },
-
       removeItem: (productId) => {
         set((state) => ({
           items: state.items.filter((item) => item.productId !== productId),
@@ -55,10 +69,12 @@ export const useCartStore = create<CartStore>()(
       },
 
       updateQuantity: (productId, quantity) => {
-        if (quantity < 1) return; // Prevent invalid quantities
+        if (quantity < 1) return;
 
         set((state) => ({
-          items: state.items.map((item) => (item.productId === productId ? { ...item, quantity } : item)),
+          items: state.items.map((item) =>
+            item.productId === productId ? { ...item, quantity, selected: true } : item,
+          ),
         }));
       },
 
@@ -88,17 +104,20 @@ export const useCartStore = create<CartStore>()(
 
       getSummary: () => {
         const items = get().items;
-        const subtotal = items.reduce((total, item) => total + item.price * item.quantity, 0);
+        const selectedItems = items.filter((item) => item.selected);
 
-        // Could add tax calculation, shipping costs, etc. here
-        const shipping = 0; // Free shipping
+        const subtotal = selectedItems.reduce((total, item) => {
+          return total + item.price * item.quantity;
+        }, 0);
+
+        const shipping = 0; // Free shipping or implement your shipping logic
 
         return {
           subtotal,
           shipping,
           total: subtotal + shipping,
           itemCount: items.reduce((count, item) => count + item.quantity, 0),
-          selectedItemCount: items.filter((item) => item.selected).length,
+          selectedItemCount: selectedItems.length,
         };
       },
 

@@ -33,7 +33,7 @@ export default function OrderHistory() {
     queryFn: async () => {
       if (!user?._id) throw new Error('User ID not found');
 
-      const response = await fetch(`http://localhost:8001/api/v1/orders/history/${user._id}`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/orders/history/${user._id}`);
       if (!response.ok) {
         throw new Error('Failed to fetch order history');
       }
