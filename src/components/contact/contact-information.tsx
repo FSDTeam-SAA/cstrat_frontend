@@ -11,7 +11,7 @@ export default function ContactInformation() {
         <div className="flex gap-[15px] items-center">
           <Image src="/location.png" alt="" width={24} height={24} />
           <p className="text-[18px] text-white font-normal leading-[150%] text-left">
-            1246 West Flint Meadow Drive, Suite 101 Kaysville, UT 84037
+           334 Masrshall way STE A, UT 84041
           </p>
         </div>
         <div className="flex gap-[15px] items-center">
@@ -23,7 +23,7 @@ export default function ContactInformation() {
         <div className="flex gap-[15px] items-center">
           <Image src="/phone-incoming-02.png" alt="" width={24} height={24} />
           <p className="text-[18px] text-white font-normal leading-[150%] text-left">
-            Phone: (385) 316-7244
+            Phone: 385-316-7244
           </p>
         </div>
       </div>

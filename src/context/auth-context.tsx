@@ -6,6 +6,7 @@ import {
   useContext,
   useState,
   useEffect,
+  useCallback,
   type ReactNode,
 } from "react"
 import { useRouter } from "next/navigation"
@@ -56,7 +57,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
-  const fetchFullUserData = async (userId: string) => {
+  const fetchFullUserData = useCallback(async (userId: string) => {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/auth/users/${userId}`, {
         headers: {
@@ -73,7 +74,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } catch (err) {
       console.error("Failed to fetch full user data", err)
     }
-  }
+  }, [token])
 
   const refetchUser = async () => {
     if (user?._id) {
@@ -108,7 +109,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     init()
-  }, [])
+  }, [fetchFullUserData])
 
   const login = async (newToken: string, userData?: Partial<User>) => {
     setToken(newToken)

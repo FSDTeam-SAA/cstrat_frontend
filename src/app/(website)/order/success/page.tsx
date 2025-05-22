@@ -15,7 +15,7 @@ export default function PaymentSuccessPage() {
 
   useEffect(() => {
     if (sessionId) {
-      fetch(`http://localhost:8001/api/v1/payments/verify/${sessionId}`)
+      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/payments/verify/${sessionId}`)
         .then((res) => res.json())
         .then((data) => {
           setStatus(data?.status || 'error');

@@ -31,7 +31,7 @@ export default function Settings() {
   // Set up mutation with Tanstack Query
   const updatePasswordMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      const response = await fetch(`http://localhost:8001/api/v1/auth/set-new-password/${user?._id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/auth/set-new-password/${user?._id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
