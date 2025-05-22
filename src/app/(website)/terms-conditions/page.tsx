@@ -9,7 +9,7 @@ export default function TermsAndConditions() {
   React.useEffect(() => {
     const fetchTermsContent = async () => {
       try {
-        const response = await fetch('http://localhost:8001/api/v1/content/terms');
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/content/terms`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

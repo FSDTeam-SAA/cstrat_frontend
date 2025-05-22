@@ -1,7 +1,7 @@
 import type { OrderResponse, PaymentResponse } from '@/types/cart';
 import { base64ToImageFile } from './base64ToImageFile';
 
-const API_BASE_URL = 'http://localhost:8001/api/v1';
+const API_BASE_URL = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1`;
 
 // Create a customized order using FormData (multipart/form-data)
 export async function createCustomizedOrder(orderData: {

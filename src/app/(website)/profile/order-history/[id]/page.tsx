@@ -60,7 +60,7 @@ export default function OrderDetails({ params }: { params: { id: string } }) {
   const { data, isLoading, error } = useQuery({
     queryKey: ['orderDetails', orderId],
     queryFn: async () => {
-      const response = await fetch(`http://localhost:8001/api/v1/orders/getallorders/${orderId}`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/orders/getallorders/${orderId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch order details');
       }
@@ -70,7 +70,7 @@ export default function OrderDetails({ params }: { params: { id: string } }) {
 
   const cancelOrderMutation = useMutation({
     mutationFn: async () => {
-      const response = await fetch(`http://localhost:8001/api/v1/orders/order/${orderId}/cancel`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/orders/order/${orderId}/cancel`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
