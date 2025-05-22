@@ -29,6 +29,7 @@ export interface CartSummary {
   shipping: number;
   total: number;
   itemCount: number;
+  selectedItemCount: number;
 }
 
 export interface DeliveryInformation {

@@ -31,7 +31,7 @@ export default function PaymentForm() {
       const userId = '67fb8eebe5a697a3ae53f7d1'; // Example user ID
 
       // Create orders for each item
-      const orderPromises = items.map(item => 
+      const orderPromises = items.map((item) =>
         createCustomizedOrder({
           userId: userId,
           productId: item.productId,
@@ -40,7 +40,7 @@ export default function PaymentForm() {
           size: item.size,
           frontCustomizationPreview: item.frontCustomization?.preview || null,
           logoImage: item.frontCustomization?.logoUrl || null,
-        })
+        }),
       );
 
       // Wait for all orders to be created

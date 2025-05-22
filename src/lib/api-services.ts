@@ -13,8 +13,7 @@ export async function createCustomizedOrder(orderData: {
   frontCustomizationPreview: string | null;
   logoImage: string | null;
 }): Promise<OrderResponse> {
-  const imgData = dataURLtoBlob(orderData.frontCustomizationPreview || '');
-  console.log('Creating customized order with data:', imgData);
+  console.log('Creating customized order with data:', orderData);
 
   try {
     // Create FormData object
@@ -30,11 +29,9 @@ export async function createCustomizedOrder(orderData: {
     // Add file fields if available
     if (orderData.frontCustomizationPreview) {
       try {
-        const previewFile = await base64ToImageFile(orderData.frontCustomizationPreview, 'customization-preview.png');
-        console.log('Preview file type:', previewFile.type);
-        console.log('Preview file name:', previewFile.name);
-        console.log('Preview file size:', previewFile.size, 'bytes');
-        formData.append('frontCustomizationPreview', previewFile);
+        const imgData = await dataURLtoBlob(orderData.frontCustomizationPreview);
+        console.log('Successfully converted preview to blob');
+        formData.append('frontCustomizationPreview', imgData, 'customization-preview.png');
       } catch (error) {
         console.error('Error converting frontCustomizationPreview:', error);
         // Continue without this file
@@ -88,12 +85,40 @@ export async function createCustomizedOrder(orderData: {
 
 // Helper function to convert data URL to Blob
 async function dataURLtoBlob(dataURL: string): Promise<Blob> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     try {
+      // Check if dataURL is empty or invalid
+      if (!dataURL || typeof dataURL !== 'string') {
+        console.warn('Empty or invalid data URL provided');
+        resolve(new Blob([])); // Return empty blob instead of throwing
+        return;
+      }
+
+      // Validate data URL format
+      if (!dataURL.startsWith('data:')) {
+        console.warn('Invalid data URL format provided');
+        resolve(new Blob([])); // Return empty blob instead of throwing
+        return;
+      }
+
       // Split the data URL to get the content type and base64 data
       const parts = dataURL.split(';base64,');
+      if (parts.length !== 2) {
+        console.warn('Invalid data URL format: missing base64 data');
+        resolve(new Blob([])); // Return empty blob instead of throwing
+        return;
+      }
+
       const contentType = parts[0].split(':')[1];
-      const raw = window.atob(parts[1]);
+      const base64Data = parts[1];
+
+      if (!contentType || !base64Data) {
+        console.warn('Invalid data URL format: missing content type or base64 data');
+        resolve(new Blob([])); // Return empty blob instead of throwing
+        return;
+      }
+
+      const raw = window.atob(base64Data.replace(/\s/g, ''));
       const rawLength = raw.length;
       const uInt8Array = new Uint8Array(rawLength);
 
@@ -103,13 +128,14 @@ async function dataURLtoBlob(dataURL: string): Promise<Blob> {
 
       resolve(new Blob([uInt8Array], { type: contentType }));
     } catch (e) {
-      reject(e);
+      console.error('Error in dataURLtoBlob:', e);
+      resolve(new Blob([])); // Return empty blob on any error
     }
   });
 }
 
 // Create payment for an order
-export async function createPayment(paymentData: {userId: string, orderId: string[]}): Promise<PaymentResponse> {
+export async function createPayment(paymentData: { userId: string; orderId: string[] }): Promise<PaymentResponse> {
   try {
     console.log('Creating payment with data:', paymentData);
 

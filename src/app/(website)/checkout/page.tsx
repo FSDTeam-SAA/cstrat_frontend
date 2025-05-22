@@ -91,7 +91,7 @@ export default function CheckoutPage() {
     <div className="flex w-full flex-col items-center">
       <PageHeader
         title="Checkout"
-        backgroundImage="/images/checkout-bg.jpg"
+        backgroundImage="/images/delivery-hero.jpg"
         breadcrumbs={[
           { label: 'Home', href: '/' },
           { label: 'Cart', href: '/cart' },

@@ -45,21 +45,22 @@ export function PageHeader({
           {/* Optional description */}
           {description && <p className="mt-4 max-w-3xl text-center text-base md:text-lg">{description}</p>}
         </div>
-      </div>
-
-      {/* Breadcrumbs */}
-      {breadcrumbs.length > 0 && (
-        <div className="flex items-center justify-center bg-white py-4">
-          {breadcrumbs.map((item, index) => (
-            <div key={index} className="flex items-center">
-              <Link href={item.href} className="text-black transition-colors hover:text-gray-600">
-                {item.label}
-              </Link>
-              {index < breadcrumbs.length - 1 && <span className="mx-2">›</span>}
+        {/* Breadcrumbs */}
+        {breadcrumbs.length > 0 && (
+          <div className="absolute bottom-0 left-0 right-0 z-20">
+            <div className="flex items-center justify-center bg-black py-4 *:text-white">
+              {breadcrumbs.map((item, index) => (
+                <div key={index} className="flex items-center">
+                  <Link href={item.href} className="transition-colors hover:text-gray-600">
+                    {item.label}
+                  </Link>
+                  {index < breadcrumbs.length - 1 && <span className="mx-2">›</span>}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

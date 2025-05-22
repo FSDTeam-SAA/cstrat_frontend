@@ -69,10 +69,12 @@ export const useCartStore = create<CartStore>()(
       },
 
       updateQuantity: (productId, quantity) => {
-        if (quantity < 1) return; // Prevent invalid quantities
+        if (quantity < 1) return;
 
         set((state) => ({
-          items: state.items.map((item) => (item.productId === productId ? { ...item, quantity } : item)),
+          items: state.items.map((item) =>
+            item.productId === productId ? { ...item, quantity, selected: true } : item,
+          ),
         }));
       },
 
@@ -102,17 +104,20 @@ export const useCartStore = create<CartStore>()(
 
       getSummary: () => {
         const items = get().items;
-        const subtotal = items.reduce((total, item) => total + item.price * item.quantity, 0);
+        const selectedItems = items.filter((item) => item.selected);
 
-        // Could add tax calculation, shipping costs, etc. here
-        const shipping = 0; // Free shipping
+        const subtotal = selectedItems.reduce((total, item) => {
+          return total + item.price * item.quantity;
+        }, 0);
+
+        const shipping = 0; // Free shipping or implement your shipping logic
 
         return {
           subtotal,
           shipping,
           total: subtotal + shipping,
           itemCount: items.reduce((count, item) => count + item.quantity, 0),
-          selectedItemCount: items.filter((item) => item.selected).length,
+          selectedItemCount: selectedItems.length,
         };
       },
 
