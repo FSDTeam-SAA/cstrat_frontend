@@ -45,8 +45,9 @@ export default function Footer() {
                 <Image src="/logo.svg" alt="Drip Swag" width={120} height={40} className="h-10 w-auto" />
               </Link>
               <p className="max-w-xs text-sm text-gray-300">
-                Lorem ipsum dolor sit amet consectetur. Nisl ut integer eu sit ipsum arcu tortor vehicula. Fames dolor
-                nibh cursus pulvinar diam risus.
+                Discover a seamless online shopping experience with top-quality products, fast delivery, and
+                customer-first service. From new arrivals to everyday essentials, we make it easy to shop your favorite
+                items — anytime, anywhere.
               </p>
               <div className="flex space-x-4">
                 <Link href="#" className="hover:text-gray-300">
@@ -55,7 +56,7 @@ export default function Footer() {
                 </Link>
                 <Link href="#" className="hover:text-gray-300">
                   <Instagram className="h-5 w-5" />
-                  <span className="sr-only">Instagram</span>
+                  <span className="sr-only">Instagram</span>  
                 </Link>
                 <Link href="#" className="hover:text-gray-300">
                   <Twitter className="h-5 w-5" />
