@@ -6,7 +6,7 @@ export default function AboutPage() {
     <div className="flex w-full flex-col items-center">
       <PageHeader
         title="About Us"
-        description="Need assistance? We are here to help. To inquire about the products and services found on our website, please contact us by phone or e-mail, and we'll gladly assist you."
+        description="Drip-Swag: Where Style Meets Strategy in Branded Merch."
         backgroundImage="/images/about-hero.png"
       />
 
@@ -16,42 +16,23 @@ export default function AboutPage() {
           <div>
             <h1 className="mb-6 text-3xl font-bold md:text-4xl">About Drip Swag</h1>
             <p className="mb-6 text-gray-600">
-            At Drip Swag, we’re more than just a promotional products company—we’re your partner in creating unforgettable brand experiences. Specializing in customization, we transform your vision into unique, high-quality products that leave a lasting impression. From bold apparel to standout accessories, we craft items that embody your brand’s vibe and connect with your audience.
+              Founded with a vision to redefine promotional swag, Drip-Swag started as a creative hub for bold brands seeking more than basic giveaways.
+              Inspired by the &quot;drip culture of high-fashion flair, we&apoch;ve grown into a full-service powerhouse since 2020.
             </p>
             <p className="mb-6 text-gray-600">
-            With our state-of-the-art, full-service warehouse, we offer a wide range of in-house decoration techniques, including screen printing, embroidery, direct-to-film (DTF), heat press, and laser engraving. This allows us to deliver precision, speed, and unparalleled quality on every project, no matter the size or complexity. Our team is passionate about innovation, ensuring every product we create is as distinctive as your brand.
+              Drawing from innovative leaders in the industry, we blend creative customization (like Vox&apoch;s unique voice-building) with sustainable, thoughtful gifting
+              (echoing Clove & Twine&apoch;s planet-positive ethos). Our team of brand stylists and marketing pros works with businesses of all sizes—from startups to enterprises—
+              to craft merch that resonates.
             </p>
             <p className="mb-6 text-gray-600">
-            Choose Drip Swag for promotional products that don’t just promote—they inspire, engage, and drip with style. Let’s make your next campaign unforgettable!
-
-
+              We&apoch;re not just vendors; we&apoch;re partners in your success, offering end-to-end solutions: design, sourcing, importing, web stores, and fulfillment.
+              With a commitment to quality and results, we&apoch;ve helped hundreds of clients create swag that sparks conversations, fosters loyalty, and drives growth.
             </p>
-
             <h2 className="mb-4 text-2xl font-bold">Our Mission</h2>
             <p className="mb-6 text-gray-600">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget euismod velit. Ut dapibus est urna.
-              Suspendisse dictum facilisis ullamcorper. Maecenas vitae efficitur tortor, in placerat dui. Morbi
-              condimentum porttitor turpis sed ultrices. Suspendisse auctor faucibus magna, imperdiet maximus orci
-              ultricies a. Cras placerat elit a sagittis tristique. Etiam imperdiet pulvinar nisi in pellentesque. Sed
-              ante orci, egestas id quam nec, eleifend varius magna. Fusce massa nisi, aliquam at cursus eu.Lorem ipsum
-              dolor sit amet, consectetur adipiscing elit. Sed eget euismod velit. Ut dapibus est urna.
+              To make swag that doesn’t just promote—it inspires. We believe branded merchandise should be beautiful, thoughtful, and effective.
+              Drip-Swag is here to help you elevate your brand presence with memorable merch that speaks for itself.
             </p>
-
-            {/* Stats */}
-            {/* <div className="mt-8 grid grid-cols-3 gap-4">
-              <div>
-                <h3 className="text-4xl font-bold">30K+</h3>
-                <p className="text-gray-700">Our Products</p>
-              </div>
-              <div>
-                <h3 className="text-4xl font-bold">12K+</h3>
-                <p className="text-gray-700">Satisfied Customers</p>
-              </div>
-              <div>
-                <h3 className="text-4xl font-bold">2K+</h3>
-                <p className="text-gray-700">Our Vendor</p>
-              </div>
-            </div> */}
           </div>
           <div className="flex justify-center lg:justify-end">
             <Image
@@ -68,104 +49,81 @@ export default function AboutPage() {
         <div className="mb-16">
           <h2 className="mb-4 text-2xl font-bold">What We Offer</h2>
           <p className="mb-4 text-gray-600">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget euismod velit. Ut dapibus est urna.
-            Suspendisse dictum facilisis ullamcorper.
+            We provide full-service branded merch solutions tailored to your business goals—from creative concepting to global delivery.
           </p>
           <ul className="mb-4 space-y-4">
             <li className="flex">
               <span className="mr-2">•</span>
               <div>
-                <span className="font-semibold">Lorem ipsum: </span>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget euismod velit. Ut dapibus est urna.
-                Suspendisse dictum facilisis ullamcorper. Maecenas vitae efficitur tortor, in placerat dui.
+                <span className="font-semibold">Creative Edge:</span>
+                Custom manufacturing for retail-quality apparel, bags, and accessories.
               </div>
             </li>
             <li className="flex">
               <span className="mr-2">•</span>
               <div>
-                <span className="font-semibold">Lorem ipsum: </span>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget euismod velit. Ut dapibus est urna.
-                Suspendisse dictum facilisis ullamcorper. Maecenas vitae efficitur tortor, in placerat dui.
+                <span className="font-semibold">Global Reach:</span>
+                Direct importing and worldwide shipping for seamless scalability.
               </div>
             </li>
             <li className="flex">
               <span className="mr-2">•</span>
               <div>
-                <span className="font-semibold">Lorem ipsum: </span>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget euismod velit. Ut dapibus est urna.
-                Suspendisse dictum facilisis ullamcorper. Maecenas vitae efficitur tortor, in placerat dui.
+                <span className="font-semibold">Client-Centric:</span>
+                Personalized service that turns challenges into standout campaigns.
               </div>
             </li>
           </ul>
-          <p className="text-gray-600">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget euismod velit. Ut dapibus est urna.
-            Suspendisse dictum facilisis ullamcorper. Maecenas vitae efficitur tortor, in placerat dui.
-          </p>
         </div>
 
         {/* Empowering Local Businesses Section */}
         <div className="mb-16">
-          <h2 className="mb-4 text-2xl font-bold">Empowering Local Businesses</h2>
+          <h2 className="mb-4 text-2xl font-bold">Empowering Brands That Want to Stand Out</h2>
           <p className="mb-4 text-gray-600">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget euismod velit. Ut dapibus est urna.
-            Suspendisse dictum facilisis ullamcorper.
+            Whether you&apoch;re a startup onboarding your first hires or an enterprise hosting global events, we help you create branded moments that connect, inspire, and leave a lasting impact.
           </p>
           <ul className="mb-4 space-y-4">
             <li className="flex">
               <span className="mr-2">•</span>
               <div>
-                <span className="font-semibold">Lorem ipsum: </span>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget euismod velit. Ut dapibus est urna.
-                Suspendisse dictum facilisis ullamcorper. Maecenas vitae efficitur tortor, in placerat dui.
+                <span className="font-semibold">Events & Trade Shows:</span>
+                Wow attendees with memorable, high-quality swag setups.
               </div>
             </li>
             <li className="flex">
               <span className="mr-2">•</span>
               <div>
-                <span className="font-semibold">Lorem ipsum: </span>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget euismod velit. Ut dapibus est urna.
-                Suspendisse dictum facilisis ullamcorper. Maecenas vitae efficitur tortor, in placerat dui.
+                <span className="font-semibold">Employee Onboarding:</span>
+                Build culture with curated kits and thoughtful gifts for your team.
               </div>
             </li>
             <li className="flex">
               <span className="mr-2">•</span>
               <div>
-                <span className="font-semibold">Lorem ipsum: </span>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget euismod velit. Ut dapibus est urna.
-                Suspendisse dictum facilisis ullamcorper. Maecenas vitae efficitur tortor, in placerat dui.
+                <span className="font-semibold">Client Gifting:</span>
+                Show appreciation with premium, branded packages that build loyalty.
               </div>
             </li>
           </ul>
-          <p className="text-gray-600">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget euismod velit. Ut dapibus est urna.
-            Suspendisse dictum facilisis ullamcorper. Maecenas vitae efficitur tortor, in placerat dui.
-          </p>
         </div>
 
         {/* Our Commitment Section */}
         <div className="mb-16">
           <h2 className="mb-4 text-2xl font-bold">Our Commitment</h2>
           <p className="text-gray-600">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget euismod velit. Ut dapibus est urna.
-            Suspendisse dictum facilisis ullamcorper. Maecenas vitae efficitur tortor, in placerat dui. Morbi
-            condimentum porttitor turpis sed ultrices. Suspendisse auctor faucibus magna, imperdiet maximus orci
-            ultricies a. Cras placerat elit a sagittis tristique. Etiam imperdiet pulvinar nisi in pellentesque. Sed
-            ante orci, egestas id quam nec, eleifend varius magna. Fusce massa nisi, aliquam at cursus eu.
+            We’re committed to excellence in every detail—from sourcing premium eco-friendly materials to ensuring smooth global fulfillment.
+            Our goal is simple: to create merch that your recipients love and your brand is proud of.
           </p>
         </div>
 
         {/* Join Us Section */}
         <div>
-          <h2 className="mb-4 text-2xl font-bold">Join Us</h2>
+          <h2 className="mb-4 text-2xl font-bold">Ready to Drip?</h2>
           <p className="mb-4 text-gray-600">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget euismod velit. Ut dapibus est urna.
-            Suspendisse dictum facilisis ullamcorper. Maecenas vitae efficitur tortor, in placerat dui. Morbi
-            condimentum porttitor turpis sed ultrices.
+            Join hundreds of businesses who’ve elevated their brand with custom swag that turns heads. Whether you&apoch;re just starting or scaling big, we&apoch;re here to help you stand out.
           </p>
           <p className="text-gray-600">
-            Suspendisse auctor faucibus magna, imperdiet maximus orci ultricies a. Cras placerat elit a sagittis
-            tristique. Etiam imperdiet pulvinar nisi in pellentesque. Sed ante orci, egestas id quam nec, eleifend
-            varius magna. Fusce massa nisi, aliquam at cursus eu.
+            Let’s build something amazing together. Contact us today and make your next campaign drip with excellence.
           </p>
         </div>
       </div>
