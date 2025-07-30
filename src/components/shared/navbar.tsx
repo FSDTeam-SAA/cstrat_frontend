@@ -9,7 +9,7 @@ import { ChevronDown } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
 import ShopMenuContent from '../shop/shop-menu';
-import Logo from '../../../public/images/drip-logo.png';
+import Logo from '../../../public/logo.png';
 import Hideon from '@/provider/Hideon';
 import { User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -28,7 +28,7 @@ export default function Navbar() {
   const router = useRouter();
   return (
     <Hideon routes={['/sign-up', '/login', '/reset-password', '/verify-otp', '/reset-password', '/forgot-password']}>
-      <header className="sticky top-0 z-50 w-full bg-black text-white">
+      <header className="sticky top-0 z-50 w-full bg-white text-black">
         <div className="container mx-auto flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Image src={Logo} alt="Drip Swag" width={120} height={40} className="h-10 w-auto" />
