@@ -6,7 +6,7 @@ export default function CorporateGifting() {
       <div className="container">
         <div className="grid grid-cols-1 items-center gap-5 md:grid-cols-2 lg:gap-[100px]">
           <div className="relative h-[300px] md:h-[400px]">
-            <Image src="/images/hassel.png" alt="Corporate Gifting" fill className="rounded-lg object-cover" />
+            <Image src="/Picture2.png" alt="Corporate Gifting" fill className="rounded-lg object-cover" />
           </div>
           <div className="space-y-4">
             <h2 className="text-[48px] text-xl font-[700] leading-[120%] md:text-4xl">
