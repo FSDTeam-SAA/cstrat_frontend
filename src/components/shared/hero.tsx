@@ -5,7 +5,7 @@ export default function Hero() {
   return (
     <header
       style={{
-        backgroundImage: "url('/images/shop-hero.png')",
+        backgroundImage: "url('Picture1.png')",
         height: '669px',
         backgroundSize: 'cover',
       }}

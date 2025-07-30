@@ -7,7 +7,7 @@ export default function AboutPage() {
       <PageHeader
         title="About Us"
         description="Drip-Swag: Where Style Meets Strategy in Branded Merch."
-        backgroundImage="/images/about-hero.png"
+        backgroundImage="/Picture4.png"
       />
 
       <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
