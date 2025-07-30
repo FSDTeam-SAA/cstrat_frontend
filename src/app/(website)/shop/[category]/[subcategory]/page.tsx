@@ -5,6 +5,7 @@ import ProductGrid from '@/components/shop/product-grid-container';
 import ProductFilters from '@/components/shop/product-filter-l';
 import CategoryTabs from '@/components/shop/category-tabs';
 import { categories } from '@/lib/data';
+import { PageHeader } from '@/components/shared/page-header';
 
 export default function CategoryPage({ params }: { params: { category: string; subcategory: string } }) {
   const { category, subcategory } = params;
@@ -21,59 +22,78 @@ export default function CategoryPage({ params }: { params: { category: string; s
       .join(' ');
 
   return (
-    <div className="container mx-auto px-4 py-6">
-      {/* Breadcrumb */}
-      <nav className="mb-4 flex items-center text-sm">
-        <Link href="/" className="hover:underline">
-          Home
-        </Link>
-        <ChevronRight className="mx-1 h-4 w-4" />
-        <Link href="/shop" className="hover:underline">
-          Shop
-        </Link>
-        <ChevronRight className="mx-1 h-4 w-4" />
-        <Link href={`/shop/${category}`} className="hover:underline">
-          {categoryData.name}
-        </Link>
-        <ChevronRight className="mx-1 h-4 w-4" />
-        <span className="font-medium">{subcategoryDisplayName}</span>
-      </nav>
+    <div>
+      <PageHeader
+        title={category && category}
+        description="Drip-Swag: Where Style Meets Strategy in Branded Merch."
+        backgroundImage={category == "tech"
+          ? "/image8.png"
+          : category == "clothing"
+            ? "/image1.png"
+            : category == 'backpacks'
+              ? "/backpack.png"
+              : category == "Writing"
+                ? "/image3.png"
+                : category == "drinkwares"
+                  ? "/image9.png"
+                  : "/Picture4.png"
+        }
 
-      {/* Category Tabs - Mobile */}
-      <div className="mb-4 flex gap-2 overflow-x-auto md:hidden">
-        <CategoryTabs category={categoryData} currentSubcategory={subcategoryDisplayName} />
-      </div>
+      />
+      <div className="container mx-auto px-4 py-6">
+        {/* Breadcrumb */}
+        <nav className="mb-4 flex items-center text-sm">
+          <Link href="/" className="hover:underline">
+            Home
+          </Link>
+          <ChevronRight className="mx-1 h-4 w-4" />
+          <Link href="/shop" className="hover:underline">
+            Shop
+          </Link>
+          <ChevronRight className="mx-1 h-4 w-4" />
+          <Link href={`/shop/${category}`} className="hover:underline">
+            {category ? category : "Shop"}
+          </Link>
+          <ChevronRight className="mx-1 h-4 w-4" />
+          <span className="font-medium">{subcategoryDisplayName}</span>
+        </nav>
 
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-[240px_1fr]">
-        {/* Sidebar Filters */}
-        <aside className="hidden md:block">
-          <Suspense fallback={<div>Loading filters...</div>}>
-            <ProductFilters category={categoryData} subcategory={subcategoryDisplayName} />
-          </Suspense>
-        </aside>
+        {/* Category Tabs - Mobile */}
+        <div className="mb-4 flex gap-2 overflow-x-auto md:hidden">
+          <CategoryTabs category={categoryData} currentSubcategory={subcategoryDisplayName} />
+        </div>
 
-        {/* Main Content */}
-        <main>
-          <div className="mb-6 flex flex-col">
-            <h1 className="text-2xl font-bold">{subcategoryDisplayName}</h1>
-            <p className="text-sm text-muted-foreground">Showing all products</p>
-          </div>
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-[240px_1fr]">
+          {/* Sidebar Filters */}
+          <aside className="hidden md:block">
+            <Suspense fallback={<div>Loading filters...</div>}>
+              <ProductFilters category={categoryData} subcategory={subcategoryDisplayName} />
+            </Suspense>
+          </aside>
 
-          {/* Category Tabs - Desktop */}
-          {/* <div className="mb-6 hidden gap-2 md:flex">
+          {/* Main Content */}
+          <main>
+            <div className="mb-6 flex flex-col">
+              <h1 className="text-2xl font-bold">{subcategoryDisplayName}</h1>
+              <p className="text-sm text-muted-foreground">Showing all products</p>
+            </div>
+
+            {/* Category Tabs - Desktop */}
+            {/* <div className="mb-6 hidden gap-2 md:flex">
             <CategoryTabs category={categoryData} currentSubcategory={subcategoryDisplayName} />
           </div> */}
 
-          {/* Mobile Filters Button */}
-          <div className="mb-6 md:hidden">
-            <ProductFilters category={categoryData} subcategory={subcategoryDisplayName} />
-          </div>
+            {/* Mobile Filters Button */}
+            <div className="mb-6 md:hidden">
+              <ProductFilters category={categoryData} subcategory={subcategoryDisplayName} />
+            </div>
 
-          {/* Product Grid */}
-          <Suspense fallback={<div>Loading products...</div>}>
-            <ProductGrid />
-          </Suspense>
-        </main>
+            {/* Product Grid */}
+            <Suspense fallback={<div>Loading products...</div>}>
+              <ProductGrid />
+            </Suspense>
+          </main>
+        </div>
       </div>
     </div>
   );
