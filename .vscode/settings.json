@@ -1,24 +1,23 @@
 {
-  "background.editor": {
-    "useFront": true,
-    "style": {
-      "content": "''",
-  "pointer-events": "none",
-  "position": "absolute",
-  "z-index": "99999",
-  "width": "100%",
-  "height": "100%",
-  "background-position": "center",
-  "background-repeat": "no-repeat",
-  "background-size": "cover",
-  "opacity": 0.1
-
-    },
-    
-    "styles": [{}, {}, {}],
-    // Local images can be dragged into the browser to quickly get the file protocol address from the address bar
-    "images": ["https://4kwallpapers.com/images/walls/thumbs_3t/14155.jpg", "file:///path/to/local/file"],
-    "interval": 0,
-    "random": false
+  "search.exclude": {
+    "**/.sst": true
+  },
+  "task.allowAutomaticTasks": true,
+  "typescript.tsserver.experimental.enableProjectDiagnostics": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "debug.openDebug": "neverOpen",
+  "problems.autoReveal": true,
+  "terminal.integrated.hideOnStartup": "always",
+  "terminal.integrated.defaultProfile.windows": "Command Prompt",
+  "terminal.integrated.inheritEnv": false,
+  "jestrunner.configPath": "jest.unit.config.cjs",
+  "compile-hero.disable-compile-files-on-did-save-code": true,
+  "tasks": {
+    "label": "lint on open",
+    "type": "shell",
+    "command": "npm run lint",
+    "runOn": "folderOpen"
   }
 }
